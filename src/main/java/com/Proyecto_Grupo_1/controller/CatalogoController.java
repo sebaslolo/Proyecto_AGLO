@@ -1,0 +1,43 @@
+package com.Proyecto_Grupo_1.controller;
+
+import com.Proyecto_Grupo_1.service.ActividadService;
+import com.Proyecto_Grupo_1.service.GuiaActividadService;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+
+@Controller
+@RequiredArgsConstructor
+@RequestMapping("/catalogo")
+public class CatalogoController {
+
+    private final ActividadService actividadService;
+    private final GuiaActividadService guiaActividadService;
+
+    @GetMapping
+    public String index() {
+        return "redirect:/catalogo/listado";
+    }
+
+    @GetMapping("/listado")
+    public String listado(Model model) {
+        model.addAttribute("actividades", actividadService.getActividades(true));
+        return "/catalogo/listado";
+    }
+
+    @GetMapping("/detalle/{idActividad}")
+    public String detalle(@PathVariable Integer idActividad, Model model, RedirectAttributes redirectAttributes) {
+        var actividadOpt = actividadService.getActividad(idActividad);
+        if (actividadOpt.isEmpty()) {
+            redirectAttributes.addFlashAttribute("error", "Actividad no encontrada.");
+            return "redirect:/catalogo/listado";
+        }
+        model.addAttribute("actividad", actividadOpt.get());
+        model.addAttribute("guias", guiaActividadService.getAsignacionesPorActividad(idActividad));
+        return "/catalogo/detalle";
+    }
+}
