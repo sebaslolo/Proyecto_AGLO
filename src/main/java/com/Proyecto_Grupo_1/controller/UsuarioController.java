@@ -4,6 +4,8 @@ import com.Proyecto_Grupo_1.domain.Usuario;
 import com.Proyecto_Grupo_1.service.UsuarioService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.MessageSource;
+import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -20,6 +22,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 public class UsuarioController {
 
     private final UsuarioService usuarioService;
+    private final MessageSource messageSource;
 
     @GetMapping
     public String index() {
@@ -47,19 +50,22 @@ public class UsuarioController {
             return "/admin/usuarios/modifica";
         }
         usuarioService.save(usuario);
-        redirectAttributes.addFlashAttribute("todoOk", "Usuario guardado correctamente.");
+        redirectAttributes.addFlashAttribute("todoOk", msg("usuario.mensaje.guardado"));
         return "redirect:/admin/usuarios/listado";
     }
 
     @PostMapping("/eliminar")
     public String eliminar(@RequestParam Integer idUsuario, RedirectAttributes redirectAttributes) {
         String titulo = "todoOk";
-        String detalle = "Usuario eliminado correctamente.";
+        String detalle = msg("usuario.mensaje.eliminado");
         try {
             usuarioService.delete(idUsuario);
-        } catch (IllegalArgumentException | IllegalStateException e) {
+        } catch (IllegalArgumentException e) {
             titulo = "error";
-            detalle = e.getMessage();
+            detalle = msg("usuario.error.noExiste");
+        } catch (IllegalStateException e) {
+            titulo = "error";
+            detalle = msg("usuario.error.asociado");
         }
         redirectAttributes.addFlashAttribute(titulo, detalle);
         return "redirect:/admin/usuarios/listado";
@@ -69,10 +75,14 @@ public class UsuarioController {
     public String modificar(@PathVariable Integer idUsuario, Model model, RedirectAttributes redirectAttributes) {
         var usuarioOpt = usuarioService.getUsuario(idUsuario);
         if (usuarioOpt.isEmpty()) {
-            redirectAttributes.addFlashAttribute("error", "Usuario no encontrado.");
+            redirectAttributes.addFlashAttribute("error", msg("usuario.error.noExiste"));
             return "redirect:/admin/usuarios/listado";
         }
         model.addAttribute("usuario", usuarioOpt.get());
         return "/admin/usuarios/modifica";
+    }
+
+    private String msg(String key) {
+        return messageSource.getMessage(key, null, LocaleContextHolder.getLocale());
     }
 }

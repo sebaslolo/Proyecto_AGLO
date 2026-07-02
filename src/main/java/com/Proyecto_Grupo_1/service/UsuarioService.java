@@ -1,7 +1,6 @@
 package com.Proyecto_Grupo_1.service;
 
 import com.Proyecto_Grupo_1.domain.Usuario;
-import com.Proyecto_Grupo_1.repository.CuentaRepository;
 import com.Proyecto_Grupo_1.repository.UsuarioRepository;
 import jakarta.validation.Valid;
 import java.util.List;
@@ -18,13 +17,9 @@ import org.springframework.validation.annotation.Validated;
 public class UsuarioService {
 
     private final UsuarioRepository usuarioRepository;
-    private final CuentaRepository cuentaRepository;
 
     @Transactional(readOnly = true)
-    public List<Usuario> getUsuarios(boolean soloGuias) {
-        if (soloGuias) {
-            return usuarioRepository.findGuiasYColaboradores();
-        }
+    public List<Usuario> getUsuarios(boolean sinFiltro) {
         return usuarioRepository.findAll();
     }
 
@@ -56,7 +51,7 @@ public class UsuarioService {
 
     @Transactional(readOnly = true)
     public List<Usuario> listarGuias() {
-        return getUsuarios(true);
+        return getUsuarios(false);
     }
 
     @Transactional
@@ -83,6 +78,8 @@ public class UsuarioService {
 
     @Transactional(readOnly = true)
     public boolean existeCorreo(String correoElectronico) {
-        return cuentaRepository.existsByCorreoElectronicoIgnoreCase(correoElectronico);
+        return usuarioRepository.findAll().stream()
+                .anyMatch(usuario -> correoElectronico != null
+                && correoElectronico.equalsIgnoreCase(usuario.getCorreo()));
     }
 }

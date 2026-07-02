@@ -14,9 +14,9 @@ public class GuiaController {
     private final GuiaActividadService guiaActividadService;
 
     @GetMapping("/guia/agenda")
-    public String agenda(@RequestParam(required = false) Integer idUsuario, Model model) {
-        if (idUsuario != null) {
-            model.addAttribute("asignaciones", guiaActividadService.getAsignacionesPorGuia(idUsuario));
+    public String agenda(@RequestParam(required = false) Integer idGuia, Model model) {
+        if (idGuia != null) {
+            model.addAttribute("asignaciones", guiaActividadService.getAsignacionesPorGuia(idGuia));
         }
         return "/guia/agenda";
     }

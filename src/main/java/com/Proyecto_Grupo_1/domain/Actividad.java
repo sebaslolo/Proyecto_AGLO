@@ -50,6 +50,9 @@ public class Actividad {
     @Column(name = "precio_actual", nullable = false)
     private BigDecimal precioActual;
 
+    @Column(name = "imagen_actividad", length = 500)
+    private String imagenActividad;
+
     @NotNull
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "id_estado", nullable = false)

@@ -8,19 +8,9 @@ import org.springframework.data.jpa.repository.Query;
 
 public interface UsuarioRepository extends JpaRepository<Usuario, Integer> {
 
-    Optional<Usuario> findByIdentificacion(String identificacion);
+    Optional<Usuario> findByUsernameIgnoreCase(String username);
 
     List<Usuario> findByNombreContainingIgnoreCaseOrApellidoPaternoContainingIgnoreCase(
             String nombre,
             String apellidoPaterno);
-
-    @Query("""
-            select u
-            from Usuario u
-            join u.tipoUsuario tu
-            where lower(tu.nombreTipoUsuario) like '%guia%'
-               or lower(tu.nombreTipoUsuario) like '%guía%'
-               or lower(tu.nombreTipoUsuario) like '%colaborador%'
-            """)
-    List<Usuario> findGuiasYColaboradores();
 }
