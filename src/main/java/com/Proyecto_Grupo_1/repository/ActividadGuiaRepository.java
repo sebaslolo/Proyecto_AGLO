@@ -9,7 +9,7 @@ public interface ActividadGuiaRepository extends JpaRepository<ActividadGuia, Ac
 
     List<ActividadGuia> findByActividadIdActividad(Integer idActividad);
 
-    List<ActividadGuia> findByGuiaIdUsuario(Integer idUsuario);
+    List<ActividadGuia> findByGuiaIdGuia(Integer idGuia);
 
-    void deleteByActividadIdActividadAndGuiaIdUsuario(Integer idActividad, Integer idUsuario);
+    void deleteByActividadIdActividadAndGuiaIdGuia(Integer idActividad, Integer idGuia);
 }

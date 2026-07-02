@@ -31,9 +31,12 @@ public class ActividadGuia {
 
     @NotNull
     @ManyToOne(fetch = FetchType.LAZY)
-    @MapsId("idUsuario")
-    @JoinColumn(name = "id_usuario", nullable = false)
-    private Usuario guia;
+    @MapsId("idGuia")
+    @JoinColumn(name = "id_guia", nullable = false)
+    private Guia guia;
+
+    @Column(name = "fecha_asignacion")
+    private LocalDateTime fechaAsignacion;
 
     @NotNull
     @ManyToOne(fetch = FetchType.LAZY)

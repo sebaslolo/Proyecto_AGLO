@@ -4,6 +4,8 @@ import com.Proyecto_Grupo_1.domain.Reservacion;
 import com.Proyecto_Grupo_1.service.ReservacionService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.MessageSource;
+import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -18,6 +20,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 public class ReservacionController {
 
     private final ReservacionService reservacionService;
+    private final MessageSource messageSource;
 
     @GetMapping("/admin/reservaciones")
     public String indexAdmin() {
@@ -36,7 +39,7 @@ public class ReservacionController {
     public String detalleAdmin(@PathVariable Integer idReservacion, Model model, RedirectAttributes redirectAttributes) {
         var reservacionOpt = reservacionService.getReservacion(idReservacion);
         if (reservacionOpt.isEmpty()) {
-            redirectAttributes.addFlashAttribute("error", "Reservacion no encontrada.");
+            redirectAttributes.addFlashAttribute("error", msg("reservacion.error.noExiste"));
             return "redirect:/admin/reservaciones/listado";
         }
         model.addAttribute("reservacion", reservacionOpt.get());
@@ -56,19 +59,22 @@ public class ReservacionController {
             return "/reservaciones/modifica";
         }
         Reservacion guardada = reservacionService.save(reservacion);
-        redirectAttributes.addFlashAttribute("todoOk", "Reservacion guardada correctamente.");
+        redirectAttributes.addFlashAttribute("todoOk", msg("reservacion.mensaje.guardada"));
         return "redirect:/reservaciones/confirmacion/" + guardada.getIdReservacion();
     }
 
     @PostMapping("/admin/reservaciones/eliminar")
     public String eliminar(@RequestParam Integer idReservacion, RedirectAttributes redirectAttributes) {
         String titulo = "todoOk";
-        String detalle = "Reservacion eliminada correctamente.";
+        String detalle = msg("reservacion.mensaje.eliminada");
         try {
             reservacionService.delete(idReservacion);
-        } catch (IllegalArgumentException | IllegalStateException e) {
+        } catch (IllegalArgumentException e) {
             titulo = "error";
-            detalle = e.getMessage();
+            detalle = msg("reservacion.error.noExiste");
+        } catch (IllegalStateException e) {
+            titulo = "error";
+            detalle = msg("reservacion.error.asociada");
         }
         redirectAttributes.addFlashAttribute(titulo, detalle);
         return "redirect:/admin/reservaciones/listado";
@@ -78,7 +84,7 @@ public class ReservacionController {
     public String confirmacion(@PathVariable Integer idReservacion, Model model, RedirectAttributes redirectAttributes) {
         var reservacionOpt = reservacionService.getReservacion(idReservacion);
         if (reservacionOpt.isEmpty()) {
-            redirectAttributes.addFlashAttribute("error", "Reservacion no encontrada.");
+            redirectAttributes.addFlashAttribute("error", msg("reservacion.error.noExiste"));
             return "redirect:/catalogo/listado";
         }
         model.addAttribute("reservacion", reservacionOpt.get());
@@ -97,5 +103,9 @@ public class ReservacionController {
         model.addAttribute("reservaciones", reservaciones);
         model.addAttribute("totalReservaciones", reservaciones.size());
         return "/reservaciones/mis-reservaciones";
+    }
+
+    private String msg(String key) {
+        return messageSource.getMessage(key, null, LocaleContextHolder.getLocale());
     }
 }

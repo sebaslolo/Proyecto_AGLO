@@ -10,48 +10,30 @@ import jakarta.persistence.MapsId;
 import jakarta.persistence.Table;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
-import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import lombok.Data;
 
 @Data
 @Entity
-@Table(name = "fide_actividad_detalle_tb")
-public class ActividadDetalle {
+@Table(name = "Fide_usuario_rol_tb")
+public class UsuarioRol {
 
     @Valid
     @NotNull
     @EmbeddedId
-    private ActividadDetalleId id = new ActividadDetalleId();
+    private UsuarioRolId id = new UsuarioRolId();
 
     @NotNull
     @ManyToOne(fetch = FetchType.LAZY)
-    @MapsId("idReservacion")
-    @JoinColumn(name = "id_reservacion", nullable = false)
-    private Reservacion reservacion;
+    @MapsId("idUsuario")
+    @JoinColumn(name = "id_usuario", nullable = false)
+    private Usuario usuario;
 
     @NotNull
     @ManyToOne(fetch = FetchType.LAZY)
-    @MapsId("idActividad")
-    @JoinColumn(name = "id_actividad", nullable = false)
-    private Actividad actividad;
-
-    @NotNull
-    @Column(name = "cantidad_personas", nullable = false)
-    private Integer cantidadPersonas;
-
-    @NotNull
-    @Column(name = "precio_unitario", nullable = false)
-    private BigDecimal precioUnitario;
-
-    @NotNull
-    @Column(name = "subtotal", nullable = false)
-    private BigDecimal subtotal;
-
-    @NotNull
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "id_estado", nullable = false)
-    private Estado estado;
+    @MapsId("idRol")
+    @JoinColumn(name = "id_rol", nullable = false)
+    private Rol rol;
 
     @Column(name = "fecha_creacion", insertable = false, updatable = false)
     private LocalDateTime fechaCreacion;

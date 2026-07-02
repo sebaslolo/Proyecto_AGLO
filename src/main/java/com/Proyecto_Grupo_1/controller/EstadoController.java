@@ -4,6 +4,8 @@ import com.Proyecto_Grupo_1.domain.Estado;
 import com.Proyecto_Grupo_1.service.EstadoService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.MessageSource;
+import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -20,6 +22,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 public class EstadoController {
 
     private final EstadoService estadoService;
+    private final MessageSource messageSource;
 
     @GetMapping
     public String index() {
@@ -46,19 +49,22 @@ public class EstadoController {
             return "/admin/estados/modifica";
         }
         estadoService.save(estado);
-        redirectAttributes.addFlashAttribute("todoOk", "Estado guardado correctamente.");
+        redirectAttributes.addFlashAttribute("todoOk", msg("estado.mensaje.guardado"));
         return "redirect:/admin/estados/listado";
     }
 
     @PostMapping("/eliminar")
     public String eliminar(@RequestParam Integer idEstado, RedirectAttributes redirectAttributes) {
         String titulo = "todoOk";
-        String detalle = "Estado eliminado correctamente.";
+        String detalle = msg("estado.mensaje.eliminado");
         try {
             estadoService.delete(idEstado);
-        } catch (IllegalArgumentException | IllegalStateException e) {
+        } catch (IllegalArgumentException e) {
             titulo = "error";
-            detalle = e.getMessage();
+            detalle = msg("estado.error.noExiste");
+        } catch (IllegalStateException e) {
+            titulo = "error";
+            detalle = msg("estado.error.asociado");
         }
         redirectAttributes.addFlashAttribute(titulo, detalle);
         return "redirect:/admin/estados/listado";
@@ -68,10 +74,14 @@ public class EstadoController {
     public String modificar(@PathVariable Integer idEstado, Model model, RedirectAttributes redirectAttributes) {
         var estadoOpt = estadoService.getEstado(idEstado);
         if (estadoOpt.isEmpty()) {
-            redirectAttributes.addFlashAttribute("error", "Estado no encontrado.");
+            redirectAttributes.addFlashAttribute("error", msg("estado.error.noExiste"));
             return "redirect:/admin/estados/listado";
         }
         model.addAttribute("estado", estadoOpt.get());
         return "/admin/estados/modifica";
+    }
+
+    private String msg(String key) {
+        return messageSource.getMessage(key, null, LocaleContextHolder.getLocale());
     }
 }

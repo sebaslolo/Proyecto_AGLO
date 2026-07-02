@@ -12,13 +12,13 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Embeddable
-public class ActividadGuiaId implements Serializable {
+public class UsuarioRolId implements Serializable {
 
     @NotNull
-    @Column(name = "id_actividad")
-    private Integer idActividad;
+    @Column(name = "id_usuario")
+    private Integer idUsuario;
 
     @NotNull
-    @Column(name = "id_guia")
-    private Integer idGuia;
+    @Column(name = "id_rol")
+    private Integer idRol;
 }

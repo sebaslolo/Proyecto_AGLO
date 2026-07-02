@@ -9,40 +9,30 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
-import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
-import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import lombok.Data;
 
 @Data
 @Entity
-@Table(name = "fide_tipo_actividad_tb")
-public class TipoActividad {
+@Table(name = "fide_guia_tb")
+public class Guia {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id_tipo_actividad")
-    private Integer idTipoActividad;
-
-    @NotBlank
-    @Column(name = "nombre_tipo_actividad", length = 100, nullable = false, unique = true)
-    private String nombreTipoActividad;
-
-    @NotBlank
-    @Column(name = "descripcion_tipo_actividad", nullable = false)
-    private String descripcionTipoActividad;
+    @Column(name = "id_guia")
+    private Integer idGuia;
 
     @NotNull
-    @Column(name = "precio_base", nullable = false)
-    private BigDecimal precioBase;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "id_usuario", nullable = false)
+    private Usuario usuario;
 
-    @NotBlank
-    @Column(name = "duracion_estimada", length = 50, nullable = false)
-    private String duracionEstimada;
+    @Column(name = "fecha_ingreso")
+    private LocalDateTime fechaIngreso;
 
-    @Column(name = "imagen_tipo_actividad", length = 500)
-    private String imagenTipoActividad;
+    @Column(name = "disponibilidad", length = 100)
+    private String disponibilidad;
 
     @NotNull
     @ManyToOne(fetch = FetchType.LAZY)
