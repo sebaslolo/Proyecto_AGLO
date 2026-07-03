@@ -148,3 +148,138 @@ create table fide_actividad_detalle_tb(
     foreign key (id_actividad) references fide_actividad_tb(id_actividad),
     index ndx_id_actividad (id_actividad)
 ) ENGINE = InnoDB;
+
+create table fide_voluntariado_tb(
+    id_voluntariado_registro int not null auto_increment,
+    id_usuario int not null,
+    id_estado int not null,
+    id_actividad int, -- Referencia opcional a fide_actividad_tb si aplica
+    fecha_ingreso date,
+    disponibilidad varchar(100),
+    horas_totales_acumuladas int default 0,
+    fecha_inscripcion datetime,
+    asistencia_confirmada boolean default false,
+    hora_entrada datetime,
+    hora_salida datetime,
+    cantidad_horas_sesion decimal(4,2),
+    fecha_sesion date,
+    fecha_creacion timestamp default current_timestamp,
+    fecha_modificacion timestamp default current_timestamp on update current_timestamp,
+    primary key (id_voluntariado_registro),
+    foreign key (id_usuario) references fide_usuario_tb(id_usuario),
+    foreign key (id_estado) references fide_estado_tb(id_estado),
+    index ndx_voluntariado_usuario (id_usuario),
+    index ndx_voluntariado_estado (id_estado)
+) ENGINE = InnoDB;
+
+    create table fide_monitoreo_tortugas_tb(
+    id_monitoreo_registro int not null auto_increment,
+    id_usuario int not null, -- Investigador o guía que realiza el reporte
+    id_estado int not null,
+    etiqueta_tortuga varchar(50) not null,
+    especie_tortuga varchar(100),
+    sexo_tortuga varchar(50),
+    fecha_registro_tortuga datetime,
+    observaciones_tortuga text,
+    tipo_marca varchar(100),
+    fecha_colocacion_marca datetime,
+    fecha_retiro_marca datetime,
+    ubicacion_marca_cuerpo varchar(150),
+    fecha_monitoreo datetime,
+    nombre_ubicacion_playa varchar(150),
+    latitud decimal(10, 8),
+    longitud decimal(11, 8),
+    fecha_avistamiento datetime,
+    lesiones_observadas text,
+    id_nido_codigo varchar(50),
+    fecha_anidacion datetime,
+    numero_huevos int,
+    profundidad_nido_cm decimal(5,2),
+    observaciones_nido text,
+    fecha_hora_eclosion datetime,
+    crias_vivas int default 0,
+    crias_muertas int default 0,
+    crias_infertiles int default 0,
+    observaciones_nacimiento text,
+    condicion_corporal varchar(100),
+    fecha_medicion datetime,
+    largo_curvo_caparazon decimal(5,2),
+    ancho_curvo_caparazon decimal(5,2),
+    largo_recto_caparazon decimal(5,2),
+    peso_kg decimal(5,2),
+    fecha_creacion timestamp default current_timestamp,
+    fecha_modificacion timestamp default current_timestamp on update current_timestamp,
+    primary key (id_monitoreo_registro),
+    foreign key (id_usuario) references fide_usuario_tb(id_usuario),
+    foreign key (id_estado) references fide_estado_tb(id_estado),
+    index ndx_tortuga_etiqueta (etiqueta_tortuga),
+    index ndx_monitoreo_usuario (id_usuario)
+) ENGINE = InnoDB;
+
+
+create table fide_inventario_tb(
+    id_inventario_registro int not null auto_increment,
+    id_estado int not null,
+    id_producto_codigo varchar(50),
+    nombre_producto varchar(100) not null,
+    descripcion_producto text,
+    precio_venta decimal(10,2) default 0.00,
+    categoria_producto varchar(100),
+    tipo_producto varchar(100),
+    stock_actual int default 0,
+    tipo_movimiento varchar(50),
+    cantidad_movimiento int,
+    motivo_movimiento varchar(255),
+    fecha_movimiento datetime,
+    fecha_creacion timestamp default current_timestamp,
+    fecha_modificacion timestamp default current_timestamp on update current_timestamp,
+    primary key (id_inventario_registro),
+    foreign key (id_estado) references fide_estado_tb(id_estado),
+    index ndx_inventario_producto (nombre_producto),
+    index ndx_inventario_estado (id_estado)
+) ENGINE = InnoDB;
+
+
+create table fide_herramientas_tb(
+    id_herramienta_registro int not null auto_increment,
+    id_usuario int, 
+    id_estado int not null, 
+    nombre_herramienta varchar(100) not null,
+    descripcion_herramienta text,
+    codigo_patrimonio_placa varchar(50),
+    categoria_herramienta varchar(100),
+    fecha_prestamo datetime,
+    fecha_devolucion_prevista datetime,
+    fecha_devolucion_real datetime,
+    observaciones_entrega text,
+    fecha_creacion timestamp default current_timestamp,
+    fecha_modificacion timestamp default current_timestamp on update current_timestamp,
+    primary key (id_herramienta_registro),
+    foreign key (id_usuario) references fide_usuario_tb(id_usuario),
+    foreign key (id_estado) references fide_estado_tb(id_estado),
+    index ndx_herramienta_codigo (codigo_patrimonio_placa),
+    index ndx_herramienta_usuario (id_usuario)
+) ENGINE = InnoDB;
+
+
+create table fide_formulario_tb(
+    id_formulario_registro int not null auto_increment,
+    id_usuario int not null, 
+    id_actividad int, 
+    id_estado int not null,
+    id_solicitud_codigo varchar(50),
+    tipo_solicitud_formulario varchar(100),
+    fecha_solicitud datetime default current_timestamp,
+    id_pregunta_ref int,
+    texto_pregunta text,
+    tipo_respuesta_esperada varchar(50),
+    valor_respuesta_llenada text,
+    fecha_creacion timestamp default current_timestamp,
+    fecha_modificacion timestamp default current_timestamp on update current_timestamp,
+    primary key (id_formulario_registro),
+    foreign key (id_usuario) references fide_usuario_tb(id_usuario),
+    foreign key (id_estado) references fide_estado_tb(id_estado),
+    index ndx_formulario_usuario (id_usuario),
+    index ndx_formulario_estado (id_estado)
+) ENGINE = InnoDB;
+
