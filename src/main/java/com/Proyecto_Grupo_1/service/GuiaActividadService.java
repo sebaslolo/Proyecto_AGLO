@@ -10,7 +10,6 @@ import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import java.util.List;
 import java.util.Optional;
-import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -18,12 +17,19 @@ import org.springframework.validation.annotation.Validated;
 
 @Service
 @Validated
-@RequiredArgsConstructor
 public class GuiaActividadService {
 
     private final ActividadGuiaRepository actividadGuiaRepository;
     private final ActividadService actividadService;
     private final GuiaService guiaService;
+
+    public GuiaActividadService(ActividadGuiaRepository actividadGuiaRepository,
+            ActividadService actividadService,
+            GuiaService guiaService) {
+        this.actividadGuiaRepository = actividadGuiaRepository;
+        this.actividadService = actividadService;
+        this.guiaService = guiaService;
+    }
 
     @Transactional(readOnly = true)
     public List<ActividadGuia> getAsignacionesPorActividad(Integer idActividad) {

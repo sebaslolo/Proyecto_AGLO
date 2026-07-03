@@ -3,7 +3,6 @@ package com.Proyecto_Grupo_1.controller;
 import com.Proyecto_Grupo_1.domain.Reservacion;
 import com.Proyecto_Grupo_1.service.ReservacionService;
 import jakarta.validation.Valid;
-import lombok.RequiredArgsConstructor;
 import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.stereotype.Controller;
@@ -16,11 +15,15 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 @Controller
-@RequiredArgsConstructor
 public class ReservacionController {
 
     private final ReservacionService reservacionService;
     private final MessageSource messageSource;
+
+    public ReservacionController(ReservacionService reservacionService, MessageSource messageSource) {
+        this.reservacionService = reservacionService;
+        this.messageSource = messageSource;
+    }
 
     @GetMapping("/admin/reservaciones")
     public String indexAdmin() {

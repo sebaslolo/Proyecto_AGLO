@@ -3,7 +3,6 @@ package com.Proyecto_Grupo_1.controller;
 import com.Proyecto_Grupo_1.domain.TipoActividad;
 import com.Proyecto_Grupo_1.service.TipoActividadService;
 import jakarta.validation.Valid;
-import lombok.RequiredArgsConstructor;
 import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.stereotype.Controller;
@@ -17,12 +16,16 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 @Controller
-@RequiredArgsConstructor
 @RequestMapping("/admin/tipos-actividad")
 public class TipoActividadController {
 
     private final TipoActividadService tipoActividadService;
     private final MessageSource messageSource;
+
+    public TipoActividadController(TipoActividadService tipoActividadService, MessageSource messageSource) {
+        this.tipoActividadService = tipoActividadService;
+        this.messageSource = messageSource;
+    }
 
     @GetMapping
     public String index() {

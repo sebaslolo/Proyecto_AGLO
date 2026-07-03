@@ -10,7 +10,6 @@ public class AvistamientoController {
 
     @GetMapping("/listado")
     public String listado() {
-        // TODO: Crear tablas, entidades, repositorios y servicios para avistamientos.
         return "/avistamientos/listado";
     }
 }

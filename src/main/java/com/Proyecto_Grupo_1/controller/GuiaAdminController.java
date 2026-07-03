@@ -5,7 +5,6 @@ import com.Proyecto_Grupo_1.service.EstadoService;
 import com.Proyecto_Grupo_1.service.GuiaService;
 import com.Proyecto_Grupo_1.service.UsuarioService;
 import jakarta.validation.Valid;
-import lombok.RequiredArgsConstructor;
 import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.stereotype.Controller;
@@ -19,7 +18,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 @Controller
-@RequiredArgsConstructor
 @RequestMapping("/admin/guias")
 public class GuiaAdminController {
 
@@ -27,6 +25,16 @@ public class GuiaAdminController {
     private final UsuarioService usuarioService;
     private final EstadoService estadoService;
     private final MessageSource messageSource;
+
+    public GuiaAdminController(GuiaService guiaService,
+            UsuarioService usuarioService,
+            EstadoService estadoService,
+            MessageSource messageSource) {
+        this.guiaService = guiaService;
+        this.usuarioService = usuarioService;
+        this.estadoService = estadoService;
+        this.messageSource = messageSource;
+    }
 
     @GetMapping
     public String index() {

@@ -5,7 +5,6 @@ import com.Proyecto_Grupo_1.repository.TelefonoRepository;
 import jakarta.validation.Valid;
 import java.util.List;
 import java.util.Optional;
-import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -13,10 +12,13 @@ import org.springframework.validation.annotation.Validated;
 
 @Service
 @Validated
-@RequiredArgsConstructor
 public class TelefonoService {
 
     private final TelefonoRepository telefonoRepository;
+
+    public TelefonoService(TelefonoRepository telefonoRepository) {
+        this.telefonoRepository = telefonoRepository;
+    }
 
     @Transactional(readOnly = true)
     public List<Telefono> getTelefonos(boolean sinFiltro) {

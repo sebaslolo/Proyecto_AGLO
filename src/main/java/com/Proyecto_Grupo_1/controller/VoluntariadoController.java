@@ -10,7 +10,6 @@ public class VoluntariadoController {
 
     @GetMapping("/listado")
     public String listado() {
-        // TODO: Crear tablas, entidades, repositorios y servicios para voluntariados.
         return "/voluntariados/listado";
     }
 }

@@ -4,7 +4,6 @@ import com.Proyecto_Grupo_1.domain.Estado;
 import com.Proyecto_Grupo_1.service.EstadoService;
 import com.Proyecto_Grupo_1.service.GuiaActividadService;
 import com.Proyecto_Grupo_1.service.GuiaService;
-import lombok.RequiredArgsConstructor;
 import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.stereotype.Controller;
@@ -17,7 +16,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 @Controller
-@RequiredArgsConstructor
 @RequestMapping("/admin/actividades/{idActividad}/guias")
 public class GuiaActividadController {
 
@@ -25,6 +23,16 @@ public class GuiaActividadController {
     private final GuiaService guiaService;
     private final EstadoService estadoService;
     private final MessageSource messageSource;
+
+    public GuiaActividadController(GuiaActividadService guiaActividadService,
+            GuiaService guiaService,
+            EstadoService estadoService,
+            MessageSource messageSource) {
+        this.guiaActividadService = guiaActividadService;
+        this.guiaService = guiaService;
+        this.estadoService = estadoService;
+        this.messageSource = messageSource;
+    }
 
     @GetMapping
     public String index(@PathVariable Integer idActividad) {

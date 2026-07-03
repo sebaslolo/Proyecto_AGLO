@@ -3,7 +3,6 @@ package com.Proyecto_Grupo_1.domain;
 import jakarta.persistence.Column;
 import jakarta.persistence.EmbeddedId;
 import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.MapsId;
@@ -25,13 +24,13 @@ public class ActividadDetalle {
     private ActividadDetalleId id = new ActividadDetalleId();
 
     @NotNull
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne
     @MapsId("idReservacion")
     @JoinColumn(name = "id_reservacion", nullable = false)
     private Reservacion reservacion;
 
     @NotNull
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne
     @MapsId("idActividad")
     @JoinColumn(name = "id_actividad", nullable = false)
     private Actividad actividad;
@@ -49,7 +48,7 @@ public class ActividadDetalle {
     private BigDecimal subtotal;
 
     @NotNull
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne
     @JoinColumn(name = "id_estado", nullable = false)
     private Estado estado;
 

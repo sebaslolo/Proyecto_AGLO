@@ -2,7 +2,6 @@ package com.Proyecto_Grupo_1.controller;
 
 import com.Proyecto_Grupo_1.service.ActividadService;
 import com.Proyecto_Grupo_1.service.GuiaActividadService;
-import lombok.RequiredArgsConstructor;
 import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.stereotype.Controller;
@@ -13,13 +12,20 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 @Controller
-@RequiredArgsConstructor
 @RequestMapping("/catalogo")
 public class CatalogoController {
 
     private final ActividadService actividadService;
     private final GuiaActividadService guiaActividadService;
     private final MessageSource messageSource;
+
+    public CatalogoController(ActividadService actividadService,
+            GuiaActividadService guiaActividadService,
+            MessageSource messageSource) {
+        this.actividadService = actividadService;
+        this.guiaActividadService = guiaActividadService;
+        this.messageSource = messageSource;
+    }
 
     @GetMapping
     public String index() {

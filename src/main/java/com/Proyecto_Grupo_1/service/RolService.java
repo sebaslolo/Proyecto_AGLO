@@ -5,7 +5,6 @@ import com.Proyecto_Grupo_1.repository.RolRepository;
 import jakarta.validation.Valid;
 import java.util.List;
 import java.util.Optional;
-import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -13,10 +12,13 @@ import org.springframework.validation.annotation.Validated;
 
 @Service
 @Validated
-@RequiredArgsConstructor
 public class RolService {
 
     private final RolRepository rolRepository;
+
+    public RolService(RolRepository rolRepository) {
+        this.rolRepository = rolRepository;
+    }
 
     @Transactional(readOnly = true)
     public List<Rol> getRoles(boolean sinFiltro) {

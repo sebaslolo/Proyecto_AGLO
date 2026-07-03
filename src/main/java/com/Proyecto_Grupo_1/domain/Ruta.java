@@ -2,7 +2,6 @@ package com.Proyecto_Grupo_1.domain;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -28,7 +27,7 @@ public class Ruta {
     @Column(name = "ruta", length = 255, nullable = false)
     private String ruta;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne
     @JoinColumn(name = "id_rol")
     private Rol rol;
 

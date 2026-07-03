@@ -4,7 +4,6 @@ import com.Proyecto_Grupo_1.domain.Ruta;
 import com.Proyecto_Grupo_1.service.RolService;
 import com.Proyecto_Grupo_1.service.RutaService;
 import jakarta.validation.Valid;
-import lombok.RequiredArgsConstructor;
 import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.stereotype.Controller;
@@ -18,13 +17,18 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 @Controller
-@RequiredArgsConstructor
 @RequestMapping("/admin/rutas")
 public class RutaController {
 
     private final RutaService rutaService;
     private final RolService rolService;
     private final MessageSource messageSource;
+
+    public RutaController(RutaService rutaService, RolService rolService, MessageSource messageSource) {
+        this.rutaService = rutaService;
+        this.rolService = rolService;
+        this.messageSource = messageSource;
+    }
 
     @GetMapping
     public String index() {

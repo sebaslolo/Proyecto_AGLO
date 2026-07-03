@@ -3,7 +3,6 @@ package com.Proyecto_Grupo_1.controller;
 import com.Proyecto_Grupo_1.domain.Usuario;
 import com.Proyecto_Grupo_1.service.UsuarioService;
 import jakarta.validation.Valid;
-import lombok.RequiredArgsConstructor;
 import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.stereotype.Controller;
@@ -17,12 +16,16 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 @Controller
-@RequiredArgsConstructor
 @RequestMapping("/admin/usuarios")
 public class UsuarioController {
 
     private final UsuarioService usuarioService;
     private final MessageSource messageSource;
+
+    public UsuarioController(UsuarioService usuarioService, MessageSource messageSource) {
+        this.usuarioService = usuarioService;
+        this.messageSource = messageSource;
+    }
 
     @GetMapping
     public String index() {
