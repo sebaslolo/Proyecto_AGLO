@@ -3,7 +3,6 @@ package com.Proyecto_Grupo_1.controller;
 import com.Proyecto_Grupo_1.domain.Rol;
 import com.Proyecto_Grupo_1.service.RolService;
 import jakarta.validation.Valid;
-import lombok.RequiredArgsConstructor;
 import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.stereotype.Controller;
@@ -17,12 +16,16 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 @Controller
-@RequiredArgsConstructor
 @RequestMapping("/admin/roles")
 public class RolController {
 
     private final RolService rolService;
     private final MessageSource messageSource;
+
+    public RolController(RolService rolService, MessageSource messageSource) {
+        this.rolService = rolService;
+        this.messageSource = messageSource;
+    }
 
     @GetMapping
     public String index() {

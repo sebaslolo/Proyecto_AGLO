@@ -2,7 +2,6 @@ package com.Proyecto_Grupo_1.domain;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -24,7 +23,7 @@ public class Guia {
     private Integer idGuia;
 
     @NotNull
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne
     @JoinColumn(name = "id_usuario", nullable = false)
     private Usuario usuario;
 
@@ -35,7 +34,7 @@ public class Guia {
     private String disponibilidad;
 
     @NotNull
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne
     @JoinColumn(name = "id_estado", nullable = false)
     private Estado estado;
 

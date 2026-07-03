@@ -7,18 +7,24 @@ import com.Proyecto_Grupo_1.domain.UsuarioRolId;
 import com.Proyecto_Grupo_1.repository.UsuarioRolRepository;
 import java.util.List;
 import java.util.Optional;
-import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
-@RequiredArgsConstructor
 public class UsuarioRolService {
 
     private final UsuarioRolRepository usuarioRolRepository;
     private final UsuarioService usuarioService;
     private final RolService rolService;
+
+    public UsuarioRolService(UsuarioRolRepository usuarioRolRepository,
+            UsuarioService usuarioService,
+            RolService rolService) {
+        this.usuarioRolRepository = usuarioRolRepository;
+        this.usuarioService = usuarioService;
+        this.rolService = rolService;
+    }
 
     @Transactional(readOnly = true)
     public List<UsuarioRol> getRolesPorUsuario(Integer idUsuario) {

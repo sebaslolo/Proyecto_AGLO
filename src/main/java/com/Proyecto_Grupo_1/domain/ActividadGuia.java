@@ -3,7 +3,6 @@ package com.Proyecto_Grupo_1.domain;
 import jakarta.persistence.Column;
 import jakarta.persistence.EmbeddedId;
 import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.MapsId;
@@ -24,13 +23,13 @@ public class ActividadGuia {
     private ActividadGuiaId id = new ActividadGuiaId();
 
     @NotNull
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne
     @MapsId("idActividad")
     @JoinColumn(name = "id_actividad", nullable = false)
     private Actividad actividad;
 
     @NotNull
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne
     @MapsId("idGuia")
     @JoinColumn(name = "id_guia", nullable = false)
     private Guia guia;
@@ -39,7 +38,7 @@ public class ActividadGuia {
     private LocalDateTime fechaAsignacion;
 
     @NotNull
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne
     @JoinColumn(name = "id_estado", nullable = false)
     private Estado estado;
 

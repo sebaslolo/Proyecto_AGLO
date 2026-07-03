@@ -10,7 +10,6 @@ public class HerramientaController {
 
     @GetMapping("/listado")
     public String listado() {
-        // TODO: Crear tablas, entidades, repositorios y servicios para herramientas.
         return "/herramientas/listado";
     }
 }

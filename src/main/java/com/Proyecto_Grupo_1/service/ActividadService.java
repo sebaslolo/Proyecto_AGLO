@@ -6,7 +6,6 @@ import jakarta.validation.Valid;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
-import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -14,10 +13,13 @@ import org.springframework.validation.annotation.Validated;
 
 @Service
 @Validated
-@RequiredArgsConstructor
 public class ActividadService {
 
     private final ActividadRepository actividadRepository;
+
+    public ActividadService(ActividadRepository actividadRepository) {
+        this.actividadRepository = actividadRepository;
+    }
 
     @Transactional(readOnly = true)
     public List<Actividad> getActividades(boolean futuras) {

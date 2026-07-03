@@ -3,7 +3,6 @@ package com.Proyecto_Grupo_1.controller;
 import com.Proyecto_Grupo_1.domain.Cuenta;
 import com.Proyecto_Grupo_1.service.CuentaService;
 import jakarta.validation.Valid;
-import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -15,11 +14,14 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 @Controller
-@RequiredArgsConstructor
 @RequestMapping("/admin/cuentas")
 public class CuentaController {
 
     private final CuentaService cuentaService;
+
+    public CuentaController(CuentaService cuentaService) {
+        this.cuentaService = cuentaService;
+    }
 
     @GetMapping
     public String index() {

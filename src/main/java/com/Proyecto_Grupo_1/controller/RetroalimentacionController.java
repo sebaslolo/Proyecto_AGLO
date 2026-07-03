@@ -10,7 +10,6 @@ public class RetroalimentacionController {
 
     @GetMapping("/listado")
     public String listado() {
-        // TODO: Crear tablas, entidades, repositorios y servicios para retroalimentacion.
         return "/retroalimentacion/listado";
     }
 }

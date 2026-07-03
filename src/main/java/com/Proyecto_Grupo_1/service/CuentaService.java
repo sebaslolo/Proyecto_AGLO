@@ -5,7 +5,6 @@ import com.Proyecto_Grupo_1.repository.CuentaRepository;
 import jakarta.validation.Valid;
 import java.util.List;
 import java.util.Optional;
-import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -13,10 +12,13 @@ import org.springframework.validation.annotation.Validated;
 
 @Service
 @Validated
-@RequiredArgsConstructor
 public class CuentaService {
 
     private final CuentaRepository cuentaRepository;
+
+    public CuentaService(CuentaRepository cuentaRepository) {
+        this.cuentaRepository = cuentaRepository;
+    }
 
     @Transactional(readOnly = true)
     public List<Cuenta> getCuentas(boolean sinFiltro) {

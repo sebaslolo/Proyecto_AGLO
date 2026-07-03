@@ -3,7 +3,6 @@ package com.Proyecto_Grupo_1.controller;
 import com.Proyecto_Grupo_1.domain.TipoUsuario;
 import com.Proyecto_Grupo_1.service.TipoUsuarioService;
 import jakarta.validation.Valid;
-import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -15,11 +14,14 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 @Controller
-@RequiredArgsConstructor
 @RequestMapping("/admin/tipos-usuario")
 public class TipoUsuarioController {
 
     private final TipoUsuarioService tipoUsuarioService;
+
+    public TipoUsuarioController(TipoUsuarioService tipoUsuarioService) {
+        this.tipoUsuarioService = tipoUsuarioService;
+    }
 
     @GetMapping
     public String index() {
