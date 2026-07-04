@@ -1,0 +1,270 @@
+:root{
+
+    --verdeOscuro:#005F63;
+    --verde:#008489;
+    --verdeClaro:#0AA7A7;
+    --blanco:#FFFFFF;
+    --gris:#D9D9D9;
+    --texto:#555555;
+    --rojo:#E53935;
+    --verde2:#43A047;
+
+}
+
+
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    font-family:'Montserrat',sans-serif;
+
+}
+
+body{
+    overflow-x:hidden;
+    background:#F4F4F4;
+
+}
+.fondo{
+
+    width:100%;
+    min-height:100vh;
+    background: url("img/fondoliso.png");
+    background-size:cover;
+    background-position:center;
+    background-repeat:no-repeat;
+    position:relative;
+}
+
+.overlay{
+    position:absolute;
+    inset:0;
+    background:rgba(0,0,0,.30);
+    z-index:1;
+}
+
+.navbar{
+    width:100%;
+    height:80px;
+    background:var(--verdeOscuro);
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    padding:0 70px;
+    position:relative;
+    z-index:5;
+}
+.logo{
+    display:flex;
+    align-items:center;
+    gap:15px;
+}
+.logo img{
+    width:55px;
+}
+.logo h2{
+    color:var(--blanco);
+    font-size:36px;
+    font-weight:700;
+}
+/* menu */
+
+.navbar nav{
+    display:flex;
+    align-items:center;
+    gap:18px;
+}
+.navbar nav a{
+    text-decoration:none;
+    color:white;
+    font-size:15px;
+    font-weight:600;
+    transition:.3s;
+}
+.navbar nav a:hover{
+    opacity:.85;
+}
+/* btn */
+.btnLogin{
+    padding:11px 22px;
+    border:2px solid white;
+    border-radius:12px;
+    transition:.3s;
+}
+.btnLogin:hover{
+    background:white;
+    color:var(--verdeOscuro);
+}
+.btnRegistro{
+    padding:11px 22px;
+    background:#00484B;
+    border-radius:12px;
+    transition:.3s;
+}
+.btnRegistro:hover{
+    background:#00393B;
+}
+
+/*div contenedor */
+
+.contenedor{
+    position:relative;
+    z-index:2;
+    width:100%;
+    min-height:calc(100vh - 80px);
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    padding:30px;
+}
+.cardRegistro{
+    width:450px;
+    background:white;
+    border-radius:18px;
+    padding:30px 30px;
+    box-shadow:0 15px 40px rgba(0,0,0,.30);
+    animation:aparecer .8s ease;
+}
+.cardRegistro h1{
+    text-align:center;
+    color:var(--verdeOscuro);
+    font-size:30px;
+    font-weight:700;
+    margin-bottom:20px;
+}
+
+/*forms*/
+
+form{
+    width:100%;
+}
+.grupo{
+    display:flex;
+    flex-direction:column;
+    margin-bottom:14px;
+}
+.grupo label{
+    color:var(--verdeOscuro);
+    font-size:14px;
+    font-weight:600;
+    margin-bottom:6px;
+}
+/* input */
+.grupo input{
+    width:100%;
+    height:42px;
+    border:2px solid var(--gris);
+    border-radius:10px;
+    outline:none;
+    padding:0 14px;
+    font-size:14px;
+    color:var(--texto);
+    transition:.3s;
+}
+.grupo input:focus{
+    border-color:var(--verde);
+}
+
+/* contraseña */
+.inputPassword{
+
+    position:relative;
+}
+.inputPassword input{
+    padding-right:45px;
+}
+.ojo{
+    position:absolute;
+    right:15px;
+    top:50%;
+    transform:translateY(-50%);
+    color:#888;
+    cursor:pointer;
+    transition:.3s;
+}
+.ojo:hover{
+    color:var(--verdeOscuro);
+}
+/* mensaja de error */
+small{
+    margin-top:4px;
+    font-size:12px;
+    color:var(--rojo);
+    font-weight:600;
+    min-height:15px;
+}
+/* btn */
+.btnCrear{
+    width:200px;
+    height:44px;
+    border:none;
+    border-radius:10px;
+    background:var(--verdeOscuro);
+    color:white;
+    font-size:15px;
+    font-weight:600;
+    cursor:pointer;
+    display:block;
+    margin:20px auto 10px;
+    transition:.3s;
+}
+.btnCrear:hover{
+    background:var(--verde);
+    transform:translateY(-2px);
+}
+/* texto inferior */
+.login{
+    text-align:center;
+    font-size:14px;
+    color:#666;
+}
+.login a{
+    text-decoration:none;
+    color:var(--verdeOscuro);
+    font-weight:700;
+}
+.login a:hover{
+    color:var(--verde);
+}
+/*flecha regresar*/
+.flecha{
+    position:fixed;
+    right:35px;
+    bottom:35px;
+    width:55px;
+    height:55px;
+    border:2px solid white;
+    border-radius:50%;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    cursor:pointer;
+    z-index:100;
+    transition:.3s;
+}
+.flecha i{
+    color:white;
+    font-size:22px;
+}
+.flecha:hover{
+    background:white;
+}
+.flecha:hover i{
+    color:var(--verdeOscuro);
+}
+/*animar*/
+@keyframes aparecer{
+    from{
+        opacity:0;
+        transform:translateY(30px);
+    }
+    to{
+        opacity:1;
+        transform:translateY(0);
+    }
+}
+/*seleccion*/
+::selection{
+    background:var(--verde);
+    color:white;
+}
