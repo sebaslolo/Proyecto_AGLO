@@ -41,7 +41,7 @@ create table fide_rol_tb (
   primary key (id_rol))
   ENGINE = InnoDB;
 
-create table Fide_usuario_rol_tb (
+create table fide_usuario_rol_tb (
   id_usuario int not null,
   id_rol INT NOT NULL,
   fecha_creacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
