@@ -45,6 +45,14 @@ public class ActividadService {
     }
 
     @Transactional(readOnly = true)
+    public List<Actividad> buscarActividades(String termino) {
+        if (termino == null || termino.isBlank()) {
+            return listarActividades();
+        }
+        return actividadRepository.findByNombreActividadContainingIgnoreCase(termino);
+    }
+
+    @Transactional(readOnly = true)
     public Actividad obtenerActividad(Integer idActividad) {
         return actividadRepository.findById(idActividad)
                 .orElseThrow(() -> new IllegalArgumentException("Actividad no encontrada: " + idActividad));

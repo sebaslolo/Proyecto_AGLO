@@ -1,6 +1,7 @@
 package com.Proyecto_Grupo_1.controller;
 
 import com.Proyecto_Grupo_1.domain.Estado;
+import com.Proyecto_Grupo_1.service.ActividadService;
 import com.Proyecto_Grupo_1.service.EstadoService;
 import com.Proyecto_Grupo_1.service.GuiaActividadService;
 import com.Proyecto_Grupo_1.service.GuiaService;
@@ -20,15 +21,18 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 public class GuiaActividadController {
 
     private final GuiaActividadService guiaActividadService;
+    private final ActividadService actividadService;
     private final GuiaService guiaService;
     private final EstadoService estadoService;
     private final MessageSource messageSource;
 
     public GuiaActividadController(GuiaActividadService guiaActividadService,
+            ActividadService actividadService,
             GuiaService guiaService,
             EstadoService estadoService,
             MessageSource messageSource) {
         this.guiaActividadService = guiaActividadService;
+        this.actividadService = actividadService;
         this.guiaService = guiaService;
         this.estadoService = estadoService;
         this.messageSource = messageSource;
@@ -42,8 +46,10 @@ public class GuiaActividadController {
     @GetMapping("/listado")
     public String listado(@PathVariable Integer idActividad, Model model) {
         model.addAttribute("idActividad", idActividad);
+        model.addAttribute("actividad", actividadService.obtenerActividad(idActividad));
         model.addAttribute("asignaciones", guiaActividadService.getAsignacionesPorActividad(idActividad));
         model.addAttribute("guias", guiaService.getGuias(false));
+        model.addAttribute("estados", estadoService.getEstados(false));
         return "/admin/actividades/guias/listado";
     }
 

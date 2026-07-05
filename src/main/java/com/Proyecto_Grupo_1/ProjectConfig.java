@@ -1,5 +1,6 @@
 package com.Proyecto_Grupo_1;
 
+import com.Proyecto_Grupo_1.web.SesionInterceptor;
 import java.util.Locale;
 import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.Bean;
@@ -13,6 +14,12 @@ import org.springframework.web.servlet.i18n.SessionLocaleResolver;
 
 @Configuration
 public class ProjectConfig implements WebMvcConfigurer {
+
+    private final SesionInterceptor sesionInterceptor;
+
+    public ProjectConfig(SesionInterceptor sesionInterceptor) {
+        this.sesionInterceptor = sesionInterceptor;
+    }
 
     @Bean
     public LocaleResolver localeResolver() {
@@ -33,6 +40,15 @@ public class ProjectConfig implements WebMvcConfigurer {
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
         registry.addInterceptor(localeChangeInterceptor());
+        registry.addInterceptor(sesionInterceptor)
+                .addPathPatterns(
+                        "/admin/**",
+                        "/guia/**",
+                        "/reservaciones/nueva",
+                        "/reservaciones/guardar",
+                        "/reservaciones/confirmacion/**",
+                        "/mis-reservaciones",
+                        "/mis-reservaciones/**");
     }
 
     @Bean("messageSource")

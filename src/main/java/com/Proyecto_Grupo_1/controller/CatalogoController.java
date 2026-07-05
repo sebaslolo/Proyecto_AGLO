@@ -2,6 +2,8 @@ package com.Proyecto_Grupo_1.controller;
 
 import com.Proyecto_Grupo_1.service.ActividadService;
 import com.Proyecto_Grupo_1.service.GuiaActividadService;
+import com.Proyecto_Grupo_1.service.ReservacionService;
+import java.util.stream.Collectors;
 import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.stereotype.Controller;
@@ -17,13 +19,16 @@ public class CatalogoController {
 
     private final ActividadService actividadService;
     private final GuiaActividadService guiaActividadService;
+    private final ReservacionService reservacionService;
     private final MessageSource messageSource;
 
     public CatalogoController(ActividadService actividadService,
             GuiaActividadService guiaActividadService,
+            ReservacionService reservacionService,
             MessageSource messageSource) {
         this.actividadService = actividadService;
         this.guiaActividadService = guiaActividadService;
+        this.reservacionService = reservacionService;
         this.messageSource = messageSource;
     }
 
@@ -34,7 +39,13 @@ public class CatalogoController {
 
     @GetMapping("/listado")
     public String listado(Model model) {
-        model.addAttribute("actividades", actividadService.getActividades(true));
+        var actividades = actividadService.getActividades(true);
+        var cuposDisponibles = actividades.stream()
+                .collect(Collectors.toMap(
+                        actividad -> actividad.getIdActividad(),
+                        actividad -> reservacionService.obtenerCupoDisponible(actividad.getIdActividad())));
+        model.addAttribute("actividades", actividades);
+        model.addAttribute("cuposDisponibles", cuposDisponibles);
         return "/catalogo/listado";
     }
 
@@ -47,6 +58,7 @@ public class CatalogoController {
         }
         model.addAttribute("actividad", actividadOpt.get());
         model.addAttribute("guias", guiaActividadService.getAsignacionesPorActividad(idActividad));
+        model.addAttribute("cupoDisponible", reservacionService.obtenerCupoDisponible(idActividad));
         return "/catalogo/detalle";
     }
 

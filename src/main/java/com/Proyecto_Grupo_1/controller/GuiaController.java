@@ -1,6 +1,7 @@
 package com.Proyecto_Grupo_1.controller;
 
 import com.Proyecto_Grupo_1.service.GuiaActividadService;
+import jakarta.servlet.http.HttpSession;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -16,9 +17,14 @@ public class GuiaController {
     }
 
     @GetMapping("/guia/agenda")
-    public String agenda(@RequestParam(required = false) Integer idGuia, Model model) {
+    public String agenda(@RequestParam(required = false) Integer idGuia, HttpSession session, Model model) {
+        if (idGuia == null) {
+            idGuia = (Integer) session.getAttribute("idGuia");
+        }
         if (idGuia != null) {
-            model.addAttribute("asignaciones", guiaActividadService.getAsignacionesPorGuia(idGuia));
+            var asignaciones = guiaActividadService.getAsignacionesPorGuia(idGuia);
+            model.addAttribute("asignaciones", asignaciones);
+            model.addAttribute("totalAsignaciones", asignaciones.size());
         }
         return "/guia/agenda";
     }

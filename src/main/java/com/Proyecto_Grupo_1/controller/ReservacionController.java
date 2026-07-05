@@ -1,7 +1,9 @@
 package com.Proyecto_Grupo_1.controller;
 
-import com.Proyecto_Grupo_1.domain.Reservacion;
+import com.Proyecto_Grupo_1.dto.ReservacionForm;
+import com.Proyecto_Grupo_1.service.ActividadService;
 import com.Proyecto_Grupo_1.service.ReservacionService;
+import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
@@ -18,10 +20,14 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 public class ReservacionController {
 
     private final ReservacionService reservacionService;
+    private final ActividadService actividadService;
     private final MessageSource messageSource;
 
-    public ReservacionController(ReservacionService reservacionService, MessageSource messageSource) {
+    public ReservacionController(ReservacionService reservacionService,
+            ActividadService actividadService,
+            MessageSource messageSource) {
         this.reservacionService = reservacionService;
+        this.actividadService = actividadService;
         this.messageSource = messageSource;
     }
 
@@ -51,19 +57,54 @@ public class ReservacionController {
     }
 
     @GetMapping("/reservaciones/nueva")
-    public String nueva(Model model) {
-        model.addAttribute("reservacion", new Reservacion());
+    public String nueva(@RequestParam Integer idActividad, Model model, RedirectAttributes redirectAttributes) {
+        var actividadOpt = actividadService.getActividad(idActividad);
+        if (actividadOpt.isEmpty()) {
+            redirectAttributes.addFlashAttribute("error", msg("actividad.error.noExiste"));
+            return "redirect:/catalogo/listado";
+        }
+        ReservacionForm reservacionForm = new ReservacionForm();
+        reservacionForm.setIdActividad(idActividad);
+        model.addAttribute("reservacionForm", reservacionForm);
+        model.addAttribute("actividad", actividadOpt.get());
+        model.addAttribute("cupoDisponible", reservacionService.obtenerCupoDisponible(idActividad));
         return "/reservaciones/modifica";
     }
 
     @PostMapping("/reservaciones/guardar")
-    public String guardar(@Valid Reservacion reservacion, BindingResult bindingResult, RedirectAttributes redirectAttributes) {
+    public String guardar(@Valid ReservacionForm reservacionForm,
+            BindingResult bindingResult,
+            HttpSession session,
+            Model model,
+            RedirectAttributes redirectAttributes) {
+        if (reservacionForm.getIdActividad() == null) {
+            redirectAttributes.addFlashAttribute("error", msg("actividad.error.noExiste"));
+            return "redirect:/catalogo/listado";
+        }
+        var actividadOpt = actividadService.getActividad(reservacionForm.getIdActividad());
+        if (actividadOpt.isEmpty()) {
+            redirectAttributes.addFlashAttribute("error", msg("actividad.error.noExiste"));
+            return "redirect:/catalogo/listado";
+        }
         if (bindingResult.hasErrors()) {
+            model.addAttribute("actividad", actividadOpt.get());
+            model.addAttribute("cupoDisponible", reservacionService.obtenerCupoDisponible(reservacionForm.getIdActividad()));
             return "/reservaciones/modifica";
         }
-        Reservacion guardada = reservacionService.save(reservacion);
-        redirectAttributes.addFlashAttribute("todoOk", msg("reservacion.mensaje.guardada"));
-        return "redirect:/reservaciones/confirmacion/" + guardada.getIdReservacion();
+        Integer idUsuario = (Integer) session.getAttribute("idUsuario");
+        try {
+            var guardada = reservacionService.crearReservacion(
+                    idUsuario,
+                    reservacionForm.getIdActividad(),
+                    reservacionForm.getCantidadPersonas());
+            redirectAttributes.addFlashAttribute("todoOk", msg("reservacion.mensaje.guardada"));
+            return "redirect:/reservaciones/confirmacion/" + guardada.getIdReservacion();
+        } catch (IllegalArgumentException | IllegalStateException e) {
+            model.addAttribute("error", e.getMessage());
+            model.addAttribute("actividad", actividadOpt.get());
+            model.addAttribute("cupoDisponible", reservacionService.obtenerCupoDisponible(reservacionForm.getIdActividad()));
+            return "/reservaciones/modifica";
+        }
     }
 
     @PostMapping("/admin/reservaciones/eliminar")
@@ -96,12 +137,18 @@ public class ReservacionController {
     }
 
     @GetMapping("/mis-reservaciones")
-    public String indexMisReservaciones(@RequestParam Integer idUsuario) {
+    public String indexMisReservaciones(@RequestParam(required = false) Integer idUsuario, HttpSession session) {
+        if (idUsuario == null) {
+            idUsuario = (Integer) session.getAttribute("idUsuario");
+        }
         return "redirect:/mis-reservaciones/listado?idUsuario=" + idUsuario;
     }
 
     @GetMapping("/mis-reservaciones/listado")
-    public String misReservaciones(@RequestParam Integer idUsuario, Model model) {
+    public String misReservaciones(@RequestParam(required = false) Integer idUsuario, HttpSession session, Model model) {
+        if (idUsuario == null) {
+            idUsuario = (Integer) session.getAttribute("idUsuario");
+        }
         var reservaciones = reservacionService.listarReservacionesPorUsuario(idUsuario);
         model.addAttribute("reservaciones", reservaciones);
         model.addAttribute("totalReservaciones", reservaciones.size());

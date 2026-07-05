@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+    <head th:replace="~{aglo/fragmentos :: head('Agenda de guía | AGLO', 'dashboard.css')}"></head>
+    <body class="public-page">
+        <main class="public-main">
+            <section class="public-page-title">
+                <div>
+                    <h1>Agenda del guía</h1>
+                    <p>Actividades turísticas asignadas.</p>
+                </div>
+                <a class="btn btn-light" th:href="@{/logout}">Cerrar sesión</a>
+            </section>
+            <section th:replace="~{admin/fragmentos :: mensajes}"></section>
+
+            <section class="admin-panel">
+                <div class="table-responsive">
+                    <table class="table admin-table align-middle">
+                        <thead>
+                            <tr>
+                                <th>Actividad</th>
+                                <th>Inicio</th>
+                                <th>Fin</th>
+                                <th>Tipo</th>
+                                <th>Estado</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr th:if="${asignaciones == null or asignaciones.empty}">
+                                <td colspan="5" class="empty-row">No hay actividades asignadas.</td>
+                            </tr>
+                            <tr th:each="asignacion : ${asignaciones}">
+                                <td th:text="${asignacion.actividad != null ? asignacion.actividad.nombreActividad : 'Actividad'}">Actividad</td>
+                                <td th:text="${asignacion.actividad != null and asignacion.actividad.fechaHoraInicio != null ? #temporals.format(asignacion.actividad.fechaHoraInicio, 'dd/MM/yyyy HH:mm') : 'Sin fecha'}">Inicio</td>
+                                <td th:text="${asignacion.actividad != null and asignacion.actividad.fechaHoraFin != null ? #temporals.format(asignacion.actividad.fechaHoraFin, 'dd/MM/yyyy HH:mm') : 'Sin fecha'}">Fin</td>
+                                <td th:text="${asignacion.actividad != null and asignacion.actividad.tipoActividad != null ? asignacion.actividad.tipoActividad.nombreTipoActividad : 'Sin tipo'}">Tipo</td>
+                                <td th:text="${asignacion.estado != null ? asignacion.estado.nombreEstado : 'Sin estado'}">Activo</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+        </main>
+        <th:block th:replace="~{aglo/fragmentos :: scripts('dashboard.js')}"></th:block>
+    </body>
+</html>

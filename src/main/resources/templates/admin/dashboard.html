@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+    <head th:replace="~{aglo/fragmentos :: head('Registro de nuevo usuario | AGLO', 'dashboard.css')}"></head>
+
+    <body class="dashboard-body">
+        <div class="dashboard-shell">
+            <div class="dashboard-overlay"></div>
+
+            <header class="admin-navbar navbar navbar-expand-lg">
+                <div class="container-fluid px-3 px-lg-5">
+                    <a class="navbar-brand admin-brand" th:href="@{/admin/dashboard}" href="/admin/dashboard">
+                        <img th:src="@{/img/logoAglo.png}" src="/img/logoAglo.png" alt="Logo AGLO"/>
+                        <span>AGLO</span>
+                    </a>
+
+                    <button class="navbar-toggler admin-toggler" type="button" data-bs-toggle="collapse"
+                            data-bs-target="#adminNavbar" aria-controls="adminNavbar" aria-expanded="false"
+                            aria-label="Mostrar navegación">
+                        <span class="navbar-toggler-icon"></span>
+                    </button>
+
+                    <nav class="collapse navbar-collapse" id="adminNavbar">
+                        <ul class="navbar-nav me-auto mb-2 mb-lg-0 admin-links">
+                            <li class="nav-item">
+                                <a class="nav-link" th:href="@{/admin/usuarios/listado}" href="/admin/usuarios/listado">Usuarios</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" th:href="@{/admin/actividades/listado}" href="/admin/actividades/listado">Actividades</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" th:href="@{/admin/reservaciones/listado}" href="/admin/reservaciones/listado">Reservaciones</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" th:href="@{/admin/guias/listado}" href="/admin/guias/listado">Asignar Guía</a>
+                            </li>
+                        </ul>
+
+                        <div class="admin-actions">
+                            <div class="dropdown">
+                                <button class="btn language-btn dropdown-toggle" type="button" data-bs-toggle="dropdown"
+                                        aria-expanded="false">
+                                    Esp
+                                </button>
+                                <ul class="dropdown-menu dropdown-menu-end">
+                                    <li><a class="dropdown-item" th:href="@{/admin/dashboard(lang=es)}" href="/admin/dashboard?lang=es">Español</a></li>
+                                    <li><a class="dropdown-item" th:href="@{/admin/dashboard(lang=en)}" href="/admin/dashboard?lang=en">English</a></li>
+                                    <li><a class="dropdown-item" th:href="@{/admin/dashboard(lang=fr)}" href="/admin/dashboard?lang=fr">Français</a></li>
+                                    <li><a class="dropdown-item" th:href="@{/admin/dashboard(lang=pt)}" href="/admin/dashboard?lang=pt">Português</a></li>
+                                </ul>
+                            </div>
+                            <a class="btn logout-btn" th:href="@{/logout}" href="/logout">Cerrar Sesión</a>
+                        </div>
+                    </nav>
+                </div>
+            </header>
+
+            <main class="admin-content">
+                <h1 class="page-title" th:text="${dashboardTitle}">Registro de nuevo usuario</h1>
+
+                <section class="summary-grid" aria-label="Resumen administrativo">
+                    <a class="summary-card" th:href="@{/admin/usuarios/listado}" href="/admin/usuarios/listado">
+                        <i class="fa-solid fa-users"></i>
+                        <span>Usuarios</span>
+                        <strong th:text="${totalUsuarios}">0</strong>
+                    </a>
+                    <a class="summary-card" th:href="@{/admin/actividades/listado}" href="/admin/actividades/listado">
+                        <i class="fa-solid fa-route"></i>
+                        <span>Actividades</span>
+                        <strong th:text="${totalActividades}">0</strong>
+                    </a>
+                    <a class="summary-card" th:href="@{/admin/reservaciones/listado}" href="/admin/reservaciones/listado">
+                        <i class="fa-solid fa-calendar-check"></i>
+                        <span>Reservaciones</span>
+                        <strong th:text="${totalReservaciones}">0</strong>
+                    </a>
+                    <a class="summary-card" th:href="@{/admin/guias/listado}" href="/admin/guias/listado">
+                        <i class="fa-solid fa-person-hiking"></i>
+                        <span>Guías</span>
+                        <strong th:text="${totalGuias}">0</strong>
+                    </a>
+                </section>
+
+                <section class="admin-panel primary-panel" id="usuarios">
+                    <div class="panel-heading">
+                        <div>
+                            <span class="section-kicker">HU2</span>
+                            <h2>Usuarios registrados</h2>
+                        </div>
+                        <form class="search-form" th:action="@{/admin/usuarios/listado}" action="/admin/usuarios/listado" method="get">
+                            <input class="form-control form-control-sm" type="search" name="q" placeholder="Buscar usuario"/>
+                            <button class="btn btn-sm btn-outline-light" type="submit">
+                                <i class="fa-solid fa-magnifying-glass"></i>
+                            </button>
+                        </form>
+                    </div>
+
+                    <div class="table-responsive">
+                        <table class="table admin-table align-middle">
+                            <thead>
+                                <tr>
+                                    <th>Identificación</th>
+                                    <th>Correo</th>
+                                    <th>Contraseña</th>
+                                    <th>Tipo de Usuario</th>
+                                    <th>Estado</th>
+                                    <th>Fecha registro</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr th:if="${usuarios == null or usuarios.empty}">
+                                    <td colspan="6" class="empty-row">No hay usuarios registrados.</td>
+                                </tr>
+                                <tr th:each="usuario : ${usuarios}">
+                                    <td>
+                                        <span th:text="${usuario.idUsuario}">1</span>
+                                        <small th:text="${usuario.nombre + ' ' + usuario.apellidoPaterno}">Nombre usuario</small>
+                                    </td>
+                                    <td th:text="${usuario.correo != null and !usuario.correo.isEmpty() ? usuario.correo : 'Sin correo'}">correo@aglo.cr</td>
+                                    <td>********</td>
+                                    <td th:text="${rolesPorUsuario[usuario.idUsuario] != null and !rolesPorUsuario[usuario.idUsuario].isEmpty() ? rolesPorUsuario[usuario.idUsuario] : 'Sin rol'}">Cliente</td>
+                                    <td>
+                                        <span class="status-pill"
+                                              th:classappend="${usuario.estado != null and usuario.estado.nombreEstado != null and usuario.estado.nombreEstado.toLowerCase() == 'activo'} ? ' status-active' : ' status-inactive'"
+                                              th:text="${usuario.estado != null ? usuario.estado.nombreEstado : 'Sin estado'}">Activo</span>
+                                    </td>
+                                    <td th:text="${usuario.fechaCreacion != null ? #temporals.format(usuario.fechaCreacion, 'dd/MM/yyyy') : 'Sin fecha'}">01/01/2026</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div class="panel-footer">
+                        <span>Vista Administrador</span>
+                        <div class="action-row">
+                            <a class="btn btn-light btn-sm" th:href="@{/admin/usuarios/nuevo}" href="/admin/usuarios/nuevo">
+                                <i class="fa-solid fa-plus"></i> Agregar
+                            </a>
+                            <a class="btn btn-light btn-sm" th:href="@{/admin/usuarios/listado}" href="/admin/usuarios/listado">
+                                <i class="fa-solid fa-pen"></i> Editar
+                            </a>
+                            <a class="btn btn-light btn-sm" th:href="@{/admin/usuarios/listado}" href="/admin/usuarios/listado">
+                                <i class="fa-solid fa-trash"></i> Eliminar
+                            </a>
+                        </div>
+                    </div>
+                </section>
+
+                <section class="dashboard-sections">
+                    <article class="admin-panel" id="actividades">
+                        <div class="panel-heading">
+                            <div>
+                                <span class="section-kicker">HU3</span>
+                                <h2>Actividades turísticas</h2>
+                            </div>
+                            <a class="btn btn-sm btn-light" th:href="@{/admin/actividades/nueva}" href="/admin/actividades/nueva">
+                                <i class="fa-solid fa-plus"></i> Nueva actividad
+                            </a>
+                        </div>
+                        <div class="table-responsive compact-scroll">
+                            <table class="table admin-table align-middle">
+                                <thead>
+                                    <tr>
+                                        <th>Nombre</th>
+                                        <th>Inicio</th>
+                                        <th>Cupo</th>
+                                        <th>Precio</th>
+                                        <th>Estado</th>
+                                        <th></th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr th:if="${actividades == null or actividades.empty}">
+                                        <td colspan="6" class="empty-row">No hay actividades registradas.</td>
+                                    </tr>
+                                    <tr th:each="actividad : ${actividades}">
+                                        <td th:text="${actividad.nombreActividad}">Tour Ostional</td>
+                                        <td th:text="${actividad.fechaHoraInicio != null ? #temporals.format(actividad.fechaHoraInicio, 'dd/MM/yyyy HH:mm') : 'Sin fecha'}">01/01/2026</td>
+                                        <td th:text="${actividad.cupoMaximo}">20</td>
+                                        <td th:text="${actividad.precioActual != null ? #numbers.formatCurrency(actividad.precioActual) : 'Sin precio'}">₡0</td>
+                                        <td th:text="${actividad.estado != null ? actividad.estado.nombreEstado : 'Sin estado'}">Activo</td>
+                                        <td class="text-end">
+                                            <a class="btn btn-sm btn-outline-dark"
+                                               th:href="@{/admin/actividades/modificar/{id}(id=${actividad.idActividad})}"
+                                               href="/admin/actividades/listado">Ver/Editar</a>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </article>
+
+                    <article class="admin-panel" id="guias">
+                        <div class="panel-heading">
+                            <div>
+                                <span class="section-kicker">HU4</span>
+                                <h2>Asignar guías</h2>
+                            </div>
+                            <a class="btn btn-sm btn-light" th:href="@{/admin/guias/listado}" href="/admin/guias/listado">
+                                <i class="fa-solid fa-person-hiking"></i> Guías
+                            </a>
+                        </div>
+                        <div class="assignment-list">
+                            <div class="assignment-item" th:if="${actividades == null or actividades.empty}">
+                                <span>No hay actividades disponibles para asignar guías.</span>
+                            </div>
+                            <a class="assignment-item" th:each="actividad : ${actividades}"
+                               th:href="@{/admin/actividades/{id}/guias/listado(id=${actividad.idActividad})}"
+                               href="/admin/actividades/1/guias/listado">
+                                <span th:text="${actividad.nombreActividad}">Actividad</span>
+                                <strong>Asignar guía</strong>
+                            </a>
+                        </div>
+                    </article>
+                </section>
+
+                <section class="admin-panel" id="reservaciones">
+                    <div class="panel-heading">
+                        <div>
+                            <span class="section-kicker">HU5</span>
+                            <h2>Reservaciones recientes</h2>
+                        </div>
+                        <a class="btn btn-sm btn-light" th:href="@{/admin/reservaciones/listado}" href="/admin/reservaciones/listado">
+                            Ver listado
+                        </a>
+                    </div>
+                    <div class="table-responsive">
+                        <table class="table admin-table align-middle">
+                            <thead>
+                                <tr>
+                                    <th>Identificador</th>
+                                    <th>Usuario</th>
+                                    <th>Fecha</th>
+                                    <th>Monto total</th>
+                                    <th>Estado</th>
+                                    <th>Detalle</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr th:if="${reservaciones == null or reservaciones.empty}">
+                                    <td colspan="6" class="empty-row">No hay reservaciones registradas.</td>
+                                </tr>
+                                <tr th:each="reservacion : ${reservaciones}">
+                                    <td th:text="${reservacion.idReservacion}">1</td>
+                                    <td th:text="${reservacion.usuario != null ? reservacion.usuario.nombre + ' ' + reservacion.usuario.apellidoPaterno : 'Sin usuario'}">Cliente</td>
+                                    <td th:text="${reservacion.fechaReservacion != null ? #temporals.format(reservacion.fechaReservacion, 'dd/MM/yyyy HH:mm') : 'Sin fecha'}">01/01/2026</td>
+                                    <td th:text="${reservacion.montoTotal != null ? #numbers.formatCurrency(reservacion.montoTotal) : 'Sin monto'}">₡0</td>
+                                    <td th:text="${reservacion.estado != null ? reservacion.estado.nombreEstado : 'Sin estado'}">Pendiente</td>
+                                    <td>
+                                        <a class="btn btn-sm btn-outline-dark"
+                                           th:href="@{/admin/reservaciones/detalle/{id}(id=${reservacion.idReservacion})}"
+                                           href="/admin/reservaciones/listado">
+                                            Ver detalle
+                                        </a>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </section>
+            </main>
+        </div>
+
+        <th:block th:replace="~{aglo/fragmentos :: scripts('dashboard.js')}"></th:block>
+    </body>
+</html>

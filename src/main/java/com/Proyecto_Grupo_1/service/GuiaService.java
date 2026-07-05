@@ -31,6 +31,11 @@ public class GuiaService {
     }
 
     @Transactional(readOnly = true)
+    public Optional<Guia> getGuiaPorUsuario(Integer idUsuario) {
+        return guiaRepository.findByUsuarioIdUsuario(idUsuario);
+    }
+
+    @Transactional(readOnly = true)
     public Guia obtenerGuia(Integer idGuia) {
         return guiaRepository.findById(idGuia)
                 .orElseThrow(() -> new IllegalArgumentException("Guia no encontrado: " + idGuia));

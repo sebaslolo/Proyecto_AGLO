@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="es"
+      xmlns:th="http://www.thymeleaf.org">
+    <head th:replace="~{aglo/fragmentos :: head('AGLO', 'inicio.css')}"></head>
+
+    <body>
+        <div class="barraScroll">
+            <div class="progreso"></div>
+        </div>
+
+        <header class="menu">
+            <div class="logo">
+                <img th:src="@{/img/logoAglo.png}" src="/img/logoAglo.png" alt="Logo AGLO"/>
+                <h2>AGLO</h2>
+            </div>
+            <nav>
+                <ul id="menu">
+                    <li><a class="activo" th:href="@{/inicio}" href="/inicio">Inicio</a></li>
+                    <li><a th:href="@{/inicio#mapa}" href="#mapa">Explora</a></li>
+                    <li><a th:href="@{/inicio#nosotros}" href="#nosotros">Sobre nosotros</a></li>
+                </ul>
+            </nav>
+            <div class="usuario">
+                <select aria-label="Idioma">
+                    <option>Esp</option>
+                    <option>Eng</option>
+                </select>
+                <button type="button" th:onclick="|location.href='@{/login}'|">Inicio Sesión</button>
+            </div>
+            <div id="bars">
+                <i class="fa-solid fa-bars"></i>
+            </div>
+        </header>
+
+        <main>
+            <section class="hero">
+                <div class="hero-overlay"></div>
+                <div class="hero-content">
+                    <div class="hero-line"></div>
+                    <div class="hero-text">
+                        <h1>
+                            Bienvenido a <br/>
+                            <span>AGLO</span>
+                        </h1>
+                        <p>
+                            Trabajamos por la conservación de las tortugas marinas
+                            y el manejo responsable del turismo en Ostional,
+                            Costa Rica.
+                        </p>
+                        <a href="#" class="hero-btn" id="abrirVideo">
+                            Ver video
+                            <i class="fa-solid fa-circle-play"></i>
+                        </a>
+
+                        <div class="video-modal" id="videoModal">
+                            <span class="cerrar" id="cerrarVideo">&times;</span>
+                            <iframe
+                                src=""
+                                title="YouTube video player"
+                                allowfullscreen>
+                            </iframe>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section class="nosotros" id="nosotros">
+                <div class="contenedor">
+                    <div class="texto">
+                        <span>SOBRE NOSOTROS</span>
+                        <h2>
+                            Conservación, comunidad
+                            y turismo responsable
+                        </h2>
+                        <p>
+                            Se crea en 2006 para mantener bajo control la actividad turística durante el fenómeno de arribada, logrando reducir el impacto negativo del turismo sobre las especies que anidan en el Refugio.
+
+                            La Asociación de Guías Locales de Ostional (AGLO) es una organización comunitaria en Ostional, Costa Rica, enfocada en gestionar y controlar el turismo para mitigar su impacto negativo en la vida silvestre local, particularmente en las tortugas lora. Ofrecen visitas guiadas para educar a los visitantes sobre el fenómeno de anidación de las tortugas y los esfuerzos de conservación vigentes. AGLO también contribuye a diversas actividades comunitarias y atiende las necesidades de quienes solicitan su asistencia.
+
+                            Su misión es mantener el control sobre las actividades turísticas durante la arribada (temporada de anidación de tortugas), con el objetivo de reducir el impacto negativo del turismo en las especies que anidan en el Refugio Nacional de Vida Silvestre Ostional.
+                        </p>
+                    </div>
+                    <div class="imagen">
+                        <img src="https://wpapi.larepublica.net/wp-content/uploads/2018/09/20180926141859.trekking.jpg" alt="Sobre nosotros"/>
+                    </div>
+                </div>
+            </section>
+
+            <section class="actividades" id="actividades">
+                <div class="contenedor">
+                    <div class="titulo">
+                        <span>DESCUBRE NUESTRAS</span>
+                        <h2>Próximas actividades</h2>
+                    </div>
+                    <div class="slider">
+                        <button class="anterior" type="button">
+                            <i class="fa-solid fa-chevron-left"></i>
+                        </button>
+                        <div class="cards">
+                            <div class="card" th:if="${actividades == null or actividades.empty}">
+                                <div class="info">
+                                    <h3>No hay actividades próximas</h3>
+                                    <p>Pronto publicaremos nuevas actividades turísticas.</p>
+                                </div>
+                            </div>
+
+                            <div class="card" th:each="actividad : ${actividades}">
+                                <img th:src="${actividad.imagenActividad != null and !actividad.imagenActividad.isEmpty() ? actividad.imagenActividad : (actividad.tipoActividad != null and actividad.tipoActividad.imagenTipoActividad != null and !actividad.tipoActividad.imagenTipoActividad.isEmpty() ? actividad.tipoActividad.imagenTipoActividad : 'https://vivemar.com.mx/wp-content/uploads/2022/01/Vivemar_Liberacion-%E2%80%93-monitoreo-nocturno-new-3.jpg')}" th:alt="${actividad.nombreActividad}"/>
+                                <div class="info">
+                                    <h3 th:text="${actividad.nombreActividad}">Actividad turística</h3>
+                                    <p><i class="fa-regular fa-calendar"></i> <span th:text="${actividad.fechaHoraInicio != null ? #temporals.format(actividad.fechaHoraInicio, 'dd/MM/yyyy HH:mm') : 'Fecha por confirmar'}">10 de junio, 2026</span></p>
+                                    <p><i class="fa-solid fa-location-dot"></i> Playa Ostional</p>
+                                    <p class="precio" th:text="${actividad.precioActual != null ? #numbers.formatCurrency(actividad.precioActual) + ' por persona' : 'Precio por confirmar'}">₡10 000 por persona</p>
+                                    <button class="btn-reserva" type="button"
+                                            th:data-descripcion="${actividad.tipoActividad != null ? actividad.tipoActividad.descripcionTipoActividad : 'Actividad turística en Playa Ostional.'}"
+                                            th:data-detalle="@{/catalogo/detalle/{id}(id=${actividad.idActividad})}"
+                                            th:data-reserva="@{/reservaciones/nueva(idActividad=${actividad.idActividad})}">Reserva</button>
+                                </div>
+                            </div>
+                        </div>
+                        <button class="siguiente" type="button">
+                            <i class="fa-solid fa-chevron-right"></i>
+                        </button>
+                    </div>
+                </div>
+            </section>
+
+            <div class="modal" id="modal">
+                <div class="modal-contenido">
+                    <span class="cerrar">&times;</span>
+                    <h2 id="modalTitulo">Actividad</h2>
+                    <p id="modalTexto">Información</p>
+                    <p class="login-msg">
+                        <a id="modalDetalle" th:href="@{/catalogo/listado}" href="/catalogo/listado">Ver detalle</a>
+                        <a id="modalReserva" th:href="@{/login}" href="/login">Reservar</a>
+                    </p>
+                </div>
+            </div>
+
+            <section class="mapa" id="mapa">
+                <div class="contenedor">
+                    <span>UBICACIÓN</span>
+                    <h2>Explora Ostional</h2>
+                    <div class="mapaGoogle">
+                        <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d15716.935958733444!2d-85.71474416005128!3d9.997520823724368!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x8f9e5172a604ecfd%3A0xbdc62e49d1e8f6fd!2sPlaya%20del%20Ostional!5e0!3m2!1ses-419!2scr!4v1783147850789!5m2!1ses-419!2scr" style="border:0;" allowfullscreen loading="lazy" referrerpolicy="strict-origin-when-cross-origin"></iframe>
+                    </div>
+                </div>
+            </section>
+
+            <section class="galeria" id="galeria">
+                <div class="contenedor">
+                    <span>EVENTOS ANTERIORES</span>
+                    <h2>Galería</h2>
+                    <div class="imagenes">
+                        <img src="https://www.ucr.ac.cr/medios/fotos/2021/nin%CC%83os-y-tortugas-lora6125434704b16.jpeg" alt="Niños observando tortugas lora"/>
+                        <img src="https://d16ice5q223i7e.cloudfront.net/wp-content/uploads/2026/03/24034625/2021-08-Simbiosis-Ostional-InfoFotos-mqcphoto-019.jpg" alt="Evento en Ostional"/>
+                        <img src="https://juventud.gob.do/wp-content/uploads/2023/03/Playita-con-bolsa-scaled.jpg" alt="Limpieza de playa"/>
+                        <img src="https://img.magnific.com/foto-gratis/fascinante-vista-silueta-surfista-oceano-puesta-sol-indonesia_181624-44971.jpg?semt=ais_hybrid&amp;w=740&amp;q=80" alt="Surf al atardecer"/>
+                        <img src="https://tb-static.uber.com/prod/udam-assets/d4fa60a8-5e14-573c-bbf6-8af12151112a.jpg" alt="Paisaje costero"/>
+                        <img src="https://tb-static.uber.com/prod/image-proc/processed_images/ff435661cf9facbbfd9977b756337fec/4eed3468b168fc6e31dff0bb81a347bc.jpeg" alt="Tour local"/>
+                    </div>
+                </div>
+            </section>
+
+            <section class="resenas" id="resenas">
+                <div class="contenedor">
+                    <span>OPINIONES</span>
+                    <h2>Reseñas</h2>
+                    <div class="listaResenas">
+                        <article class="resena">
+                            <div class="avatar">
+                                <img src="https://i.pinimg.com/originals/31/ec/2c/31ec2ce212492e600b8de27f38846ed7.jpg" alt="María López"/>
+                            </div>
+                            <div class="contenidoResena">
+                                <div class="encabezadoResena">
+                                    <h3>María López</h3>
+                                    <div class="estrellas">
+                                        <i class="fa-solid fa-star"></i>
+                                        <i class="fa-solid fa-star"></i>
+                                        <i class="fa-solid fa-star"></i>
+                                        <i class="fa-solid fa-star"></i>
+                                        <i class="fa-solid fa-star"></i>
+                                    </div>
+                                </div>
+                                <p>Una experiencia maravillosa con los guías.</p>
+                            </div>
+                        </article>
+
+                        <article class="resena">
+                            <div class="avatar">
+                                <img src="https://i.pinimg.com/originals/31/ec/2c/31ec2ce212492e600b8de27f38846ed7.jpg" alt="Carlos Ramírez"/>
+                            </div>
+                            <div class="contenidoResena">
+                                <div class="encabezadoResena">
+                                    <h3>Carlos Ramírez</h3>
+                                    <div class="estrellas">
+                                        <i class="fa-solid fa-star"></i>
+                                        <i class="fa-solid fa-star"></i>
+                                        <i class="fa-solid fa-star"></i>
+                                        <i class="fa-solid fa-star"></i>
+                                        <i class="fa-solid fa-star"></i>
+                                    </div>
+                                </div>
+                                <p>Excelente organización y experiencia familiar.</p>
+                            </div>
+                        </article>
+
+                        <article class="resena">
+                            <div class="avatar">
+                                <img src="https://i.pinimg.com/originals/31/ec/2c/31ec2ce212492e600b8de27f38846ed7.jpg" alt="Laura Méndez"/>
+                            </div>
+                            <div class="contenidoResena">
+                                <div class="encabezadoResena">
+                                    <h3>Laura Méndez</h3>
+                                    <div class="estrellas">
+                                        <i class="fa-solid fa-star"></i>
+                                        <i class="fa-solid fa-star"></i>
+                                        <i class="fa-solid fa-star"></i>
+                                        <i class="fa-solid fa-star"></i>
+                                        <i class="fa-solid fa-star"></i>
+                                    </div>
+                                </div>
+                                <p>Muy recomendado para amantes de la naturaleza.</p>
+                            </div>
+                        </article>
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <footer class="footer" id="contacto">
+            <div class="contenedor">
+                <div class="footerInfo">
+                    <img th:src="@{/img/logoAglo.png}" src="/img/logoAglo.png" alt="Logo AGLO"/>
+                    <p>
+                        Asociación de Guías Locales de Ostional dedicada
+                        a la conservación ambiental y al turismo responsable.
+                    </p>
+                </div>
+
+                <div class="footerContacto">
+                    <h3>Contacto</h3>
+                    <p>
+                        <i class="fa-solid fa-location-dot"></i>
+                        Ostional, Guanacaste
+                    </p>
+                    <p>
+                        <i class="fa-solid fa-phone"></i>
+                        +506 2222-2222
+                    </p>
+                    <p>
+                        <i class="fa-solid fa-envelope"></i>
+                        info@aglo.cr
+                    </p>
+                </div>
+
+                <div class="footerLinks">
+                    <h3>Enlaces</h3>
+                    <ul>
+                        <li><a th:href="@{/inicio}" href="/inicio">Inicio</a></li>
+                        <li><a th:href="@{/inicio#nosotros}" href="#nosotros">Sobre Nosotros</a></li>
+                        <li><a th:href="@{/inicio#actividades}" href="#actividades">Actividades</a></li>
+                        <li><a th:href="@{/inicio#galeria}" href="#galeria">Galería</a></li>
+                        <li><a th:href="@{/inicio#contacto}" href="#contacto">Contacto</a></li>
+                    </ul>
+                </div>
+
+                <div class="footerRedes">
+                    <h3>Síguenos</h3>
+                    <div class="iconos">
+                        <a href="#" aria-label="Facebook"><i class="fa-brands fa-facebook-f"></i></a>
+                        <a href="#" aria-label="Instagram"><i class="fa-brands fa-instagram"></i></a>
+                        <a href="#" aria-label="YouTube"><i class="fa-brands fa-youtube"></i></a>
+                        <a href="#" aria-label="WhatsApp"><i class="fa-brands fa-whatsapp"></i></a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="copyright">
+                <p>
+                    © 2026 AGLO | Asociación de Guías Locales de Ostional.
+                    Todos los derechos reservados.
+                </p>
+            </div>
+        </footer>
+
+        <th:block th:replace="~{aglo/fragmentos :: scripts('inicio.js')}"></th:block>
+    </body>
+</html>

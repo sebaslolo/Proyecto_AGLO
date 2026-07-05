@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+    <head th:replace="~{aglo/fragmentos :: head('Guías | AGLO', 'dashboard.css')}"></head>
+    <body class="admin-page">
+        <header th:replace="~{admin/fragmentos :: nav}"></header>
+        <main class="admin-main">
+            <section class="admin-page-title">
+                <div>
+                    <h1>Guías</h1>
+                    <p>Colaboradores disponibles para asignar a actividades.</p>
+                </div>
+                <a class="btn btn-light" th:href="@{/admin/guias/nuevo}">
+                    <i class="fa-solid fa-plus"></i> Agregar guía
+                </a>
+            </section>
+            <section th:replace="~{admin/fragmentos :: mensajes}"></section>
+
+            <section class="admin-panel">
+                <div class="table-responsive">
+                    <table class="table admin-table align-middle">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Usuario</th>
+                                <th>Ingreso</th>
+                                <th>Disponibilidad</th>
+                                <th>Estado</th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr th:if="${guias == null or guias.empty}">
+                                <td colspan="6" class="empty-row">No hay guías registrados.</td>
+                            </tr>
+                            <tr th:each="guia : ${guias}">
+                                <td th:text="${guia.idGuia}">1</td>
+                                <td th:text="${guia.usuario != null ? guia.usuario.nombre + ' ' + guia.usuario.apellidoPaterno : 'Sin usuario'}">Guía</td>
+                                <td th:text="${guia.fechaIngreso != null ? #temporals.format(guia.fechaIngreso, 'dd/MM/yyyy') : 'Sin fecha'}">Fecha</td>
+                                <td th:text="${guia.disponibilidad != null and !guia.disponibilidad.isEmpty() ? guia.disponibilidad : 'Sin dato'}">Disponible</td>
+                                <td th:text="${guia.estado != null ? guia.estado.nombreEstado : 'Sin estado'}">Activo</td>
+                                <td class="text-end">
+                                    <a class="btn btn-sm btn-outline-dark" th:href="@{/admin/guias/modificar/{id}(id=${guia.idGuia})}">
+                                        <i class="fa-solid fa-pen"></i> Editar
+                                    </a>
+                                    <button class="btn btn-sm btn-outline-danger" type="button"
+                                            data-bs-toggle="modal" data-bs-target="#confirmDeleteModal"
+                                            th:data-delete-id="${guia.idGuia}"
+                                            th:data-delete-name="${guia.usuario != null ? guia.usuario.nombre : 'guía'}">
+                                        <i class="fa-solid fa-trash"></i> Eliminar
+                                    </button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+        </main>
+
+        <div class="modal fade" id="confirmDeleteModal" tabindex="-1" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+                    <form th:action="@{/admin/guias/eliminar}" method="post">
+                        <input type="hidden" name="idGuia" id="deleteId"/>
+                        <div class="modal-header bg-warning">
+                            <h2 class="modal-title fs-5">Confirmar eliminación</h2>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+                        </div>
+                        <div class="modal-body">
+                            <p>¿Desea eliminar <strong id="deleteName">este registro</strong>?</p>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                            <button type="submit" class="btn btn-danger">Eliminar</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+        <th:block th:replace="~{aglo/fragmentos :: scripts('dashboard.js')}"></th:block>
+    </body>
+</html>

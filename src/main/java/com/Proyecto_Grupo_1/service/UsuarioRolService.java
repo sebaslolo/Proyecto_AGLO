@@ -52,6 +52,21 @@ public class UsuarioRolService {
     }
 
     @Transactional
+    public void reemplazarRolPrincipal(Integer idUsuario, Integer idRol) {
+        var rolesActuales = usuarioRolRepository.findByUsuarioIdUsuario(idUsuario);
+        rolesActuales.forEach(usuarioRolRepository::delete);
+        if (idRol != null) {
+            Usuario usuario = usuarioService.obtenerUsuario(idUsuario);
+            Rol rol = rolService.obtenerRol(idRol);
+            UsuarioRol usuarioRol = new UsuarioRol();
+            usuarioRol.setId(new UsuarioRolId(idUsuario, idRol));
+            usuarioRol.setUsuario(usuario);
+            usuarioRol.setRol(rol);
+            usuarioRolRepository.save(usuarioRol);
+        }
+    }
+
+    @Transactional
     public void delete(Integer idUsuario, Integer idRol) {
         UsuarioRolId id = new UsuarioRolId(idUsuario, idRol);
         if (!usuarioRolRepository.existsById(id)) {

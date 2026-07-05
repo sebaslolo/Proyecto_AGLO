@@ -1,8 +1,12 @@
 package com.Proyecto_Grupo_1.controller;
 
 import com.Proyecto_Grupo_1.domain.Usuario;
+import com.Proyecto_Grupo_1.service.EstadoService;
+import com.Proyecto_Grupo_1.service.RolService;
+import com.Proyecto_Grupo_1.service.UsuarioRolService;
 import com.Proyecto_Grupo_1.service.UsuarioService;
 import jakarta.validation.Valid;
+import java.util.stream.Collectors;
 import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.stereotype.Controller;
@@ -20,10 +24,20 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 public class UsuarioController {
 
     private final UsuarioService usuarioService;
+    private final EstadoService estadoService;
+    private final RolService rolService;
+    private final UsuarioRolService usuarioRolService;
     private final MessageSource messageSource;
 
-    public UsuarioController(UsuarioService usuarioService, MessageSource messageSource) {
+    public UsuarioController(UsuarioService usuarioService,
+            EstadoService estadoService,
+            RolService rolService,
+            UsuarioRolService usuarioRolService,
+            MessageSource messageSource) {
         this.usuarioService = usuarioService;
+        this.estadoService = estadoService;
+        this.rolService = rolService;
+        this.usuarioRolService = usuarioRolService;
         this.messageSource = messageSource;
     }
 
@@ -35,8 +49,15 @@ public class UsuarioController {
     @GetMapping("/listado")
     public String listado(@RequestParam(required = false) String q, Model model) {
         var usuarios = usuarioService.buscarUsuarios(q);
+        var rolesPorUsuario = usuarios.stream()
+                .collect(Collectors.toMap(
+                        Usuario::getIdUsuario,
+                        usuario -> usuarioRolService.getRolesPorUsuario(usuario.getIdUsuario()).stream()
+                                .map(usuarioRol -> usuarioRol.getRol().getRol())
+                                .collect(Collectors.joining(", "))));
         model.addAttribute("usuarios", usuarios);
         model.addAttribute("totalUsuarios", usuarios.size());
+        model.addAttribute("rolesPorUsuario", rolesPorUsuario);
         model.addAttribute("q", q);
         return "/admin/usuarios/listado";
     }
@@ -44,15 +65,26 @@ public class UsuarioController {
     @GetMapping("/nuevo")
     public String nuevo(Model model) {
         model.addAttribute("usuario", new Usuario());
+        cargarCatalogos(model);
         return "/admin/usuarios/modifica";
     }
 
     @PostMapping("/guardar")
-    public String guardar(@Valid Usuario usuario, BindingResult bindingResult, RedirectAttributes redirectAttributes) {
+    public String guardar(@Valid Usuario usuario,
+            BindingResult bindingResult,
+            @RequestParam(required = false) Integer idRol,
+            Model model,
+            RedirectAttributes redirectAttributes) {
+        if (!usuarioService.correoDisponible(usuario.getCorreo(), usuario.getIdUsuario())) {
+            bindingResult.rejectValue("correo", "usuario.error.correoDuplicado", msg("usuario.error.correoDuplicado"));
+        }
         if (bindingResult.hasErrors()) {
+            cargarCatalogos(model);
+            model.addAttribute("idRol", idRol);
             return "/admin/usuarios/modifica";
         }
-        usuarioService.save(usuario);
+        Usuario guardado = usuarioService.save(usuario);
+        usuarioRolService.reemplazarRolPrincipal(guardado.getIdUsuario(), idRol);
         redirectAttributes.addFlashAttribute("todoOk", msg("usuario.mensaje.guardado"));
         return "redirect:/admin/usuarios/listado";
     }
@@ -82,7 +114,17 @@ public class UsuarioController {
             return "redirect:/admin/usuarios/listado";
         }
         model.addAttribute("usuario", usuarioOpt.get());
+        model.addAttribute("idRol", usuarioRolService.getRolesPorUsuario(idUsuario).stream()
+                .findFirst()
+                .map(usuarioRol -> usuarioRol.getRol().getIdRol())
+                .orElse(null));
+        cargarCatalogos(model);
         return "/admin/usuarios/modifica";
+    }
+
+    private void cargarCatalogos(Model model) {
+        model.addAttribute("estados", estadoService.getEstados(false));
+        model.addAttribute("roles", rolService.getRoles(false));
     }
 
     private String msg(String key) {

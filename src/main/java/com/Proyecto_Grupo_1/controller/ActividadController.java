@@ -2,6 +2,8 @@ package com.Proyecto_Grupo_1.controller;
 
 import com.Proyecto_Grupo_1.domain.Actividad;
 import com.Proyecto_Grupo_1.service.ActividadService;
+import com.Proyecto_Grupo_1.service.EstadoService;
+import com.Proyecto_Grupo_1.service.TipoActividadService;
 import jakarta.validation.Valid;
 import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
@@ -20,10 +22,17 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 public class ActividadController {
 
     private final ActividadService actividadService;
+    private final TipoActividadService tipoActividadService;
+    private final EstadoService estadoService;
     private final MessageSource messageSource;
 
-    public ActividadController(ActividadService actividadService, MessageSource messageSource) {
+    public ActividadController(ActividadService actividadService,
+            TipoActividadService tipoActividadService,
+            EstadoService estadoService,
+            MessageSource messageSource) {
         this.actividadService = actividadService;
+        this.tipoActividadService = tipoActividadService;
+        this.estadoService = estadoService;
         this.messageSource = messageSource;
     }
 
@@ -33,26 +42,35 @@ public class ActividadController {
     }
 
     @GetMapping("/listado")
-    public String listado(Model model) {
-        var actividades = actividadService.getActividades(false);
+    public String listado(@RequestParam(required = false) String q, Model model) {
+        var actividades = actividadService.buscarActividades(q);
         model.addAttribute("actividades", actividades);
         model.addAttribute("totalActividades", actividades.size());
+        model.addAttribute("q", q);
         return "/admin/actividades/listado";
     }
 
     @GetMapping("/nueva")
     public String nueva(Model model) {
         model.addAttribute("actividad", new Actividad());
+        cargarCatalogos(model);
         return "/admin/actividades/modifica";
     }
 
     @PostMapping("/guardar")
-    public String guardar(@Valid Actividad actividad, BindingResult bindingResult, RedirectAttributes redirectAttributes) {
+    public String guardar(@Valid Actividad actividad, BindingResult bindingResult, Model model, RedirectAttributes redirectAttributes) {
         if (bindingResult.hasErrors()) {
+            cargarCatalogos(model);
             return "/admin/actividades/modifica";
         }
-        actividadService.save(actividad);
-        redirectAttributes.addFlashAttribute("todoOk", msg("actividad.mensaje.guardado"));
+        try {
+            actividadService.save(actividad);
+            redirectAttributes.addFlashAttribute("todoOk", msg("actividad.mensaje.guardado"));
+        } catch (IllegalArgumentException e) {
+            cargarCatalogos(model);
+            model.addAttribute("error", msg("actividad.error.fechaPasada"));
+            return "/admin/actividades/modifica";
+        }
         return "redirect:/admin/actividades/listado";
     }
 
@@ -81,7 +99,13 @@ public class ActividadController {
             return "redirect:/admin/actividades/listado";
         }
         model.addAttribute("actividad", actividadOpt.get());
+        cargarCatalogos(model);
         return "/admin/actividades/modifica";
+    }
+
+    private void cargarCatalogos(Model model) {
+        model.addAttribute("tiposActividad", tipoActividadService.getTiposActividad(false));
+        model.addAttribute("estados", estadoService.getEstados(false));
     }
 
     private String msg(String key) {
