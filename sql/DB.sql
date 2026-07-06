@@ -63,6 +63,22 @@ CREATE TABLE fide_ruta_tb (
     FOREIGN KEY (id_rol) REFERENCES fide_rol_tb(id_rol))
     ENGINE = InnoDB;
 
+INSERT INTO fide_ruta_tb (ruta, requiere_rol) VALUES
+('/', FALSE),
+('/inicio', FALSE),
+('/login', FALSE),
+('/registro/**', FALSE),
+('/forgot-password', FALSE),
+('/catalogo/**', FALSE),
+('/avistamientos/**', FALSE),
+('/herramientas/**', FALSE),
+('/retroalimentacion/**', FALSE),
+('/voluntariados/**', FALSE),
+('/css/**', FALSE),
+('/js/**', FALSE),
+('/img/**', FALSE),
+('/webjars/**', FALSE);
+
 create table fide_reservacion_tb(
     id_reservacion  int not null auto_increment,
     id_usuario  int not null,
@@ -292,4 +308,3 @@ create table fide_formulario_tb(
     index ndx_formulario_usuario (id_usuario),
     index ndx_formulario_estado (id_estado)
 ) ENGINE = InnoDB;
-
