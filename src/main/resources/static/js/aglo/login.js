@@ -26,14 +26,9 @@ formLogin?.addEventListener("submit", function (e) {
     errorPassword.textContent = "";
     correo.classList.remove("inputError", "inputCorrecto");
     password.classList.remove("inputError", "inputCorrecto");
-    // validar correo
-    const regexCorreo = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    // validar correo o usuario
     if (correo.value.trim() === "") {
-        errorCorreo.textContent = "El correo es obligatorio";
-        correo.classList.add("inputError");
-        valido = false;
-    } else if (!regexCorreo.test(correo.value)) {
-        errorCorreo.textContent = "Correo inválido";
+        errorCorreo.textContent = "El correo o usuario es obligatorio";
         correo.classList.add("inputError");
         valido = false;
     } else {

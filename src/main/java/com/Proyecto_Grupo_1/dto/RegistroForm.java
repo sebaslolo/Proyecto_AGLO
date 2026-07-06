@@ -9,14 +9,30 @@ import lombok.Data;
 public class RegistroForm {
 
     @NotBlank
-    private String nombreCompleto;
+    @Size(max = 30)
+    private String username;
+
+    @NotBlank
+    @Size(max = 20)
+    private String nombre;
+
+    @NotBlank
+    @Size(max = 30)
+    private String apellidoPaterno;
+
+    @Size(max = 30)
+    private String apellidoMaterno;
 
     @Email
     @NotBlank
+    @Size(max = 75)
     private String correo;
 
+    @Size(max = 25)
+    private String telefono;
+
     @NotBlank
-    @Size(min = 8)
+    @Size(min = 8, max = 512)
     private String password;
 
     @NotBlank

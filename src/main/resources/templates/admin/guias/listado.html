@@ -36,7 +36,7 @@
                                 <td th:text="${guia.idGuia}">1</td>
                                 <td th:text="${guia.usuario != null ? guia.usuario.nombre + ' ' + guia.usuario.apellidoPaterno : 'Sin usuario'}">Guía</td>
                                 <td th:text="${guia.fechaIngreso != null ? #temporals.format(guia.fechaIngreso, 'dd/MM/yyyy') : 'Sin fecha'}">Fecha</td>
-                                <td th:text="${guia.disponibilidad != null and !guia.disponibilidad.isEmpty() ? guia.disponibilidad : 'Sin dato'}">Disponible</td>
+                                <td th:text="${guia.disponibilidad == null ? 'Sin dato' : (guia.disponibilidad ? 'Disponible' : 'No disponible')}">Disponible</td>
                                 <td th:text="${guia.estado != null ? guia.estado.nombreEstado : 'Sin estado'}">Activo</td>
                                 <td class="text-end">
                                     <a class="btn btn-sm btn-outline-dark" th:href="@{/admin/guias/modificar/{id}(id=${guia.idGuia})}">

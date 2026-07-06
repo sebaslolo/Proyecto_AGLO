@@ -1,10 +1,12 @@
 package com.Proyecto_Grupo_1.controller;
 
+import com.Proyecto_Grupo_1.domain.Reservacion;
 import com.Proyecto_Grupo_1.dto.ReservacionForm;
 import com.Proyecto_Grupo_1.service.ActividadService;
 import com.Proyecto_Grupo_1.service.ReservacionService;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
+import java.util.Collection;
 import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.stereotype.Controller;
@@ -125,34 +127,54 @@ public class ReservacionController {
     }
 
     @GetMapping("/reservaciones/confirmacion/{idReservacion}")
-    public String confirmacion(@PathVariable Integer idReservacion, Model model, RedirectAttributes redirectAttributes) {
+    public String confirmacion(@PathVariable Integer idReservacion, HttpSession session, Model model, RedirectAttributes redirectAttributes) {
         var reservacionOpt = reservacionService.getReservacion(idReservacion);
         if (reservacionOpt.isEmpty()) {
             redirectAttributes.addFlashAttribute("error", msg("reservacion.error.noExiste"));
             return "redirect:/catalogo/listado";
         }
-        model.addAttribute("reservacion", reservacionOpt.get());
+        Reservacion reservacion = reservacionOpt.get();
+        if (!puedeVerReservacion(reservacion, session)) {
+            redirectAttributes.addFlashAttribute("error", msg("error.recurso.acceso"));
+            return "redirect:/mis-reservaciones";
+        }
+        model.addAttribute("reservacion", reservacion);
         model.addAttribute("detalles", reservacionService.obtenerDetalle(idReservacion));
         return "/reservaciones/confirmacion";
     }
 
     @GetMapping("/mis-reservaciones")
-    public String indexMisReservaciones(@RequestParam(required = false) Integer idUsuario, HttpSession session) {
-        if (idUsuario == null) {
-            idUsuario = (Integer) session.getAttribute("idUsuario");
-        }
-        return "redirect:/mis-reservaciones/listado?idUsuario=" + idUsuario;
+    public String indexMisReservaciones() {
+        return "redirect:/mis-reservaciones/listado";
     }
 
     @GetMapping("/mis-reservaciones/listado")
-    public String misReservaciones(@RequestParam(required = false) Integer idUsuario, HttpSession session, Model model) {
-        if (idUsuario == null) {
-            idUsuario = (Integer) session.getAttribute("idUsuario");
-        }
+    public String misReservaciones(HttpSession session, Model model) {
+        Integer idUsuario = (Integer) session.getAttribute("idUsuario");
         var reservaciones = reservacionService.listarReservacionesPorUsuario(idUsuario);
         model.addAttribute("reservaciones", reservaciones);
         model.addAttribute("totalReservaciones", reservaciones.size());
         return "/reservaciones/mis-reservaciones";
+    }
+
+    private boolean puedeVerReservacion(Reservacion reservacion, HttpSession session) {
+        if (tieneRol(session.getAttribute("rolesUsuario"), "ADMIN")) {
+            return true;
+        }
+        Integer idUsuario = (Integer) session.getAttribute("idUsuario");
+        return reservacion.getUsuario() != null
+                && reservacion.getUsuario().getIdUsuario() != null
+                && reservacion.getUsuario().getIdUsuario().equals(idUsuario);
+    }
+
+    private boolean tieneRol(Object roles, String esperado) {
+        if (roles instanceof Collection<?> coleccion) {
+            return coleccion.stream()
+                    .map(String::valueOf)
+                    .map(String::toUpperCase)
+                    .anyMatch(rol -> rol.contains(esperado));
+        }
+        return false;
     }
 
     private String msg(String key) {

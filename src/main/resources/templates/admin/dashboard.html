@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html lang="es" xmlns:th="http://www.thymeleaf.org">
-    <head th:replace="~{aglo/fragmentos :: head('Registro de nuevo usuario | AGLO', 'dashboard.css')}"></head>
+    <head th:replace="~{aglo/fragmentos :: head('Panel administrativo | AGLO', 'dashboard.css')}"></head>
 
     <body class="dashboard-body">
         <div class="dashboard-shell">
@@ -55,7 +55,7 @@
             </header>
 
             <main class="admin-content">
-                <h1 class="page-title" th:text="${dashboardTitle}">Registro de nuevo usuario</h1>
+                <h1 class="page-title" th:text="${dashboardTitle}">Panel administrativo</h1>
 
                 <section class="summary-grid" aria-label="Resumen administrativo">
                     <a class="summary-card" th:href="@{/admin/usuarios/listado}" href="/admin/usuarios/listado">

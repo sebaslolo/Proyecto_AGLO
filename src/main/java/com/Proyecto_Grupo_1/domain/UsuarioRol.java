@@ -14,7 +14,7 @@ import lombok.Data;
 
 @Data
 @Entity
-@Table(name = "Fide_usuario_rol_tb")
+@Table(name = "fide_usuario_rol_tb")
 public class UsuarioRol {
 
     @Valid

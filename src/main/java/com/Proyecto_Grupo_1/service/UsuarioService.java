@@ -49,8 +49,11 @@ public class UsuarioService {
     }
 
     @Transactional(readOnly = true)
-    public Optional<Usuario> autenticar(String correo, String password) {
-        return usuarioRepository.findByCorreoIgnoreCase(correo)
+    public Optional<Usuario> autenticar(String identificador, String password) {
+        if (identificador == null || identificador.isBlank()) {
+            return Optional.empty();
+        }
+        return buscarPorCorreoOUsername(identificador.trim())
                 .filter(usuario -> password != null && password.equals(usuario.getPassword()));
     }
 
@@ -77,16 +80,20 @@ public class UsuarioService {
 
     @Transactional
     public Usuario registrarCliente(RegistroForm registroForm, Estado estadoActivo) {
+        if (existeUsername(registroForm.getUsername())) {
+            throw new IllegalArgumentException("El usuario ya existe.");
+        }
         if (existeCorreo(registroForm.getCorreo())) {
             throw new IllegalArgumentException("El correo ya existe.");
         }
 
         Usuario usuario = new Usuario();
-        String[] partesNombre = separarNombre(registroForm.getNombreCompleto());
-        usuario.setNombre(partesNombre[0]);
-        usuario.setApellidoPaterno(partesNombre[1]);
-        usuario.setCorreo(registroForm.getCorreo());
-        usuario.setUsername(generarUsername(registroForm.getCorreo()));
+        usuario.setUsername(registroForm.getUsername().trim());
+        usuario.setNombre(registroForm.getNombre().trim());
+        usuario.setApellidoPaterno(registroForm.getApellidoPaterno().trim());
+        usuario.setApellidoMaterno(limpiarOpcional(registroForm.getApellidoMaterno()));
+        usuario.setCorreo(registroForm.getCorreo().trim());
+        usuario.setTelefono(limpiarOpcional(registroForm.getTelefono()));
         usuario.setPassword(registroForm.getPassword());
         usuario.setEstado(estadoActivo);
         return usuarioRepository.save(usuario);
@@ -111,7 +118,16 @@ public class UsuarioService {
 
     @Transactional(readOnly = true)
     public boolean existeCorreo(String correoElectronico) {
-        return correoElectronico != null && usuarioRepository.existsByCorreoIgnoreCase(correoElectronico);
+        return correoElectronico != null
+                && !correoElectronico.isBlank()
+                && usuarioRepository.existsByCorreoIgnoreCase(correoElectronico.trim());
+    }
+
+    @Transactional(readOnly = true)
+    public boolean existeUsername(String username) {
+        return username != null
+                && !username.isBlank()
+                && usuarioRepository.existsByUsernameIgnoreCase(username.trim());
     }
 
     @Transactional(readOnly = true)
@@ -119,47 +135,20 @@ public class UsuarioService {
         if (correoElectronico == null || correoElectronico.isBlank()) {
             return true;
         }
-        return usuarioRepository.findByCorreoIgnoreCase(correoElectronico)
+        return usuarioRepository.findByCorreoIgnoreCase(correoElectronico.trim())
                 .map(usuario -> usuario.getIdUsuario().equals(idUsuarioActual))
                 .orElse(true);
     }
 
-    private String generarUsername(String correoElectronico) {
-        String base = correoElectronico;
-        int arroba = correoElectronico.indexOf('@');
-        if (arroba > 0) {
-            base = correoElectronico.substring(0, arroba);
+    private Optional<Usuario> buscarPorCorreoOUsername(String identificador) {
+        Optional<Usuario> porCorreo = usuarioRepository.findByCorreoIgnoreCase(identificador);
+        if (porCorreo.isPresent()) {
+            return porCorreo;
         }
-        base = limpiarUsername(base);
-        String candidato = limitar(base, 30);
-        int consecutivo = 1;
-        while (usuarioRepository.existsByUsernameIgnoreCase(candidato)) {
-            String sufijo = String.valueOf(consecutivo++);
-            candidato = limitar(base, 30 - sufijo.length()) + sufijo;
-        }
-        return candidato;
+        return usuarioRepository.findByUsernameIgnoreCase(identificador);
     }
 
-    private String limpiarUsername(String texto) {
-        String limpio = texto == null ? "usuario" : texto.replaceAll("[^A-Za-z0-9_]", "");
-        return limpio.isBlank() ? "usuario" : limpio;
-    }
-
-    private String[] separarNombre(String nombreCompleto) {
-        String limpio = nombreCompleto == null ? "" : nombreCompleto.trim().replaceAll("\\s+", " ");
-        if (limpio.isBlank()) {
-            return new String[]{"Cliente", "AGLO"};
-        }
-        String[] partes = limpio.split(" ", 2);
-        String nombre = limitar(partes[0], 20);
-        String apellido = partes.length > 1 ? partes[1] : "AGLO";
-        return new String[]{nombre, limitar(apellido, 30)};
-    }
-
-    private String limitar(String texto, int longitudMaxima) {
-        if (texto == null) {
-            return "";
-        }
-        return texto.length() <= longitudMaxima ? texto : texto.substring(0, longitudMaxima);
+    private String limpiarOpcional(String texto) {
+        return texto == null || texto.isBlank() ? null : texto.trim();
     }
 }

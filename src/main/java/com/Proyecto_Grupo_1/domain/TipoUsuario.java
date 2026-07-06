@@ -1,18 +1,14 @@
 package com.Proyecto_Grupo_1.domain;
 
 import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotBlank;
 import java.time.LocalDateTime;
 import lombok.Data;
 
 @Data
-@Entity
-@Table(name = "fide_tipo_usuario_tb")
 public class TipoUsuario {
 
     @Id

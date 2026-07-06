@@ -41,7 +41,7 @@ create table fide_rol_tb (
   primary key (id_rol))
   ENGINE = InnoDB;
 
-create table Fide_usuario_rol_tb (
+create table fide_usuario_rol_tb (
   id_usuario int not null,
   id_rol INT NOT NULL,
   fecha_creacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
@@ -293,89 +293,19 @@ create table fide_formulario_tb(
     index ndx_formulario_estado (id_estado)
 ) ENGINE = InnoDB;
 
-INSERT INTO fide_estado_tb (nombre_estado) VALUES 
-('Activo'),          
-('Inactivo'),        
-('Pendiente'),       
-('Confirmada'),      
-('Cancelada'),            
-('Completado'),      
+INSERT INTO fide_estado_tb (nombre_estado) VALUES
+('Activo'),
+('Inactivo'),
+('Pendiente'),
+('Confirmada'),
+('Cancelada'),
+('Completado'),
 ('Disponible');
 
-insert into fide_guia_tb (id_usuario, fecha_ingreso, disponibilidad, id_estado) values
-(1, '2023-01-15', true, 1),
-(2, '2023-02-20', false, 1),
-(3, '2023-03-05', true, 1),
-(4, '2023-04-10', true, 1),
-(5, '2023-05-25', false, 1),
-(6, '2023-06-30', true, 1),
-(7, '2023-07-15', false, 1),
-(8, '2023-08-20', true, 1),
-(9, '2023-09-05', true, 1),
-(10, '2023-10-10', false, 1),
-(11, '2023-11-15', true, 1),
-(12, '2023-12-20', false, 1);
-
-insert into fide_voluntariado_tb (id_usuario, id_estado, fecha_ingreso, disponibilidad) values
-(13, 1, '2023-01-15', 'Lunes a Viernes'),
-(14, 1, '2023-02-20', 'Fines de Semana'),
-(15, 1, '2023-03-05', 'Lunes a Viernes'),
-(16, 1, '2023-04-10', 'Fines de Semana'),
-(17, 1, '2023-05-25', 'Lunes a Viernes'),
-(18, 1, '2023-06-30', 'Fines de Semana'),
-(19, 1, '2023-07-15', 'Lunes a Viernes'),
-(20, 1, '2023-08-20', 'Fines de Semana'),
-(21, 1, '2023-09-05', 'Lunes a Viernes'),
-(22, 1, '2023-10-10', 'Fines de Semana'),
-(23, 1, '2023-11-15', 'Lunes a Viernes'),
-(24, 1, '2023-12-20', 'Fines de Semana');
-
-insert into fide_guia_actividad_tb (id_actividad, id_guia, fecha_asignacion, id_estado) values
-(1, 1, '2023-01-15 10:00:00', 1),
-(2, 2, '2023-02-20 14:30:00', 1),
-(3, 3, '2023-03-05 09:15:00', 1),
-(4, 4, '2023-04-10 16:45:00', 1),
-(5, 5, '2023-05-25 11:30:00', 1),
-(6, 6, '2023-06-30 13:00:00', 1),
-(7, 7, '2023-07-15 15:20:00', 1),
-(8, 8, '2023-08-20 12:10:00', 1),
-(9, 9, '2023-09-05 17:40:00', 1),
-(10, 10, '2023-10-10 08:50:00', 1),
-(11, 11, '2023-11-15 14:05:00', 1),
-(12, 12, '2023-12-20 09:55:00', 1),
-(1, 13, '2023-01-15 10:00:00', 1),
-(2, 14, '2023-02-20 14:30:00', 1),
-(3, 15, '2023-03-05 09:15:00', 1),
-(4, 16, '2023-04-10 16:45:00', 1),
-(5, 17, '2023-05-25 11:30:00', 1),
-(6, 18, '2023-06-30 13:00:00', 1),
-(7, 19, '2023-07-15 15:20:00', 1),
-(8, 20, '2023-08-20 12:10:00', 1),
-(9, 21, '2023-09-05 17:40:00', 1),
-(10, 22, '2023-10-10 08:50:00', 1),
-(11, 23, '2023-11-15 14:05:00', 1),
-(12, 24, '2023-12-20 09:55:00', 1);
-
-
 INSERT INTO fide_rol_tb (rol) VALUES
 ('ADMIN'),
 ('GUIA'),
 ('CLIENTE');
-
-
-  primary key (id_rol))
-  ENGINE = InnoDB;
-
-INSERT INTO fide_rol_tb (rol) VALUES
-('ADMIN'),
-('GUIA'),
-('CLIENTE');
-
-create table fide_usuario_rol_tb (
-  id_usuario int not null,
-  id_rol INT NOT NULL,
-    FOREIGN KEY (id_rol) REFERENCES fide_rol_tb(id_rol))
-    ENGINE = InnoDB;
 
 INSERT INTO fide_ruta_tb (ruta, id_rol, requiere_rol) VALUES
 ('/admin/**', 1, TRUE),
@@ -388,9 +318,17 @@ INSERT INTO fide_ruta_tb (ruta, id_rol, requiere_rol) VALUES
 ('/', NULL, FALSE),
 ('/inicio', NULL, FALSE),
 ('/login', NULL, FALSE),
-('/registro', NULL, FALSE),
+('/registro/**', NULL, FALSE),
 ('/forgot-password', NULL, FALSE),
 ('/catalogo/**', NULL, FALSE),
+('/avistamientos/**', NULL, FALSE),
+('/herramientas/**', NULL, FALSE),
+('/retroalimentacion/**', NULL, FALSE),
+('/voluntariados/**', NULL, FALSE),
+('/css/**', NULL, FALSE),
+('/js/**', NULL, FALSE),
+('/img/**', NULL, FALSE),
+('/webjars/**', NULL, FALSE),
 ('/logout', NULL, FALSE);
 
 INSERT INTO fide_usuario_tb
@@ -445,3 +383,107 @@ VALUES
 ('carolina.reyes',   'C5&nJ1t@', 'Carolina',  'Reyes',       'Perez',      'carolina.reyes@gmail.com',   '672345724', 1),
 ('manuel.espinoza',  'M3#vH9m!', 'Manuel',    'Espinoza',    'Vega',       'manuel.espinoza@gmail.com',  '682345725', 2),
 ('tatiana.molina',   'T6@qX4k$', 'Tatiana',   'Molina',      'Castillo',   'tatiana.molina@gmail.com',   '692345726', 1);
+
+INSERT INTO fide_usuario_rol_tb (id_usuario, id_rol) VALUES
+(1, 2),
+(2, 2),
+(3, 2),
+(4, 2),
+(5, 2),
+(6, 2),
+(7, 2),
+(8, 2),
+(9, 2),
+(10, 2),
+(11, 2),
+(12, 2),
+(13, 3),
+(14, 3),
+(15, 3),
+(16, 3),
+(17, 3),
+(18, 3),
+(19, 3),
+(20, 3),
+(21, 3),
+(22, 3),
+(23, 3),
+(24, 3),
+(25, 3),
+(26, 3),
+(27, 3),
+(28, 3),
+(29, 3),
+(30, 3),
+(31, 3),
+(32, 3),
+(33, 3),
+(34, 3),
+(35, 3),
+(36, 3),
+(37, 3),
+(38, 3),
+(39, 3),
+(40, 3),
+(41, 3),
+(42, 3),
+(43, 3),
+(44, 3),
+(45, 3),
+(46, 3),
+(47, 3),
+(48, 3),
+(49, 1);
+
+INSERT INTO fide_tipo_actividad_tb
+(nombre_tipo_actividad, descripcion_tipo_actividad, precio_base, duracion_estimada, imagen_tipo_actividad, id_estado)
+VALUES
+('Liberacion de tortugas', 'Acompanamiento guiado durante liberaciones controladas en Playa Ostional.', 12000.00, '2 horas', 'https://vivemar.com.mx/wp-content/uploads/2022/01/Vivemar_Liberacion-%E2%80%93-monitoreo-nocturno-new-3.jpg', 1),
+('Senderismo costero', 'Recorrido interpretativo por senderos y miradores cercanos a la comunidad.', 18000.00, '3 horas', 'https://wpapi.larepublica.net/wp-content/uploads/2018/09/20180926141859.trekking.jpg', 1),
+('Avistamiento nocturno', 'Observacion responsable de fauna y actividad de anidacion con guia local.', 20000.00, '2.5 horas', 'https://www.ucr.ac.cr/medios/fotos/2021/nin%CC%83os-y-tortugas-lora6125434704b16.jpeg', 1),
+('Voluntariado ambiental', 'Jornada comunitaria de limpieza, educacion ambiental y conservacion.', 5000.00, '4 horas', 'https://juventud.gob.do/wp-content/uploads/2023/03/Playita-con-bolsa-scaled.jpg', 1);
+
+INSERT INTO fide_actividad_tb
+(id_tipo_actividad, nombre_actividad, fecha_hora_inicio, fecha_hora_fin, cupo_maximo, precio_actual, imagen_actividad, id_estado)
+VALUES
+(1, 'Liberacion familiar de tortugas', '2026-08-15 16:30:00', '2026-08-15 18:30:00', 24, 12000.00, 'https://vivemar.com.mx/wp-content/uploads/2022/01/Vivemar_Liberacion-%E2%80%93-monitoreo-nocturno-new-3.jpg', 1),
+(2, 'Sendero Mirador Ostional', '2026-08-18 07:00:00', '2026-08-18 10:00:00', 18, 18000.00, 'https://wpapi.larepublica.net/wp-content/uploads/2018/09/20180926141859.trekking.jpg', 1),
+(3, 'Tour nocturno de anidacion', '2026-08-21 19:00:00', '2026-08-21 21:30:00', 16, 20000.00, 'https://www.ucr.ac.cr/medios/fotos/2021/nin%CC%83os-y-tortugas-lora6125434704b16.jpeg', 1),
+(4, 'Limpieza comunitaria de playa', '2026-08-24 08:00:00', '2026-08-24 12:00:00', 30, 5000.00, 'https://juventud.gob.do/wp-content/uploads/2023/03/Playita-con-bolsa-scaled.jpg', 1),
+(1, 'Charla y liberacion al atardecer', '2026-08-28 16:00:00', '2026-08-28 18:00:00', 20, 14000.00, 'https://d16ice5q223i7e.cloudfront.net/wp-content/uploads/2026/03/24034625/2021-08-Simbiosis-Ostional-InfoFotos-mqcphoto-019.jpg', 1);
+
+INSERT INTO fide_guia_tb (id_usuario, fecha_ingreso, disponibilidad, id_estado) VALUES
+(1, '2023-01-15', TRUE, 1),
+(2, '2023-02-20', FALSE, 1),
+(3, '2023-03-05', TRUE, 1),
+(4, '2023-04-10', TRUE, 1),
+(5, '2023-05-25', FALSE, 1),
+(6, '2023-06-30', TRUE, 1),
+(7, '2023-07-15', FALSE, 1),
+(8, '2023-08-20', TRUE, 1),
+(9, '2023-09-05', TRUE, 1),
+(10, '2023-10-10', FALSE, 1),
+(11, '2023-11-15', TRUE, 1),
+(12, '2023-12-20', FALSE, 1);
+
+INSERT INTO fide_actividad_guia_tb (id_actividad, id_guia, fecha_asignacion, id_estado) VALUES
+(1, 1, '2026-07-01 08:00:00', 1),
+(1, 2, '2026-07-01 08:00:00', 1),
+(2, 3, '2026-07-01 08:00:00', 1),
+(3, 4, '2026-07-01 08:00:00', 1),
+(4, 5, '2026-07-01 08:00:00', 1),
+(5, 6, '2026-07-01 08:00:00', 1);
+
+INSERT INTO fide_voluntariado_tb (id_usuario, id_estado, fecha_ingreso, disponibilidad) VALUES
+(13, 1, '2023-01-15', 'Lunes a Viernes'),
+(14, 1, '2023-02-20', 'Fines de Semana'),
+(15, 1, '2023-03-05', 'Lunes a Viernes'),
+(16, 1, '2023-04-10', 'Fines de Semana'),
+(17, 1, '2023-05-25', 'Lunes a Viernes'),
+(18, 1, '2023-06-30', 'Fines de Semana'),
+(19, 1, '2023-07-15', 'Lunes a Viernes'),
+(20, 1, '2023-08-20', 'Fines de Semana'),
+(21, 1, '2023-09-05', 'Lunes a Viernes'),
+(22, 1, '2023-10-10', 'Fines de Semana'),
+(23, 1, '2023-11-15', 'Lunes a Viernes'),
+(24, 1, '2023-12-20', 'Fines de Semana');

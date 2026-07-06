@@ -63,6 +63,11 @@ public class ActividadService {
         if (actividad.getFechaHoraInicio() != null && actividad.getFechaHoraInicio().isBefore(LocalDateTime.now())) {
             throw new IllegalArgumentException("La fecha de inicio no puede ser anterior a la fecha actual");
         }
+        if (actividad.getFechaHoraInicio() != null
+                && actividad.getFechaHoraFin() != null
+                && !actividad.getFechaHoraFin().isAfter(actividad.getFechaHoraInicio())) {
+            throw new IllegalArgumentException("La fecha de fin debe ser posterior a la fecha de inicio");
+        }
         return actividadRepository.save(actividad);
     }
 

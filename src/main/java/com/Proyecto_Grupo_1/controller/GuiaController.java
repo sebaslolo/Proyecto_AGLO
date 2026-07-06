@@ -5,7 +5,6 @@ import jakarta.servlet.http.HttpSession;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 
 @Controller
 public class GuiaController {
@@ -17,10 +16,8 @@ public class GuiaController {
     }
 
     @GetMapping("/guia/agenda")
-    public String agenda(@RequestParam(required = false) Integer idGuia, HttpSession session, Model model) {
-        if (idGuia == null) {
-            idGuia = (Integer) session.getAttribute("idGuia");
-        }
+    public String agenda(HttpSession session, Model model) {
+        Integer idGuia = (Integer) session.getAttribute("idGuia");
         if (idGuia != null) {
             var asignaciones = guiaActividadService.getAsignacionesPorGuia(idGuia);
             model.addAttribute("asignaciones", asignaciones);

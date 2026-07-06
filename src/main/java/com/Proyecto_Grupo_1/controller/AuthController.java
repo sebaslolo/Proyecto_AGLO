@@ -120,6 +120,9 @@ public class AuthController {
         if (usuarioService.existeCorreo(registroForm.getCorreo())) {
             bindingResult.rejectValue("correo", "registro.error.correoDuplicado", msg("registro.error.correoDuplicado"));
         }
+        if (usuarioService.existeUsername(registroForm.getUsername())) {
+            bindingResult.rejectValue("username", "registro.error.usernameDuplicado", msg("registro.error.usernameDuplicado"));
+        }
         if (bindingResult.hasErrors()) {
             return "/auth/registro";
         }

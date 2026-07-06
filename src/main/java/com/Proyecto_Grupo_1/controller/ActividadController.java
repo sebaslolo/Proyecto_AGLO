@@ -68,7 +68,7 @@ public class ActividadController {
             redirectAttributes.addFlashAttribute("todoOk", msg("actividad.mensaje.guardado"));
         } catch (IllegalArgumentException e) {
             cargarCatalogos(model);
-            model.addAttribute("error", msg("actividad.error.fechaPasada"));
+            model.addAttribute("error", e.getMessage());
             return "/admin/actividades/modifica";
         }
         return "redirect:/admin/actividades/listado";

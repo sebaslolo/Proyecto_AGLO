@@ -29,13 +29,47 @@
                     <div th:if="${error}" class="alert alert-danger" role="alert" th:text="${error}">Error</div>
                     <form id="formRegistro" th:action="@{/registro}" th:object="${registroForm}" action="/registro" method="post">
                         <div class="grupo">
-                            <label for="nombreCompleto">Nombre Completo</label>
+                            <label for="username">Usuario</label>
                             <input
                                 type="text"
-                                id="nombreCompleto"
-                                th:field="*{nombreCompleto}"
-                                placeholder="Ej. María López"/>
-                            <small id="errorNombre" th:text="${#fields.hasErrors('nombreCompleto')} ? 'Ingrese su nombre.' : ''"></small>
+                                id="username"
+                                th:field="*{username}"
+                                maxlength="30"
+                                placeholder="Ej. maria.lopez"/>
+                            <small id="errorUsername" th:text="${#fields.hasErrors('username')} ? 'Usuario inválido o duplicado.' : ''"></small>
+                        </div>
+
+                        <div class="grupo">
+                            <label for="nombre">Nombre</label>
+                            <input
+                                type="text"
+                                id="nombre"
+                                th:field="*{nombre}"
+                                maxlength="20"
+                                placeholder="Ej. María"/>
+                            <small id="errorNombre" th:text="${#fields.hasErrors('nombre')} ? 'Ingrese su nombre.' : ''"></small>
+                        </div>
+
+                        <div class="grupo">
+                            <label for="apellidoPaterno">Apellido paterno</label>
+                            <input
+                                type="text"
+                                id="apellidoPaterno"
+                                th:field="*{apellidoPaterno}"
+                                maxlength="30"
+                                placeholder="Ej. López"/>
+                            <small id="errorApellidoPaterno" th:text="${#fields.hasErrors('apellidoPaterno')} ? 'Ingrese su apellido paterno.' : ''"></small>
+                        </div>
+
+                        <div class="grupo">
+                            <label for="apellidoMaterno">Apellido materno</label>
+                            <input
+                                type="text"
+                                id="apellidoMaterno"
+                                th:field="*{apellidoMaterno}"
+                                maxlength="30"
+                                placeholder="Opcional"/>
+                            <small id="errorApellidoMaterno" th:text="${#fields.hasErrors('apellidoMaterno')} ? 'Máximo 30 caracteres.' : ''"></small>
                         </div>
 
                         <div class="grupo">
@@ -44,8 +78,20 @@
                                 type="email"
                                 id="correo"
                                 th:field="*{correo}"
+                                maxlength="75"
                                 placeholder="ejemplo@correo.com"/>
                             <small id="errorCorreo" th:text="${#fields.hasErrors('correo')} ? 'Correo electrónico inválido o duplicado.' : ''"></small>
+                        </div>
+
+                        <div class="grupo">
+                            <label for="telefono">Teléfono</label>
+                            <input
+                                type="tel"
+                                id="telefono"
+                                th:field="*{telefono}"
+                                maxlength="25"
+                                placeholder="Opcional"/>
+                            <small id="errorTelefono" th:text="${#fields.hasErrors('telefono')} ? 'Máximo 25 caracteres.' : ''"></small>
                         </div>
 
                         <div class="grupo">
