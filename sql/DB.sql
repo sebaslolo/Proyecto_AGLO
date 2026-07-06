@@ -158,8 +158,6 @@ create table fide_actividad_guia_tb(
     index ndx_id_actividad (id_actividad),
     index ndx_id_guia (id_guia)
 ) ENGINE = InnoDB;
-<<<<<<< Updated upstream
-=======
 
 create table fide_voluntariado_tb(
     id_voluntariado_registro int not null auto_increment,
@@ -294,6 +292,15 @@ create table fide_formulario_tb(
     index ndx_formulario_usuario (id_usuario),
     index ndx_formulario_estado (id_estado)
 ) ENGINE = InnoDB;
+
+INSERT INTO fide_estado_tb (nombre_estado) VALUES 
+('Activo'),          
+('Inactivo'),        
+('Pendiente'),       
+('Confirmada'),      
+('Cancelada'),            
+('Completado'),      
+('Disponible');
 
 insert into fide_guia_tb (id_usuario, fecha_ingreso, disponibilidad, id_estado) values
 (1, '2023-01-15', true, 1),
@@ -438,4 +445,3 @@ VALUES
 ('carolina.reyes',   'C5&nJ1t@', 'Carolina',  'Reyes',       'Perez',      'carolina.reyes@gmail.com',   '672345724', 1),
 ('manuel.espinoza',  'M3#vH9m!', 'Manuel',    'Espinoza',    'Vega',       'manuel.espinoza@gmail.com',  '682345725', 2),
 ('tatiana.molina',   'T6@qX4k$', 'Tatiana',   'Molina',      'Castillo',   'tatiana.molina@gmail.com',   '692345726', 1);
->>>>>>> Stashed changes
