@@ -41,7 +41,7 @@ create table fide_rol_tb (
   primary key (id_rol))
   ENGINE = InnoDB;
 
-create table fide_usuario_rol_tb (
+create table Fide_usuario_rol_tb (
   id_usuario int not null,
   id_rol INT NOT NULL,
   fecha_creacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
@@ -62,22 +62,6 @@ CREATE TABLE fide_ruta_tb (
     PRIMARY KEY (id_ruta),
     FOREIGN KEY (id_rol) REFERENCES fide_rol_tb(id_rol))
     ENGINE = InnoDB;
-
-INSERT INTO fide_ruta_tb (ruta, requiere_rol) VALUES
-('/', FALSE),
-('/inicio', FALSE),
-('/login', FALSE),
-('/registro/**', FALSE),
-('/forgot-password', FALSE),
-('/catalogo/**', FALSE),
-('/avistamientos/**', FALSE),
-('/herramientas/**', FALSE),
-('/retroalimentacion/**', FALSE),
-('/voluntariados/**', FALSE),
-('/css/**', FALSE),
-('/js/**', FALSE),
-('/img/**', FALSE),
-('/webjars/**', FALSE);
 
 create table fide_reservacion_tb(
     id_reservacion  int not null auto_increment,
@@ -148,8 +132,8 @@ create table fide_actividad_detalle_tb(
 create table fide_guia_tb(
     id_guia int not null auto_increment,
     id_usuario int not null,
-    fecha_ingreso datetime,
-    disponibilidad varchar(100),
+    fecha_ingreso date,
+    disponibilidad boolean,
     id_estado int not null,
     fecha_creacion timestamp default current_timestamp,
     fecha_modificacion timestamp default current_timestamp on update current_timestamp,
@@ -308,3 +292,156 @@ create table fide_formulario_tb(
     index ndx_formulario_usuario (id_usuario),
     index ndx_formulario_estado (id_estado)
 ) ENGINE = InnoDB;
+
+INSERT INTO fide_estado_tb (nombre_estado) VALUES 
+('Activo'),          
+('Inactivo'),        
+('Pendiente'),       
+('Confirmada'),      
+('Cancelada'),            
+('Completado'),      
+('Disponible');
+
+insert into fide_guia_tb (id_usuario, fecha_ingreso, disponibilidad, id_estado) values
+(1, '2023-01-15', true, 1),
+(2, '2023-02-20', false, 1),
+(3, '2023-03-05', true, 1),
+(4, '2023-04-10', true, 1),
+(5, '2023-05-25', false, 1),
+(6, '2023-06-30', true, 1),
+(7, '2023-07-15', false, 1),
+(8, '2023-08-20', true, 1),
+(9, '2023-09-05', true, 1),
+(10, '2023-10-10', false, 1),
+(11, '2023-11-15', true, 1),
+(12, '2023-12-20', false, 1);
+
+insert into fide_voluntariado_tb (id_usuario, id_estado, fecha_ingreso, disponibilidad) values
+(13, 1, '2023-01-15', 'Lunes a Viernes'),
+(14, 1, '2023-02-20', 'Fines de Semana'),
+(15, 1, '2023-03-05', 'Lunes a Viernes'),
+(16, 1, '2023-04-10', 'Fines de Semana'),
+(17, 1, '2023-05-25', 'Lunes a Viernes'),
+(18, 1, '2023-06-30', 'Fines de Semana'),
+(19, 1, '2023-07-15', 'Lunes a Viernes'),
+(20, 1, '2023-08-20', 'Fines de Semana'),
+(21, 1, '2023-09-05', 'Lunes a Viernes'),
+(22, 1, '2023-10-10', 'Fines de Semana'),
+(23, 1, '2023-11-15', 'Lunes a Viernes'),
+(24, 1, '2023-12-20', 'Fines de Semana');
+
+insert into fide_guia_actividad_tb (id_actividad, id_guia, fecha_asignacion, id_estado) values
+(1, 1, '2023-01-15 10:00:00', 1),
+(2, 2, '2023-02-20 14:30:00', 1),
+(3, 3, '2023-03-05 09:15:00', 1),
+(4, 4, '2023-04-10 16:45:00', 1),
+(5, 5, '2023-05-25 11:30:00', 1),
+(6, 6, '2023-06-30 13:00:00', 1),
+(7, 7, '2023-07-15 15:20:00', 1),
+(8, 8, '2023-08-20 12:10:00', 1),
+(9, 9, '2023-09-05 17:40:00', 1),
+(10, 10, '2023-10-10 08:50:00', 1),
+(11, 11, '2023-11-15 14:05:00', 1),
+(12, 12, '2023-12-20 09:55:00', 1),
+(1, 13, '2023-01-15 10:00:00', 1),
+(2, 14, '2023-02-20 14:30:00', 1),
+(3, 15, '2023-03-05 09:15:00', 1),
+(4, 16, '2023-04-10 16:45:00', 1),
+(5, 17, '2023-05-25 11:30:00', 1),
+(6, 18, '2023-06-30 13:00:00', 1),
+(7, 19, '2023-07-15 15:20:00', 1),
+(8, 20, '2023-08-20 12:10:00', 1),
+(9, 21, '2023-09-05 17:40:00', 1),
+(10, 22, '2023-10-10 08:50:00', 1),
+(11, 23, '2023-11-15 14:05:00', 1),
+(12, 24, '2023-12-20 09:55:00', 1);
+
+
+INSERT INTO fide_rol_tb (rol) VALUES
+('ADMIN'),
+('GUIA'),
+('CLIENTE');
+
+
+  primary key (id_rol))
+  ENGINE = InnoDB;
+
+INSERT INTO fide_rol_tb (rol) VALUES
+('ADMIN'),
+('GUIA'),
+('CLIENTE');
+
+create table fide_usuario_rol_tb (
+  id_usuario int not null,
+  id_rol INT NOT NULL,
+    FOREIGN KEY (id_rol) REFERENCES fide_rol_tb(id_rol))
+    ENGINE = InnoDB;
+
+INSERT INTO fide_ruta_tb (ruta, id_rol, requiere_rol) VALUES
+('/admin/**', 1, TRUE),
+('/guia/**', 2, TRUE),
+('/reservaciones/nueva', 3, TRUE),
+('/reservaciones/guardar', 3, TRUE),
+('/reservaciones/confirmacion/**', 3, TRUE),
+('/mis-reservaciones', 3, TRUE),
+('/mis-reservaciones/**', 3, TRUE),
+('/', NULL, FALSE),
+('/inicio', NULL, FALSE),
+('/login', NULL, FALSE),
+('/registro', NULL, FALSE),
+('/forgot-password', NULL, FALSE),
+('/catalogo/**', NULL, FALSE),
+('/logout', NULL, FALSE);
+
+INSERT INTO fide_usuario_tb
+(username, password, nombre, apellido_paterno, apellido_materno, correo, telefono, id_estado)
+VALUES
+('juan.garcia',      'J7@mP2x!', 'Juan',      'Garcia',      'Lopez',      'juan.garcia@gmail.com',      '612345678', 1),
+('maria.martinez',   'M#8kL5q$', 'Maria',     'Martinez',    'Gomez',      'maria.martinez@gmail.com',   '622345679', 2),
+('carlos.lopez',     'C9&vR1t*', 'Carlos',    'Lopez',       'Perez',      'carlos.lopez@gmail.com',     '632345680', 1),
+('ana.rodriguez',    'A4!nW7z%', 'Ana',       'Rodriguez',   'Fernandez',  'ana.rodriguez@gmail.com',    '642345681', 2),
+('luis.fernandez',   'L2@xH8m&', 'Luis',      'Fernandez',   'Gonzalez',   'luis.fernandez@gmail.com',   '652345682', 1),
+('elena.gonzalez',   'E6$pT3k#', 'Elena',     'Gonzalez',    'Sanchez',    'elena.gonzalez@gmail.com',   '662345683', 2),
+('pedro.perez',      'P1%yN9c!', 'Pedro',     'Perez',       'Ruiz',       'pedro.perez@gmail.com',      '672345684', 1),
+('sofia.sanchez',    'S5&wQ2j$', 'Sofia',     'Sanchez',     'Ramirez',    'sofia.sanchez@gmail.com',    '682345685', 2),
+('miguel.ruiz',      'M8!dF4v@', 'Miguel',    'Ruiz',        'Torres',     'miguel.ruiz@gmail.com',      '692345686', 1),
+('isabel.ramirez',   'I3#uX7n%', 'Isabel',    'Ramirez',     'Flores',     'isabel.ramirez@gmail.com',   '702345687', 2),
+('jose.torres',      'J9*tB5r&', 'Jose',      'Torres',      'Rivera',     'jose.torres@gmail.com',      '712345688', 1),
+('lucia.flores',     'L4@gC8p!', 'Lucia',     'Flores',      'Morales',    'lucia.flores@gmail.com',     '722345689', 2),
+('antonio.rivera',   'A7$hZ1m*', 'Antonio',   'Rivera',      'Ortiz',      'antonio.rivera@gmail.com',   '732345690', 1),
+('david.solis',      'D8@qL2w!', 'David',     'Solis',       'Castro',     'david.solis@gmail.com',      '742345691', 2),
+('nicole.vargas',    'N4#zX8m$', 'Nicole',    'Vargas',      'Jimenez',    'nicole.vargas@gmail.com',    '752345692', 1),
+('bianca.solano',    'B7%rP3k&', 'Bianca',    'Solano',      'Mora',       'bianca.solano@gmail.com',    '762345693', 2),
+('sebastian.castro', 'S2!nV6t@', 'Sebastian', 'Castro',      'Rojas',      'sebastian.castro@gmail.com', '772345694', 1),
+('andres.mora',      'A9&gW4p#', 'Andres',    'Mora',        'Vega',       'andres.mora@gmail.com',      '782345695', 2),
+('paula.vega',       'P3@dF8x!', 'Paula',     'Vega',        'Salas',      'paula.vega@gmail.com',       '792345696', 1),
+('kevin.salas',      'K6#hJ1q$', 'Kevin',     'Salas',       'Leon',       'kevin.salas@gmail.com',      '802345697', 2),
+('laura.leon',       'L5%yM9w*', 'Laura',     'Leon',        'Acosta',     'laura.leon@gmail.com',       '812345698', 1),
+('jorge.acosta',     'J2@uT7k&', 'Jorge',     'Acosta',      'Herrera',    'jorge.acosta@gmail.com',     '822345699', 2),
+('karla.herrera',    'K8!bR3n#', 'Karla',     'Herrera',     'Campos',     'karla.herrera@gmail.com',    '832345700', 1),
+('diego.campos',     'D4$pX6m%', 'Diego',     'Campos',      'Navarro',    'diego.campos@gmail.com',     '842345701', 2),
+('adriana.navarro',  'A1&vL8t!', 'Adriana',   'Navarro',     'Mendez',     'adriana.navarro@gmail.com',  '852345702', 1),
+('roberto.mendez',   'R9@gQ5c$', 'Roberto',   'Mendez',      'Aguilar',    'roberto.mendez@gmail.com',   '862345703', 2),
+('daniela.aguilar',  'D7#kH2z*', 'Daniela',   'Aguilar',     'Cordero',    'daniela.aguilar@gmail.com',  '872345704', 1),
+('ricardo.cordero',  'R5!mN4x&', 'Ricardo',   'Cordero',     'Araya',      'ricardo.cordero@gmail.com',  '882345705', 2),
+('gabriela.araya',   'G3%pW7j@', 'Gabriela',  'Araya',       'Monge',      'gabriela.araya@gmail.com',   '892345706', 1),
+('oscar.monge',      'O6$tY1q#', 'Oscar',     'Monge',       'Quesada',    'oscar.monge@gmail.com',      '902345707', 2),
+('valeria.quesada',  'V8@rC5m!', 'Valeria',   'Quesada',     'Alfaro',     'valeria.quesada@gmail.com',  '912345708', 1),
+('fernando.alfaro',  'F2#nD9x$', 'Fernando',  'Alfaro',      'Esquivel',   'fernando.alfaro@gmail.com',  '922345709', 2),
+('camila.esquivel',  'C4&wH6k%', 'Camila',    'Esquivel',    'Blanco',     'camila.esquivel@gmail.com',  '932345710', 1),
+('eduardo.blanco',   'E1!vP8t&', 'Eduardo',   'Blanco',      'Chaves',     'eduardo.blanco@gmail.com',   '942345711', 2),
+('patricia.chaves',  'P9@xJ3m*', 'Patricia',  'Chaves',      'Nunez',      'patricia.chaves@gmail.com',  '952345712', 1),
+('sergio.nunez',     'S7#qL5c!', 'Sergio',    'Nunez',       'Porras',     'sergio.nunez@gmail.com',     '962345713', 2),
+('monica.porras',    'M5%zR2w$', 'Monica',    'Porras',      'Soto',       'monica.porras@gmail.com',    '972345714', 1),
+('cristian.soto',    'C8&tF4k@', 'Cristian',  'Soto',        'Valverde',   'cristian.soto@gmail.com',    '982345715', 2),
+('alicia.valverde',  'A6!hN1p#', 'Alicia',    'Valverde',    'Rojas',      'alicia.valverde@gmail.com',  '992345716', 1),
+('esteban.rojas',    'E3@dM7x%', 'Esteban',   'Rojas',       'Jimenez',    'esteban.rojas@gmail.com',    '602345717', 2),
+('veronica.jimenez', 'V4&yK9q!', 'Veronica',  'Jimenez',     'Solis',      'veronica.jimenez@gmail.com', '612345718', 1),
+('adrian.arias',     'A8#uP2m$', 'Adrian',    'Arias',       'Vargas',     'adrian.arias@gmail.com',     '622345719', 2),
+('melissa.diaz',     'M1%gT6w*', 'Melissa',   'Diaz',        'Rojas',      'melissa.diaz@gmail.com',     '632345720', 1),
+('hector.ortega',    'H9@bL5n&', 'Hector',    'Ortega',      'Lopez',      'hector.ortega@gmail.com',    '642345721', 2),
+('ximena.marin',     'X2!kC8p#', 'Ximena',    'Marin',       'Campos',     'ximena.marin@gmail.com',     '652345722', 1),
+('fabian.guerrero',  'F7$rW3x%', 'Fabian',    'Guerrero',    'Soto',       'fabian.guerrero@gmail.com',  '662345723', 2),
+('carolina.reyes',   'C5&nJ1t@', 'Carolina',  'Reyes',       'Perez',      'carolina.reyes@gmail.com',   '672345724', 1),
+('manuel.espinoza',  'M3#vH9m!', 'Manuel',    'Espinoza',    'Vega',       'manuel.espinoza@gmail.com',  '682345725', 2),
+('tatiana.molina',   'T6@qX4k$', 'Tatiana',   'Molina',      'Castillo',   'tatiana.molina@gmail.com',   '692345726', 1);
