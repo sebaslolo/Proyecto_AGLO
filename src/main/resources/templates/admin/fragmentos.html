@@ -13,24 +13,34 @@
 
         <nav class="collapse navbar-collapse" id="adminNavbar">
             <ul class="navbar-nav me-auto mb-2 mb-lg-0 admin-links">
-                <li class="nav-item"><a class="nav-link" th:href="@{/admin/usuarios/listado}">Usuarios</a></li>
-                <li class="nav-item"><a class="nav-link" th:href="@{/admin/actividades/listado}">Actividades</a></li>
-                <li class="nav-item"><a class="nav-link" th:href="@{/admin/reservaciones/listado}">Reservaciones</a></li>
-                <li class="nav-item"><a class="nav-link" th:href="@{/admin/guias/listado}">Guías</a></li>
+                <li class="nav-item">
+                    <a class="nav-link" th:href="@{/admin/usuarios/listado}" th:text="#{navbar.usuarios}">Usuarios</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" th:href="@{/admin/actividades/listado}" th:text="#{navbar.actividades}">Actividades</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" th:href="@{/admin/reservaciones/listado}" th:text="#{navbar.reservaciones}">Reservaciones</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" th:href="@{/admin/guias/listado}" th:text="#{navbar.guias}">Guías</a>
+                </li>
             </ul>
 
             <div class="admin-actions">
                 <div class="dropdown">
-                    <button class="btn language-btn dropdown-toggle" type="button" data-bs-toggle="dropdown"
-                            aria-expanded="false">
+                    <button class="btn language-btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" th:text="#{navbar.idiomaActual}">
                         Esp
                     </button>
                     <ul class="dropdown-menu dropdown-menu-end">
-                        <li><a class="dropdown-item" th:href="@{/admin/dashboard(lang=es)}">Español</a></li>
-                        <li><a class="dropdown-item" th:href="@{/admin/dashboard(lang=en)}">English</a></li>
+                        <li><a class="dropdown-item" th:href="@{${#httpServletRequest.requestURI}(lang=es)}" th:text="#{idioma.es}">Español</a></li>
+                        <li><a class="dropdown-item" th:href="@{${#httpServletRequest.requestURI}(lang=en)}" th:text="#{idioma.en}">English</a></li>
+                        <li><a class="dropdown-item" th:href="@{${#httpServletRequest.requestURI}(lang=fr)}" th:text="#{idioma.fr}">Francés</a></li>
+                        <li><a class="dropdown-item" th:href="@{${#httpServletRequest.requestURI}(lang=it)}" th:text="#{idioma.it}">Italiano</a></li>
+                        <li><a class="dropdown-item" th:href="@{${#httpServletRequest.requestURI}(lang=pt)}" th:text="#{idioma.pt}">Portugués</a></li>
                     </ul>
                 </div>
-                <a class="btn logout-btn" th:href="@{/logout}">Cerrar Sesión</a>
+                <a class="btn logout-btn" th:href="@{/logout}" th:text="#{navbar.cerrarSesion}">Cerrar Sesión</a>
             </div>
         </nav>
     </div>

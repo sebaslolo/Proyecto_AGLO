@@ -27,9 +27,14 @@
         <url/>
     </scm>
     <properties>
-        <java.version>26</java.version>
-        <maven.compiler.release>17</maven.compiler.release>
-    </properties>
+    <java.version>26</java.version>
+    <maven.compiler.release>17</maven.compiler.release>
+
+    <!-- Codificación UTF-8 -->
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+</properties>
+   
     
     <dependencies>
         <dependency>
@@ -141,6 +146,14 @@
                     </excludes>
                 </configuration>
             </plugin>
+            
+            <plugin>
+                <artifactId>maven-resources-plugin</artifactId>
+                <version>3.3.1</version>
+                <configuration>
+                    <encoding>UTF-8</encoding>
+                </configuration>
+            </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
@@ -182,6 +195,7 @@
                     </compilerArgs>
                 </configuration>
             </plugin>
+            
         </plugins>
     </build>
 

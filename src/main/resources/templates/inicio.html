@@ -15,18 +15,23 @@
             </div>
             <nav>
                 <ul id="menu">
-                    <li><a class="activo" th:href="@{/inicio}" href="/inicio">Inicio</a></li>
-                    <li><a th:href="@{/inicio#mapa}" href="#mapa">Explora</a></li>
-                    <li><a th:href="@{/inicio#nosotros}" href="#nosotros">Sobre nosotros</a></li>
+                    <li><a class="activo" th:href="@{/inicio}" href="/inicio" th:text="#{menu.inicio}">Inicio</a></li>
+                   <li><a th:href="@{/inicio#mapa}" href="#mapa" th:text="#{menu.explora}">Explora</a></li>
+<li><a th:href="@{/inicio#nosotros}" href="#nosotros" th:text="#{menu.nosotros}">Sobre nosotros</a></li>
                 </ul>
             </nav>
             <div class="usuario">
-                <select aria-label="Idioma">
-                    <option>Esp</option>
-                    <option>Eng</option>
+               <select th:aria-label="#{idioma.selector}" onchange="location = this.value;">
+                    <option th:value="@{/inicio(lang=es)}" th:selected="${#locale.language == 'es'}">Esp</option>
+                    <option th:value="@{/inicio(lang=en)}" th:selected="${#locale.language == 'en'}">Eng</option>
+                    <option th:value="@{/inicio(lang=fr)}" th:selected="${#locale.language == 'fr'}">Fr</option>
+                    <option th:value="@{/inicio(lang=it)}" th:selected="${#locale.language == 'it'}">It</option>
+                    <option th:value="@{/inicio(lang=pt)}" th:selected="${#locale.language == 'pt'}">Pt</option>
                 </select>
-                <button type="button" th:onclick="|location.href='@{/login}'|">Inicio Sesión</button>
+                <button type="button" th:onclick="|location.href='@{/login}'|" th:text="#{plantilla.inicioSesion}">Inicio Sesión</button>
             </div>
+            
+            
             <div id="bars">
                 <i class="fa-solid fa-bars"></i>
             </div>
@@ -38,15 +43,8 @@
                 <div class="hero-content">
                     <div class="hero-line"></div>
                     <div class="hero-text">
-                        <h1>
-                            Bienvenido a <br/>
-                            <span>AGLO</span>
-                        </h1>
-                        <p>
-                            Trabajamos por la conservación de las tortugas marinas
-                            y el manejo responsable del turismo en Ostional,
-                            Costa Rica.
-                        </p>
+                        <h1 th:text="#{inicio.bienvenida}">Bienvenido a AGLO</h1>
+                        <p th:text="#{inicio.descripcion}">Trabajamos por la conservación de las tortugas marinas...</p>
                         <a href="#" class="hero-btn" id="abrirVideo">
                             Ver video
                             <i class="fa-solid fa-circle-play"></i>
