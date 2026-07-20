@@ -40,7 +40,10 @@
                         <li><a class="dropdown-item" th:href="@{${#httpServletRequest.requestURI}(lang=pt)}" th:text="#{idioma.pt}">Portugués</a></li>
                     </ul>
                 </div>
-                <a class="btn logout-btn" th:href="@{/logout}" th:text="#{navbar.cerrarSesion}">Cerrar Sesión</a>
+                <form th:action="@{/logout}" method="post" class="d-inline">
+                    <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+                    <button class="btn logout-btn" type="submit" th:text="#{navbar.cerrarSesion}">Cerrar Sesión</button>
+                </form>
             </div>
         </nav>
     </div>

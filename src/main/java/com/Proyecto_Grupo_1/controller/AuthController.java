@@ -1,17 +1,13 @@
 package com.Proyecto_Grupo_1.controller;
 
-import com.Proyecto_Grupo_1.domain.Usuario;
 import com.Proyecto_Grupo_1.dto.LoginForm;
 import com.Proyecto_Grupo_1.dto.RegistroForm;
 import com.Proyecto_Grupo_1.service.ActividadService;
 import com.Proyecto_Grupo_1.service.EstadoService;
-import com.Proyecto_Grupo_1.service.GuiaService;
 import com.Proyecto_Grupo_1.service.RolService;
 import com.Proyecto_Grupo_1.service.UsuarioRolService;
 import com.Proyecto_Grupo_1.service.UsuarioService;
-import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
-import java.util.List;
 import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.stereotype.Controller;
@@ -20,6 +16,7 @@ import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 @Controller
@@ -30,7 +27,6 @@ public class AuthController {
     private final UsuarioRolService usuarioRolService;
     private final EstadoService estadoService;
     private final RolService rolService;
-    private final GuiaService guiaService;
     private final MessageSource messageSource;
 
     public AuthController(ActividadService actividadService,
@@ -38,14 +34,12 @@ public class AuthController {
             UsuarioRolService usuarioRolService,
             EstadoService estadoService,
             RolService rolService,
-            GuiaService guiaService,
             MessageSource messageSource) {
         this.actividadService = actividadService;
         this.usuarioService = usuarioService;
         this.usuarioRolService = usuarioRolService;
         this.estadoService = estadoService;
         this.rolService = rolService;
-        this.guiaService = guiaService;
         this.messageSource = messageSource;
     }
 
@@ -56,50 +50,19 @@ public class AuthController {
     }
 
     @GetMapping("/login")
-    public String login(Model model) {
+    public String login(@RequestParam(required = false) String error,
+            @RequestParam(required = false) String logout,
+            Model model) {
         if (!model.containsAttribute("loginForm")) {
             model.addAttribute("loginForm", new LoginForm());
         }
-        return "/auth/login";
-    }
-
-    @PostMapping("/login")
-    public String autenticar(@Valid @ModelAttribute LoginForm loginForm,
-            BindingResult bindingResult,
-            HttpSession session,
-            Model model) {
-        if (bindingResult.hasErrors()) {
-            return "/auth/login";
-        }
-        var usuarioOpt = usuarioService.autenticar(loginForm.getCorreo(), loginForm.getPassword());
-        if (usuarioOpt.isEmpty()) {
+        if (error != null) {
             model.addAttribute("error", msg("error.login"));
-            return "/auth/login";
         }
-        Usuario usuario = usuarioOpt.get();
-        if (usuario.getEstado() != null
-                && usuario.getEstado().getNombreEstado() != null
-                && !"activo".equalsIgnoreCase(usuario.getEstado().getNombreEstado())) {
-            model.addAttribute("error", msg("login.error.inactivo"));
-            return "/auth/login";
+        if (logout != null) {
+            model.addAttribute("todoOk", "Sesión cerrada correctamente.");
         }
-
-        List<String> roles = usuarioRolService.getRolesPorUsuario(usuario.getIdUsuario()).stream()
-                .map(usuarioRol -> usuarioRol.getRol().getRol())
-                .toList();
-        session.setAttribute("idUsuario", usuario.getIdUsuario());
-        session.setAttribute("nombreUsuario", usuario.getNombre());
-        session.setAttribute("rolesUsuario", roles);
-        guiaService.getGuiaPorUsuario(usuario.getIdUsuario())
-                .ifPresent(guia -> session.setAttribute("idGuia", guia.getIdGuia()));
-
-        if (tieneRol(roles, "ADMIN")) {
-            return "redirect:/admin/dashboard";
-        }
-        if (tieneRol(roles, "GUIA") || tieneRol(roles, "GUÍA")) {
-            return "redirect:/guia/agenda";
-        }
-        return "redirect:/catalogo/listado";
+        return "/auth/login";
     }
 
     @GetMapping("/registro")
@@ -140,22 +103,10 @@ public class AuthController {
         }
     }
 
-    @GetMapping("/logout")
-    public String logout(HttpSession session, RedirectAttributes redirectAttributes) {
-        session.invalidate();
-        redirectAttributes.addFlashAttribute("todoOk", "Sesión cerrada correctamente.");
-        return "redirect:/login";
-    }
 
     @GetMapping("/forgot-password")
     public String forgotPassword() {
         return "/auth/forgot-password";
-    }
-
-    private boolean tieneRol(List<String> roles, String esperado) {
-        return roles.stream()
-                .map(String::toUpperCase)
-                .anyMatch(rol -> rol.contains(esperado));
     }
 
     private String msg(String key) {

@@ -75,6 +75,10 @@ public class UsuarioController {
             @RequestParam(required = false) Integer idRol,
             Model model,
             RedirectAttributes redirectAttributes) {
+        if (usuario.getIdUsuario() == null
+                && (usuario.getPassword() == null || usuario.getPassword().isBlank())) {
+            bindingResult.rejectValue("password", "usuario.error.password", "La contraseña es obligatoria.");
+        }
         if (!usuarioService.correoDisponible(usuario.getCorreo(), usuario.getIdUsuario())) {
             bindingResult.rejectValue("correo", "usuario.error.correoDuplicado", msg("usuario.error.correoDuplicado"));
         }

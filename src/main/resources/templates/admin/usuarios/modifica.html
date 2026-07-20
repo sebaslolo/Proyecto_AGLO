@@ -22,7 +22,9 @@
                         </div>
                         <div>
                             <label class="form-label" for="password">Contraseña</label>
-                            <input class="form-control" type="text" th:field="*{password}" maxlength="512" required/>
+                            <input class="form-control" type="password" id="password" name="password" maxlength="512"
+                                   th:placeholder="${usuario.idUsuario == null ? 'Contraseña' : 'Dejar en blanco para conservarla'}"
+                                   th:required="${usuario.idUsuario == null}"/>
                         </div>
                         <div>
                             <label class="form-label" for="nombre">Nombre</label>
