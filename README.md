@@ -62,7 +62,7 @@ Antes de ejecutar el proyecto, se requiere contar con:
 - Catalogo de actividades y vista de detalle.
 - Reservaciones, confirmacion de reserva y consulta de mis reservaciones.
 - Panel administrativo.
-- Gestion de usuarios, roles, rutas, actividades, tipos de actividad, guias, asignacion de guias, estados, telefonos y cuentas.
+- Gestion de usuarios, roles, rutas, actividades, tipos de actividad, guias, asignacion de guias y estados.
 - Agenda para guias.
 - Vistas informativas para voluntariados, avistamientos, herramientas y retroalimentacion.
 
