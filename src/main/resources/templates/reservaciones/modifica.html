@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+    <head th:replace="~{aglo/fragmentos :: head('Reservar actividad | AGLO', 'dashboard.css')}"></head>
+    <body class="public-page">
+        <main class="public-main">
+            <section class="public-page-title">
+                <div>
+                    <h1>Reservar actividad</h1>
+                    <p th:text="${actividad.nombreActividad}">Actividad</p>
+                </div>
+                <a class="btn btn-light" th:href="@{/catalogo/detalle/{id}(id=${actividad.idActividad})}">Regresar</a>
+            </section>
+            <section th:replace="~{admin/fragmentos :: mensajes}"></section>
+
+            <section class="detail-layout">
+                <article class="detail-panel">
+                    <img class="detail-image" th:src="${actividad.imagenActividad != null and !actividad.imagenActividad.isEmpty() ? actividad.imagenActividad : (actividad.tipoActividad != null and actividad.tipoActividad.imagenTipoActividad != null and !actividad.tipoActividad.imagenTipoActividad.isEmpty() ? actividad.tipoActividad.imagenTipoActividad : 'https://vivemar.com.mx/wp-content/uploads/2022/01/Vivemar_Liberacion-%E2%80%93-monitoreo-nocturno-new-3.jpg')}" th:alt="${actividad.nombreActividad}"/>
+                    <div class="detail-body">
+                        <h2 th:text="${actividad.nombreActividad}">Actividad</h2>
+                        <div class="catalog-meta">
+                            <span th:text="${actividad.fechaHoraInicio != null ? #temporals.format(actividad.fechaHoraInicio, 'dd/MM/yyyy HH:mm') : 'Fecha por confirmar'}">Fecha</span>
+                            <span th:text="${actividad.precioActual != null ? #numbers.formatCurrency(actividad.precioActual) + ' por persona' : 'Precio por confirmar'}">Precio</span>
+                            <span th:text="${'Cupo disponible: ' + cupoDisponible}">Cupo</span>
+                        </div>
+                    </div>
+                </article>
+
+                <section class="admin-panel">
+                    <div th:if="${error}" class="alert alert-danger" th:text="${error}">Error</div>
+                    <form th:action="@{/reservaciones/guardar}" th:object="${reservacionForm}" method="post" class="was-validated">
+                        <input type="hidden" th:field="*{idActividad}"/>
+                        <div class="mb-3">
+                            <label class="form-label" for="cantidadPersonas">Cantidad de personas</label>
+                            <input class="form-control" type="number" th:field="*{cantidadPersonas}" min="1" th:max="${cupoDisponible}" required/>
+                        </div>
+                        <button class="btn btn-success w-100" type="submit">Confirmar reservación</button>
+                    </form>
+                </section>
+            </section>
+        </main>
+        <th:block th:replace="~{aglo/fragmentos :: scripts('dashboard.js')}"></th:block>
+    </body>
+</html>

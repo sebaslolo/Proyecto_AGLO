@@ -14,17 +14,6 @@ create table fide_estado_tb (
     index ndx_nombre_estado (nombre_estado )
 ) ENGINE = InnoDB;
 
-INSERT INTO fide_estado_tb (nombre_estado) VALUES 
-('Activo'),          
-('Inactivo'),        
-('Pendiente'),       
-('Confirmada'),      
-('Cancelada'),            
-('Completado'),      
-('Disponible');
-
-
-
 create table fide_usuario_tb (
   id_usuario INT NOT NULL AUTO_INCREMENT,
   username varchar(30) NOT NULL UNIQUE,
@@ -143,8 +132,8 @@ create table fide_actividad_detalle_tb(
 create table fide_guia_tb(
     id_guia int not null auto_increment,
     id_usuario int not null,
-    fecha_ingreso datetime,
-    disponibilidad varchar(100),
+    fecha_ingreso date,
+    disponibilidad boolean,
     id_estado int not null,
     fecha_creacion timestamp default current_timestamp,
     fecha_modificacion timestamp default current_timestamp on update current_timestamp,
@@ -260,24 +249,6 @@ create table fide_inventario_tb(
     index ndx_inventario_estado (id_estado)
 ) ENGINE = InnoDB;
 
-INSERT INTO fide_inventario_tb (id_estado, id_producto_codigo, nombre_producto, descripcion_producto, precio_venta, categoria_producto, tipo_producto, stock_actual, tipo_movimiento, cantidad_movimiento, motivo_movimiento, fecha_movimiento) VALUES
-(1, 'ART-001', 'Tortuga de Madera Pequeña', 'Artesanía tallada a mano por artesanos de Ostional', 15.00, 'Artesanías', 'Producto Venta', 25, 'Entrada', 25, 'Recepción de lote artesanal', NOW()),
-(1, 'ART-002', 'Llavero de Resina Tortuguita', 'Llavero conmemorativo de la arribada', 5.00, 'Artesanías', 'Producto Venta', 100, 'Entrada', 100, 'Ingreso stock tienda', NOW()),
-(1, 'ART-003', 'Camiseta Oficial AGLO M', 'Camiseta de algodón con logo de la asociación talla M', 20.00, 'Textil', 'Producto Venta', 30, 'Entrada', 30, 'Abastecimiento de uniformes/tienda', NOW()),
-(1, 'ART-004', 'Camiseta Oficial AGLO L', 'Camiseta de algodón con logo de la asociación talla L', 20.00, 'Textil', 'Producto Venta', 30, 'Entrada', 30, 'Abastecimiento de uniformes/tienda', NOW()),
-(1, 'ART-005', 'Gorra Bordada', 'Gorra con protección solar ajustable', 12.50, 'Textil', 'Producto Venta', 40, 'Entrada', 40, 'Compra a proveedor local', NOW()),
-(1, 'ART-008', 'Bolso de Manta Ecológico', 'Bolso reutilizable para caminatas en la playa', 10.00, 'Textil', 'Producto Venta', 50, 'Entrada', 50, 'Ingreso stock tienda', NOW()),
-(1, 'ART-009', 'Pulsera de Tortuga', 'Pulsera de hilo hecha por familias locales', 4.00, 'Artesanías', 'Producto Venta', 150, 'Entrada', 150, 'Recepción lote artesanal', NOW()),
-(1, 'MAT-012', 'Malla de Protección', 'Malla plástica para proteger nidos contra depredadores', 0.00, 'Conservación', 'Insumo Interno', 60, 'Entrada', 60, 'Compra operativa', NOW()),
-(1, 'MAT-013', 'Guantes de Látex Caja', 'Caja de 100 guantes para manipulación segura', 0.00, 'Protección', 'Insumo Interno', 15, 'Entrada', 15, 'Abastecimiento voluntariado', NOW()),
-(1, 'MAT-014', 'Bolsas para Conteo Lora', 'Bolsas especiales para recolección de muestras biológicas', 0.00, 'Investigación', 'Insumo Interno', 500, 'Entrada', 500, 'Suministros biológicos', NOW()),
-(1, 'MAT-015', 'Foco de Luz Roja LED', 'Linterna de luz roja que no afecta a las tortugas', 18.00, 'Monitoreo', 'Insumo Interno', 25, 'Entrada', 25, 'Compra de equipos guía', NOW()),
-(1, 'MAT-016', 'Baterías AAA Recargables', 'Paquete de 4 pilas para linternas de monitoreo', 0.00, 'Energía', 'Insumo Interno', 20, 'Entrada', 20, 'Compra insumos', NOW()),
-(1, 'MAT-017', 'Libreta de Campo Impermeable', 'Libreta Rite in the Rain para apuntes bajo la lluvia', 0.00, 'Monitoreo', 'Insumo Interno', 30, 'Entrada', 30, 'Dotación para guías', NOW()),
-(1, 'MAT-018', 'Cinta Métrica de Fibra 5m', 'Cinta métrica para medir el caparazón de la tortuga', 0.00, 'Investigación', 'Insumo Interno', 12, 'Entrada', 12, 'Adquisición científica', NOW()),
-(1, 'MAT-019', 'Líquido Desinfectante Galón', 'Para limpieza de calzado y herramientas post-monitoreo', 0.00, 'Limpieza', 'Insumo Interno', 8, 'Entrada', 8, 'Mantenimiento de estación', NOW()),
-
-
 
 create table fide_herramientas_tb(
     id_herramienta_registro int not null auto_increment,
@@ -301,25 +272,6 @@ create table fide_herramientas_tb(
 ) ENGINE = InnoDB;
 
 
-
-INSERT INTO fide_herramientas_tb (id_usuario, id_estado, nombre_herramienta, descripcion_herramienta, codigo_patrimonio_placa, categoria_herramienta, fecha_prestamo, fecha_devolucion_prevista, observaciones_entrega) VALUES
-(1, 15, 'Cinta Métrica Ergonómica', 'Cinta flexible para medición de caparazones', 'AGLO-HER-001', 'Investigación', NOW(), '2026-07-06 04:00:00', 'Entregado en estuche plástico'),
-(1, 15, 'Linterna Luz Roja Nocturna', 'Linterna frontal con filtro rojo regulable', 'AGLO-HER-002', 'Monitoreo', NOW(), '2026-07-06 04:00:00', 'Carga de batería completa'),
-(1, 15, 'Linterna Luz Roja Nocturna', 'Linterna frontal con filtro rojo regulable', 'AGLO-HER-003', 'Monitoreo', NOW(), '2026-07-06 04:00:00', 'Detalle de desgaste en correa'),
-(1, 15, 'GPS Portátil', 'Dispositivo de geolocalización para nidos de tortuga', 'AGLO-HER-006', 'Investigación', NOW(), '2026-07-06 06:00:00', 'Pantalla con protector, pilas cargadas'),
-(1, 15, 'Pala de Punta Plástica', 'Pala ligera para remoción cuidadosa de arena', 'AGLO-HER-007', 'Voluntariado', NOW(), '2026-07-05 12:00:00', 'Limpia'),
-(1, 15, 'Rastrillo para Limpieza', 'Rastrillo metálico para remover microplásticos de la playa', 'AGLO-HER-009', 'Voluntariado', NOW(), '2026-07-05 12:00:00', 'Dientes completos'),
-(1, 15, 'Kit de Primeros Auxilios', 'Botiquín portátil de marcha para patrullas nocturnas', 'AGLO-HER-013', 'Seguridad', NOW(), '2026-07-06 06:00:00', 'Completo con insumos vigentes'),
-(1, 15, 'Megáfono Portátil 20W', 'Megáfono para manejo e instrucciones de grupos de turistas', 'AGLO-HER-014', 'Turismo', NOW(), '2026-07-05 22:00:00', 'Probado el sonido'),
-(1, 15, 'Termómetro de Arena', 'Termómetro de sonda larga para medir temperatura del nido', 'AGLO-HER-016', 'Investigación', NOW(), '2026-07-06 04:00:00', 'Sonda desinfectada'),
-(1, 15, 'Radio Transmisor', 'Radio VHF para comunicación entre cuadrillas de guías', 'AGLO-HER-020', 'Seguridad', NOW(), '2026-07-06 06:00:00', 'Antena flexible nueva'),
-(1, 15, 'Cámara Fotográfica de Campo', 'Cámara compacta a prueba de agua para registro de anomalías', 'AGLO-HER-021', 'Investigación', NOW(), '2026-07-06 05:00:00', 'Tarjeta SD limpia 32GB'),
-(1, 15, 'Malla Metálica de Muestra', 'Estructura cilíndrica piloto para nidos de control', 'AGLO-HER-022', 'Conservación', NOW(), '2026-07-06 02:00:00', 'Ligeramente oxidada'),
-(1, 15, 'Foco Luz Blanca de Emergencia', 'Reflector potente únicamente para emergencias o rescates', 'AGLO-HER-024', 'Seguridad', '2026-07-05 18:00:00', '2026-07-06 06:00:00', 'Prohibido usar frente a tortugas desovando'),
-(1, 15, 'Tablilla con Clip de Campo', 'Soporte acrílico para hojas de conteo de voluntarios', 'AGLO-HER-025', 'Monitoreo', NOW(), '2026-07-05 23:00:00', 'Lápiz de grafito atado');
-(1, 15, 'Balanza Digital', 'Balanza portátil para pesar muestras o nidos colapsados', 'AGLO-HER-026', 'Investigación', NOW(), '2026-07-06 04:00:00', 'Capacidad hasta 20kg')
-
-
 create table fide_formulario_tb(
     id_formulario_registro int not null auto_increment,
     id_usuario int not null, 
@@ -341,11 +293,197 @@ create table fide_formulario_tb(
     index ndx_formulario_estado (id_estado)
 ) ENGINE = InnoDB;
 
-INSERT INTO fide_formulario_tb (id_usuario, id_actividad, id_estado, id_solicitud_codigo, tipo_solicitud_formulario, id_pregunta_ref, texto_pregunta, tipo_respuesta_esperada, valor_respuesta_llenada) VALUES
-(1, 101, 1, 'FORM-2026-01', 'Retroalimentación Voluntariado', 1, 'Califique la experiencia general del 1 al 5', 'Número', '5'),
-(1, 101, 1, 'FORM-2026-02', 'Inscripción Voluntariado', 4, '¿Tiene experiencia previa en manejo de tortugas?', 'Booleano', 'No'),
-(1, 102, 1, 'FORM-2026-03', 'Reporte Avistamiento', 7, 'Especie de tortuga identificada', 'Opciones', 'Tortuga Lora (Lepidochelys olivacea)')(1, 102, 1, 'FORM-2026-03', 'Reporte Avistamiento', 9, 'Comportamiento predominante observado', 'Texto corto', 'Desove masivo fluido'),
-(1, 103, 1, 'FORM-2026-05', 'Control Herramientas', 11, '¿Alguna herramienta presentó fallas?', 'Booleano', 'Sí'),(1, 102, 1, 'FORM-2026-07', 'Reporte Avistamiento', 8, 'Estimado de tortugas en el sector asignado', 'Número', '2'),
-(1, 101, 1, 'FORM-2026-08', 'Retroalimentación Voluntariado', 1, 'Califique la experiencia general del 1 al 5', 'Número', '5'),
+INSERT INTO fide_estado_tb (nombre_estado) VALUES
+('Activo'),
+('Inactivo'),
+('Pendiente'),
+('Confirmada'),
+('Cancelada'),
+('Completado'),
+('Disponible');
 
+INSERT INTO fide_rol_tb (rol) VALUES
+('ADMIN'),
+('GUIA'),
+('CLIENTE');
 
+INSERT INTO fide_ruta_tb (ruta, id_rol, requiere_rol) VALUES
+('/admin/**', 1, TRUE),
+('/guia/**', 2, TRUE),
+('/reservaciones/nueva', 3, TRUE),
+('/reservaciones/guardar', 3, TRUE),
+('/reservaciones/confirmacion/**', 3, TRUE),
+('/mis-reservaciones', 3, TRUE),
+('/mis-reservaciones/**', 3, TRUE),
+('/', NULL, FALSE),
+('/inicio', NULL, FALSE),
+('/login', NULL, FALSE),
+('/registro/**', NULL, FALSE),
+('/forgot-password', NULL, FALSE),
+('/catalogo/**', NULL, FALSE),
+('/avistamientos/**', NULL, FALSE),
+('/herramientas/**', NULL, FALSE),
+('/retroalimentacion/**', NULL, FALSE),
+('/voluntariados/**', NULL, FALSE),
+('/css/**', NULL, FALSE),
+('/js/**', NULL, FALSE),
+('/img/**', NULL, FALSE),
+('/webjars/**', NULL, FALSE),
+('/logout', NULL, FALSE);
+
+INSERT INTO fide_usuario_tb
+(username, password, nombre, apellido_paterno, apellido_materno, correo, telefono, id_estado)
+VALUES
+('juan.garcia',      'J7@mP2x!', 'Juan',      'Garcia',      'Lopez',      'juan.garcia@gmail.com',      '612345678', 1),
+('maria.martinez',   'M#8kL5q$', 'Maria',     'Martinez',    'Gomez',      'maria.martinez@gmail.com',   '622345679', 2),
+('carlos.lopez',     'C9&vR1t*', 'Carlos',    'Lopez',       'Perez',      'carlos.lopez@gmail.com',     '632345680', 1),
+('ana.rodriguez',    'A4!nW7z%', 'Ana',       'Rodriguez',   'Fernandez',  'ana.rodriguez@gmail.com',    '642345681', 2),
+('luis.fernandez',   'L2@xH8m&', 'Luis',      'Fernandez',   'Gonzalez',   'luis.fernandez@gmail.com',   '652345682', 1),
+('elena.gonzalez',   'E6$pT3k#', 'Elena',     'Gonzalez',    'Sanchez',    'elena.gonzalez@gmail.com',   '662345683', 2),
+('pedro.perez',      'P1%yN9c!', 'Pedro',     'Perez',       'Ruiz',       'pedro.perez@gmail.com',      '672345684', 1),
+('sofia.sanchez',    'S5&wQ2j$', 'Sofia',     'Sanchez',     'Ramirez',    'sofia.sanchez@gmail.com',    '682345685', 2),
+('miguel.ruiz',      'M8!dF4v@', 'Miguel',    'Ruiz',        'Torres',     'miguel.ruiz@gmail.com',      '692345686', 1),
+('isabel.ramirez',   'I3#uX7n%', 'Isabel',    'Ramirez',     'Flores',     'isabel.ramirez@gmail.com',   '702345687', 2),
+('jose.torres',      'J9*tB5r&', 'Jose',      'Torres',      'Rivera',     'jose.torres@gmail.com',      '712345688', 1),
+('lucia.flores',     'L4@gC8p!', 'Lucia',     'Flores',      'Morales',    'lucia.flores@gmail.com',     '722345689', 2),
+('antonio.rivera',   'A7$hZ1m*', 'Antonio',   'Rivera',      'Ortiz',      'antonio.rivera@gmail.com',   '732345690', 1),
+('david.solis',      'D8@qL2w!', 'David',     'Solis',       'Castro',     'david.solis@gmail.com',      '742345691', 2),
+('nicole.vargas',    'N4#zX8m$', 'Nicole',    'Vargas',      'Jimenez',    'nicole.vargas@gmail.com',    '752345692', 1),
+('bianca.solano',    'B7%rP3k&', 'Bianca',    'Solano',      'Mora',       'bianca.solano@gmail.com',    '762345693', 2),
+('sebastian.castro', 'S2!nV6t@', 'Sebastian', 'Castro',      'Rojas',      'sebastian.castro@gmail.com', '772345694', 1),
+('andres.mora',      'A9&gW4p#', 'Andres',    'Mora',        'Vega',       'andres.mora@gmail.com',      '782345695', 2),
+('paula.vega',       'P3@dF8x!', 'Paula',     'Vega',        'Salas',      'paula.vega@gmail.com',       '792345696', 1),
+('kevin.salas',      'K6#hJ1q$', 'Kevin',     'Salas',       'Leon',       'kevin.salas@gmail.com',      '802345697', 2),
+('laura.leon',       'L5%yM9w*', 'Laura',     'Leon',        'Acosta',     'laura.leon@gmail.com',       '812345698', 1),
+('jorge.acosta',     'J2@uT7k&', 'Jorge',     'Acosta',      'Herrera',    'jorge.acosta@gmail.com',     '822345699', 2),
+('karla.herrera',    'K8!bR3n#', 'Karla',     'Herrera',     'Campos',     'karla.herrera@gmail.com',    '832345700', 1),
+('diego.campos',     'D4$pX6m%', 'Diego',     'Campos',      'Navarro',    'diego.campos@gmail.com',     '842345701', 2),
+('adriana.navarro',  'A1&vL8t!', 'Adriana',   'Navarro',     'Mendez',     'adriana.navarro@gmail.com',  '852345702', 1),
+('roberto.mendez',   'R9@gQ5c$', 'Roberto',   'Mendez',      'Aguilar',    'roberto.mendez@gmail.com',   '862345703', 2),
+('daniela.aguilar',  'D7#kH2z*', 'Daniela',   'Aguilar',     'Cordero',    'daniela.aguilar@gmail.com',  '872345704', 1),
+('ricardo.cordero',  'R5!mN4x&', 'Ricardo',   'Cordero',     'Araya',      'ricardo.cordero@gmail.com',  '882345705', 2),
+('gabriela.araya',   'G3%pW7j@', 'Gabriela',  'Araya',       'Monge',      'gabriela.araya@gmail.com',   '892345706', 1),
+('oscar.monge',      'O6$tY1q#', 'Oscar',     'Monge',       'Quesada',    'oscar.monge@gmail.com',      '902345707', 2),
+('valeria.quesada',  'V8@rC5m!', 'Valeria',   'Quesada',     'Alfaro',     'valeria.quesada@gmail.com',  '912345708', 1),
+('fernando.alfaro',  'F2#nD9x$', 'Fernando',  'Alfaro',      'Esquivel',   'fernando.alfaro@gmail.com',  '922345709', 2),
+('camila.esquivel',  'C4&wH6k%', 'Camila',    'Esquivel',    'Blanco',     'camila.esquivel@gmail.com',  '932345710', 1),
+('eduardo.blanco',   'E1!vP8t&', 'Eduardo',   'Blanco',      'Chaves',     'eduardo.blanco@gmail.com',   '942345711', 2),
+('patricia.chaves',  'P9@xJ3m*', 'Patricia',  'Chaves',      'Nunez',      'patricia.chaves@gmail.com',  '952345712', 1),
+('sergio.nunez',     'S7#qL5c!', 'Sergio',    'Nunez',       'Porras',     'sergio.nunez@gmail.com',     '962345713', 2),
+('monica.porras',    'M5%zR2w$', 'Monica',    'Porras',      'Soto',       'monica.porras@gmail.com',    '972345714', 1),
+('cristian.soto',    'C8&tF4k@', 'Cristian',  'Soto',        'Valverde',   'cristian.soto@gmail.com',    '982345715', 2),
+('alicia.valverde',  'A6!hN1p#', 'Alicia',    'Valverde',    'Rojas',      'alicia.valverde@gmail.com',  '992345716', 1),
+('esteban.rojas',    'E3@dM7x%', 'Esteban',   'Rojas',       'Jimenez',    'esteban.rojas@gmail.com',    '602345717', 2),
+('veronica.jimenez', 'V4&yK9q!', 'Veronica',  'Jimenez',     'Solis',      'veronica.jimenez@gmail.com', '612345718', 1),
+('adrian.arias',     'A8#uP2m$', 'Adrian',    'Arias',       'Vargas',     'adrian.arias@gmail.com',     '622345719', 2),
+('melissa.diaz',     'M1%gT6w*', 'Melissa',   'Diaz',        'Rojas',      'melissa.diaz@gmail.com',     '632345720', 1),
+('hector.ortega',    'H9@bL5n&', 'Hector',    'Ortega',      'Lopez',      'hector.ortega@gmail.com',    '642345721', 2),
+('ximena.marin',     'X2!kC8p#', 'Ximena',    'Marin',       'Campos',     'ximena.marin@gmail.com',     '652345722', 1),
+('fabian.guerrero',  'F7$rW3x%', 'Fabian',    'Guerrero',    'Soto',       'fabian.guerrero@gmail.com',  '662345723', 2),
+('carolina.reyes',   'C5&nJ1t@', 'Carolina',  'Reyes',       'Perez',      'carolina.reyes@gmail.com',   '672345724', 1),
+('manuel.espinoza',  'M3#vH9m!', 'Manuel',    'Espinoza',    'Vega',       'manuel.espinoza@gmail.com',  '682345725', 2),
+('tatiana.molina',   'T6@qX4k$', 'Tatiana',   'Molina',      'Castillo',   'tatiana.molina@gmail.com',   '692345726', 1);
+
+INSERT INTO fide_usuario_rol_tb (id_usuario, id_rol) VALUES
+(1, 2),
+(2, 2),
+(3, 2),
+(4, 2),
+(5, 2),
+(6, 2),
+(7, 2),
+(8, 2),
+(9, 2),
+(10, 2),
+(11, 2),
+(12, 2),
+(13, 3),
+(14, 3),
+(15, 3),
+(16, 3),
+(17, 3),
+(18, 3),
+(19, 3),
+(20, 3),
+(21, 3),
+(22, 3),
+(23, 3),
+(24, 3),
+(25, 3),
+(26, 3),
+(27, 3),
+(28, 3),
+(29, 3),
+(30, 3),
+(31, 3),
+(32, 3),
+(33, 3),
+(34, 3),
+(35, 3),
+(36, 3),
+(37, 3),
+(38, 3),
+(39, 3),
+(40, 3),
+(41, 3),
+(42, 3),
+(43, 3),
+(44, 3),
+(45, 3),
+(46, 3),
+(47, 3),
+(48, 3),
+(49, 1);
+
+INSERT INTO fide_tipo_actividad_tb
+(nombre_tipo_actividad, descripcion_tipo_actividad, precio_base, duracion_estimada, imagen_tipo_actividad, id_estado)
+VALUES
+('Liberacion de tortugas', 'Acompanamiento guiado durante liberaciones controladas en Playa Ostional.', 12000.00, '2 horas', 'https://vivemar.com.mx/wp-content/uploads/2022/01/Vivemar_Liberacion-%E2%80%93-monitoreo-nocturno-new-3.jpg', 1),
+('Senderismo costero', 'Recorrido interpretativo por senderos y miradores cercanos a la comunidad.', 18000.00, '3 horas', 'https://wpapi.larepublica.net/wp-content/uploads/2018/09/20180926141859.trekking.jpg', 1),
+('Avistamiento nocturno', 'Observacion responsable de fauna y actividad de anidacion con guia local.', 20000.00, '2.5 horas', 'https://www.ucr.ac.cr/medios/fotos/2021/nin%CC%83os-y-tortugas-lora6125434704b16.jpeg', 1),
+('Voluntariado ambiental', 'Jornada comunitaria de limpieza, educacion ambiental y conservacion.', 5000.00, '4 horas', 'https://juventud.gob.do/wp-content/uploads/2023/03/Playita-con-bolsa-scaled.jpg', 1);
+
+INSERT INTO fide_actividad_tb
+(id_tipo_actividad, nombre_actividad, fecha_hora_inicio, fecha_hora_fin, cupo_maximo, precio_actual, imagen_actividad, id_estado)
+VALUES
+(1, 'Liberacion familiar de tortugas', '2026-08-15 16:30:00', '2026-08-15 18:30:00', 24, 12000.00, 'https://vivemar.com.mx/wp-content/uploads/2022/01/Vivemar_Liberacion-%E2%80%93-monitoreo-nocturno-new-3.jpg', 1),
+(2, 'Sendero Mirador Ostional', '2026-08-18 07:00:00', '2026-08-18 10:00:00', 18, 18000.00, 'https://wpapi.larepublica.net/wp-content/uploads/2018/09/20180926141859.trekking.jpg', 1),
+(3, 'Tour nocturno de anidacion', '2026-08-21 19:00:00', '2026-08-21 21:30:00', 16, 20000.00, 'https://www.ucr.ac.cr/medios/fotos/2021/nin%CC%83os-y-tortugas-lora6125434704b16.jpeg', 1),
+(4, 'Limpieza comunitaria de playa', '2026-08-24 08:00:00', '2026-08-24 12:00:00', 30, 5000.00, 'https://juventud.gob.do/wp-content/uploads/2023/03/Playita-con-bolsa-scaled.jpg', 1),
+(1, 'Charla y liberacion al atardecer', '2026-08-28 16:00:00', '2026-08-28 18:00:00', 20, 14000.00, 'https://d16ice5q223i7e.cloudfront.net/wp-content/uploads/2026/03/24034625/2021-08-Simbiosis-Ostional-InfoFotos-mqcphoto-019.jpg', 1);
+
+INSERT INTO fide_guia_tb (id_usuario, fecha_ingreso, disponibilidad, id_estado) VALUES
+(1, '2023-01-15', TRUE, 1),
+(2, '2023-02-20', FALSE, 1),
+(3, '2023-03-05', TRUE, 1),
+(4, '2023-04-10', TRUE, 1),
+(5, '2023-05-25', FALSE, 1),
+(6, '2023-06-30', TRUE, 1),
+(7, '2023-07-15', FALSE, 1),
+(8, '2023-08-20', TRUE, 1),
+(9, '2023-09-05', TRUE, 1),
+(10, '2023-10-10', FALSE, 1),
+(11, '2023-11-15', TRUE, 1),
+(12, '2023-12-20', FALSE, 1);
+
+INSERT INTO fide_actividad_guia_tb (id_actividad, id_guia, fecha_asignacion, id_estado) VALUES
+(1, 1, '2026-07-01 08:00:00', 1),
+(1, 2, '2026-07-01 08:00:00', 1),
+(2, 3, '2026-07-01 08:00:00', 1),
+(3, 4, '2026-07-01 08:00:00', 1),
+(4, 5, '2026-07-01 08:00:00', 1),
+(5, 6, '2026-07-01 08:00:00', 1);
+
+INSERT INTO fide_voluntariado_tb (id_usuario, id_estado, fecha_ingreso, disponibilidad) VALUES
+(13, 1, '2023-01-15', 'Lunes a Viernes'),
+(14, 1, '2023-02-20', 'Fines de Semana'),
+(15, 1, '2023-03-05', 'Lunes a Viernes'),
+(16, 1, '2023-04-10', 'Fines de Semana'),
+(17, 1, '2023-05-25', 'Lunes a Viernes'),
+(18, 1, '2023-06-30', 'Fines de Semana'),
+(19, 1, '2023-07-15', 'Lunes a Viernes'),
+(20, 1, '2023-08-20', 'Fines de Semana'),
+(21, 1, '2023-09-05', 'Lunes a Viernes'),
+(22, 1, '2023-10-10', 'Fines de Semana'),
+(23, 1, '2023-11-15', 'Lunes a Viernes'),
+(24, 1, '2023-12-20', 'Fines de Semana');

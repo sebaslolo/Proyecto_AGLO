@@ -4,13 +4,13 @@ import com.Proyecto_Grupo_1.domain.Actividad;
 import com.Proyecto_Grupo_1.domain.ActividadGuia;
 import com.Proyecto_Grupo_1.domain.ActividadGuiaId;
 import com.Proyecto_Grupo_1.domain.Estado;
-import com.Proyecto_Grupo_1.domain.Usuario;
+import com.Proyecto_Grupo_1.domain.Guia;
 import com.Proyecto_Grupo_1.repository.ActividadGuiaRepository;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
-import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -18,12 +18,19 @@ import org.springframework.validation.annotation.Validated;
 
 @Service
 @Validated
-@RequiredArgsConstructor
 public class GuiaActividadService {
 
     private final ActividadGuiaRepository actividadGuiaRepository;
     private final ActividadService actividadService;
-    private final UsuarioService usuarioService;
+    private final GuiaService guiaService;
+
+    public GuiaActividadService(ActividadGuiaRepository actividadGuiaRepository,
+            ActividadService actividadService,
+            GuiaService guiaService) {
+        this.actividadGuiaRepository = actividadGuiaRepository;
+        this.actividadService = actividadService;
+        this.guiaService = guiaService;
+    }
 
     @Transactional(readOnly = true)
     public List<ActividadGuia> getAsignacionesPorActividad(Integer idActividad) {
@@ -31,41 +38,42 @@ public class GuiaActividadService {
     }
 
     @Transactional(readOnly = true)
-    public List<ActividadGuia> getAsignacionesPorGuia(Integer idUsuario) {
-        return actividadGuiaRepository.findByGuiaIdUsuario(idUsuario);
+    public List<ActividadGuia> getAsignacionesPorGuia(Integer idGuia) {
+        return actividadGuiaRepository.findByGuiaIdGuia(idGuia);
     }
 
     @Transactional(readOnly = true)
-    public Optional<ActividadGuia> getAsignacion(Integer idActividad, Integer idUsuario) {
-        return actividadGuiaRepository.findById(new ActividadGuiaId(idActividad, idUsuario));
+    public Optional<ActividadGuia> getAsignacion(Integer idActividad, Integer idGuia) {
+        return actividadGuiaRepository.findById(new ActividadGuiaId(idActividad, idGuia));
     }
 
     @Transactional
-    public ActividadGuia save(@NotNull Integer idActividad, @NotNull Integer idUsuario, @Valid @NotNull Estado estado) {
-        return asignarGuia(idActividad, idUsuario, estado);
+    public ActividadGuia save(@NotNull Integer idActividad, @NotNull Integer idGuia, @Valid @NotNull Estado estado) {
+        return asignarGuia(idActividad, idGuia, estado);
     }
 
     @Transactional
-    public ActividadGuia asignarGuia(@NotNull Integer idActividad, @NotNull Integer idUsuario, @Valid @NotNull Estado estado) {
-        ActividadGuiaId id = new ActividadGuiaId(idActividad, idUsuario);
+    public ActividadGuia asignarGuia(@NotNull Integer idActividad, @NotNull Integer idGuia, @Valid @NotNull Estado estado) {
+        ActividadGuiaId id = new ActividadGuiaId(idActividad, idGuia);
         if (actividadGuiaRepository.existsById(id)) {
             throw new IllegalArgumentException("El guia ya esta asignado a esta actividad");
         }
 
         Actividad actividad = actividadService.obtenerActividad(idActividad);
-        Usuario guia = usuarioService.obtenerUsuario(idUsuario);
+        Guia guia = guiaService.obtenerGuia(idGuia);
 
         ActividadGuia actividadGuia = new ActividadGuia();
         actividadGuia.setId(id);
         actividadGuia.setActividad(actividad);
         actividadGuia.setGuia(guia);
+        actividadGuia.setFechaAsignacion(LocalDateTime.now());
         actividadGuia.setEstado(estado);
         return actividadGuiaRepository.save(actividadGuia);
     }
 
     @Transactional
-    public void delete(Integer idActividad, Integer idUsuario) {
-        ActividadGuiaId id = new ActividadGuiaId(idActividad, idUsuario);
+    public void delete(Integer idActividad, Integer idGuia) {
+        ActividadGuiaId id = new ActividadGuiaId(idActividad, idGuia);
         if (!actividadGuiaRepository.existsById(id)) {
             throw new IllegalArgumentException("La asignacion de guia no existe.");
         }
@@ -77,8 +85,8 @@ public class GuiaActividadService {
     }
 
     @Transactional
-    public void removerGuia(Integer idActividad, Integer idUsuario) {
-        delete(idActividad, idUsuario);
+    public void removerGuia(Integer idActividad, Integer idGuia) {
+        delete(idActividad, idGuia);
     }
 
     @Transactional(readOnly = true)
@@ -87,7 +95,7 @@ public class GuiaActividadService {
     }
 
     @Transactional(readOnly = true)
-    public List<ActividadGuia> listarActividadesPorGuia(Integer idUsuario) {
-        return getAsignacionesPorGuia(idUsuario);
+    public List<ActividadGuia> listarActividadesPorGuia(Integer idGuia) {
+        return getAsignacionesPorGuia(idGuia);
     }
 }

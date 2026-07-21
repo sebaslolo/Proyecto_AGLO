@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="es"
+      xmlns:th="http://www.thymeleaf.org">
+    <head th:replace="~{aglo/fragmentos :: head('Crear Cuenta | AGLO', 'registro.css')}"></head>
+
+    <body>
+        <section class="fondo">
+            <div class="overlay"></div>
+
+            <header class="navbar">
+                <div class="logo">
+                    <img th:src="@{/img/logoAglo.png}" src="/img/logoAglo.png" alt="Logo AGLO"/>
+                    <h2>AGLO</h2>
+                </div>
+
+                <nav>
+                    <a th:href="@{/login}" href="/login" class="btnLogin">
+                        Inicio Sesión
+                    </a>
+                    <a th:href="@{/registro}" href="/registro" class="btnRegistro">
+                        Registrarse
+                    </a>
+                </nav>
+            </header>
+
+            <main class="contenedor">
+                <div class="cardRegistro">
+                    <h1>Crear cuenta</h1>
+                    <div th:if="${error}" class="alert alert-danger" role="alert" th:text="${error}">Error</div>
+                    <form id="formRegistro" th:action="@{/registro}" th:object="${registroForm}" action="/registro" method="post">
+                        <div class="grupo">
+                            <label for="username">Usuario</label>
+                            <input
+                                type="text"
+                                id="username"
+                                th:field="*{username}"
+                                maxlength="30"
+                                placeholder="Ej. maria.lopez"/>
+                            <small id="errorUsername" th:text="${#fields.hasErrors('username')} ? 'Usuario inválido o duplicado.' : ''"></small>
+                        </div>
+
+                        <div class="grupo">
+                            <label for="nombre">Nombre</label>
+                            <input
+                                type="text"
+                                id="nombre"
+                                th:field="*{nombre}"
+                                maxlength="20"
+                                placeholder="Ej. María"/>
+                            <small id="errorNombre" th:text="${#fields.hasErrors('nombre')} ? 'Ingrese su nombre.' : ''"></small>
+                        </div>
+
+                        <div class="grupo">
+                            <label for="apellidoPaterno">Apellido paterno</label>
+                            <input
+                                type="text"
+                                id="apellidoPaterno"
+                                th:field="*{apellidoPaterno}"
+                                maxlength="30"
+                                placeholder="Ej. López"/>
+                            <small id="errorApellidoPaterno" th:text="${#fields.hasErrors('apellidoPaterno')} ? 'Ingrese su apellido paterno.' : ''"></small>
+                        </div>
+
+                        <div class="grupo">
+                            <label for="apellidoMaterno">Apellido materno</label>
+                            <input
+                                type="text"
+                                id="apellidoMaterno"
+                                th:field="*{apellidoMaterno}"
+                                maxlength="30"
+                                placeholder="Opcional"/>
+                            <small id="errorApellidoMaterno" th:text="${#fields.hasErrors('apellidoMaterno')} ? 'Máximo 30 caracteres.' : ''"></small>
+                        </div>
+
+                        <div class="grupo">
+                            <label for="correo">Correo electrónico</label>
+                            <input
+                                type="email"
+                                id="correo"
+                                th:field="*{correo}"
+                                maxlength="75"
+                                placeholder="ejemplo@correo.com"/>
+                            <small id="errorCorreo" th:text="${#fields.hasErrors('correo')} ? 'Correo electrónico inválido o duplicado.' : ''"></small>
+                        </div>
+
+                        <div class="grupo">
+                            <label for="telefono">Teléfono</label>
+                            <input
+                                type="tel"
+                                id="telefono"
+                                th:field="*{telefono}"
+                                maxlength="25"
+                                placeholder="Opcional"/>
+                            <small id="errorTelefono" th:text="${#fields.hasErrors('telefono')} ? 'Máximo 25 caracteres.' : ''"></small>
+                        </div>
+
+                        <div class="grupo">
+                            <label for="password">Contraseña</label>
+                            <div class="inputPassword">
+                                <input
+                                type="password"
+                                id="password"
+                                th:field="*{password}"
+                                placeholder="********"/>
+                                <i class="fa-regular fa-eye-slash ojo"></i>
+                            </div>
+                            <small id="errorPassword" th:text="${#fields.hasErrors('password')} ? 'Debe tener mínimo 8 caracteres.' : ''"></small>
+                        </div>
+
+                        <div class="grupo">
+                            <label for="confirmar">Confirmar contraseña</label>
+                            <div class="inputPassword">
+                                <input
+                                type="password"
+                                id="confirmar"
+                                th:field="*{confirmar}"
+                                placeholder="********"/>
+                                <i class="fa-regular fa-eye-slash ojo"></i>
+                            </div>
+                            <small id="errorConfirmar" th:text="${#fields.hasErrors('confirmar')} ? 'Las contraseñas no coinciden.' : ''"></small>
+                        </div>
+
+                        <button type="submit" class="btnCrear">
+                            Registrarse
+                        </button>
+
+                        <p class="login">
+                            ¿Ya tienes cuenta?
+                            <a th:href="@{/login}" href="/login">Inicia sesión</a>
+                        </p>
+                    </form>
+                </div>
+            </main>
+
+            <a th:href="@{/inicio}" href="/inicio" class="flecha" aria-label="Volver al inicio">
+                <i class="fa-solid fa-chevron-right"></i>
+            </a>
+        </section>
+
+        <th:block th:replace="~{aglo/fragmentos :: scripts('registro.js')}"></th:block>
+    </body>
+</html>

@@ -1,0 +1,18 @@
+<head xmlns:th="http://www.thymeleaf.org" th:fragment="head(titulo, hojaCss)">
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title th:text="${titulo}">AGLO</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com"/>
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+
+    <link th:href="@{/webjars/bootstrap/css/bootstrap.min.css}" rel="stylesheet"/>
+    <link th:href="@{/webjars/font-awesome/css/all.css}" rel="stylesheet"/>
+    <link th:href="@{/css/aglo/{archivo}(archivo=${hojaCss})}" rel="stylesheet"/>
+</head>
+
+<th:block xmlns:th="http://www.thymeleaf.org" th:fragment="scripts(archivoJs)">
+    <script th:src="@{/webjars/bootstrap/js/bootstrap.bundle.min.js}"></script>
+    <script th:src="@{/js/aglo/{archivo}(archivo=${archivoJs})}"></script>
+</th:block>

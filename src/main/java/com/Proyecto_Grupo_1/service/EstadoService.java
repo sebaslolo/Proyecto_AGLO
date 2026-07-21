@@ -5,7 +5,6 @@ import com.Proyecto_Grupo_1.repository.EstadoRepository;
 import jakarta.validation.Valid;
 import java.util.List;
 import java.util.Optional;
-import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -13,10 +12,13 @@ import org.springframework.validation.annotation.Validated;
 
 @Service
 @Validated
-@RequiredArgsConstructor
 public class EstadoService {
 
     private final EstadoRepository estadoRepository;
+
+    public EstadoService(EstadoRepository estadoRepository) {
+        this.estadoRepository = estadoRepository;
+    }
 
     @Transactional(readOnly = true)
     public List<Estado> getEstados(boolean sinFiltro) {
@@ -26,6 +28,17 @@ public class EstadoService {
     @Transactional(readOnly = true)
     public Optional<Estado> getEstado(Integer idEstado) {
         return estadoRepository.findById(idEstado);
+    }
+
+    @Transactional(readOnly = true)
+    public Optional<Estado> getEstadoPorNombre(String nombreEstado) {
+        return estadoRepository.findByNombreEstadoIgnoreCase(nombreEstado);
+    }
+
+    @Transactional(readOnly = true)
+    public Estado obtenerEstadoPorNombre(String nombreEstado) {
+        return estadoRepository.findByNombreEstadoIgnoreCase(nombreEstado)
+                .orElseThrow(() -> new IllegalArgumentException("Estado no encontrado: " + nombreEstado));
     }
 
     @Transactional(readOnly = true)

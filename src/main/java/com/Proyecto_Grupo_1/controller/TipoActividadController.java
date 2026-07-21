@@ -1,9 +1,11 @@
 package com.Proyecto_Grupo_1.controller;
 
 import com.Proyecto_Grupo_1.domain.TipoActividad;
+import com.Proyecto_Grupo_1.service.EstadoService;
 import com.Proyecto_Grupo_1.service.TipoActividadService;
 import jakarta.validation.Valid;
-import lombok.RequiredArgsConstructor;
+import org.springframework.context.MessageSource;
+import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -15,11 +17,20 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 @Controller
-@RequiredArgsConstructor
 @RequestMapping("/admin/tipos-actividad")
 public class TipoActividadController {
 
     private final TipoActividadService tipoActividadService;
+    private final EstadoService estadoService;
+    private final MessageSource messageSource;
+
+    public TipoActividadController(TipoActividadService tipoActividadService,
+            EstadoService estadoService,
+            MessageSource messageSource) {
+        this.tipoActividadService = tipoActividadService;
+        this.estadoService = estadoService;
+        this.messageSource = messageSource;
+    }
 
     @GetMapping
     public String index() {
@@ -37,28 +48,33 @@ public class TipoActividadController {
     @GetMapping("/nuevo")
     public String nuevo(Model model) {
         model.addAttribute("tipoActividad", new TipoActividad());
+        cargarCatalogos(model);
         return "/admin/tipos-actividad/modifica";
     }
 
     @PostMapping("/guardar")
-    public String guardar(@Valid TipoActividad tipoActividad, BindingResult bindingResult, RedirectAttributes redirectAttributes) {
+    public String guardar(@Valid TipoActividad tipoActividad, BindingResult bindingResult, Model model, RedirectAttributes redirectAttributes) {
         if (bindingResult.hasErrors()) {
+            cargarCatalogos(model);
             return "/admin/tipos-actividad/modifica";
         }
         tipoActividadService.save(tipoActividad);
-        redirectAttributes.addFlashAttribute("todoOk", "Tipo de actividad guardado correctamente.");
+        redirectAttributes.addFlashAttribute("todoOk", msg("tipoActividad.mensaje.guardado"));
         return "redirect:/admin/tipos-actividad/listado";
     }
 
     @PostMapping("/eliminar")
     public String eliminar(@RequestParam Integer idTipoActividad, RedirectAttributes redirectAttributes) {
         String titulo = "todoOk";
-        String detalle = "Tipo de actividad eliminado correctamente.";
+        String detalle = msg("tipoActividad.mensaje.eliminado");
         try {
             tipoActividadService.delete(idTipoActividad);
-        } catch (IllegalArgumentException | IllegalStateException e) {
+        } catch (IllegalArgumentException e) {
             titulo = "error";
-            detalle = e.getMessage();
+            detalle = msg("tipoActividad.error.noExiste");
+        } catch (IllegalStateException e) {
+            titulo = "error";
+            detalle = msg("tipoActividad.error.asociado");
         }
         redirectAttributes.addFlashAttribute(titulo, detalle);
         return "redirect:/admin/tipos-actividad/listado";
@@ -68,10 +84,19 @@ public class TipoActividadController {
     public String modificar(@PathVariable Integer idTipoActividad, Model model, RedirectAttributes redirectAttributes) {
         var tipoActividadOpt = tipoActividadService.getTipoActividad(idTipoActividad);
         if (tipoActividadOpt.isEmpty()) {
-            redirectAttributes.addFlashAttribute("error", "Tipo de actividad no encontrado.");
+            redirectAttributes.addFlashAttribute("error", msg("tipoActividad.error.noExiste"));
             return "redirect:/admin/tipos-actividad/listado";
         }
         model.addAttribute("tipoActividad", tipoActividadOpt.get());
+        cargarCatalogos(model);
         return "/admin/tipos-actividad/modifica";
+    }
+
+    private void cargarCatalogos(Model model) {
+        model.addAttribute("estados", estadoService.getEstados(false));
+    }
+
+    private String msg(String key) {
+        return messageSource.getMessage(key, null, LocaleContextHolder.getLocale());
     }
 }

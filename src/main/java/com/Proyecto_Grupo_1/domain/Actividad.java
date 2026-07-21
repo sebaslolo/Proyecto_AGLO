@@ -2,7 +2,6 @@ package com.Proyecto_Grupo_1.domain;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -26,7 +25,7 @@ public class Actividad {
     private Integer idActividad;
 
     @NotNull
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne
     @JoinColumn(name = "id_tipo_actividad", nullable = false)
     private TipoActividad tipoActividad;
 
@@ -50,8 +49,11 @@ public class Actividad {
     @Column(name = "precio_actual", nullable = false)
     private BigDecimal precioActual;
 
+    @Column(name = "imagen_actividad", length = 500)
+    private String imagenActividad;
+
     @NotNull
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne
     @JoinColumn(name = "id_estado", nullable = false)
     private Estado estado;
 

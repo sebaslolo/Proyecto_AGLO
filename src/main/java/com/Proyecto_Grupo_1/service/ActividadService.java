@@ -6,7 +6,6 @@ import jakarta.validation.Valid;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
-import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -14,10 +13,13 @@ import org.springframework.validation.annotation.Validated;
 
 @Service
 @Validated
-@RequiredArgsConstructor
 public class ActividadService {
 
     private final ActividadRepository actividadRepository;
+
+    public ActividadService(ActividadRepository actividadRepository) {
+        this.actividadRepository = actividadRepository;
+    }
 
     @Transactional(readOnly = true)
     public List<Actividad> getActividades(boolean futuras) {
@@ -43,6 +45,14 @@ public class ActividadService {
     }
 
     @Transactional(readOnly = true)
+    public List<Actividad> buscarActividades(String termino) {
+        if (termino == null || termino.isBlank()) {
+            return listarActividades();
+        }
+        return actividadRepository.findByNombreActividadContainingIgnoreCase(termino);
+    }
+
+    @Transactional(readOnly = true)
     public Actividad obtenerActividad(Integer idActividad) {
         return actividadRepository.findById(idActividad)
                 .orElseThrow(() -> new IllegalArgumentException("Actividad no encontrada: " + idActividad));
@@ -52,6 +62,11 @@ public class ActividadService {
     public Actividad save(@Valid Actividad actividad) {
         if (actividad.getFechaHoraInicio() != null && actividad.getFechaHoraInicio().isBefore(LocalDateTime.now())) {
             throw new IllegalArgumentException("La fecha de inicio no puede ser anterior a la fecha actual");
+        }
+        if (actividad.getFechaHoraInicio() != null
+                && actividad.getFechaHoraFin() != null
+                && !actividad.getFechaHoraFin().isAfter(actividad.getFechaHoraInicio())) {
+            throw new IllegalArgumentException("La fecha de fin debe ser posterior a la fecha de inicio");
         }
         return actividadRepository.save(actividad);
     }

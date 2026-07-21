@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+    <head th:replace="~{aglo/fragmentos :: head('Guía | AGLO', 'dashboard.css')}"></head>
+    <body class="admin-page">
+        <header th:replace="~{admin/fragmentos :: nav}"></header>
+        <main class="admin-main">
+            <section class="admin-page-title">
+                <div>
+                    <h1 th:text="${guia.idGuia == null ? 'Agregar guía' : 'Editar guía'}">Guía</h1>
+                    <p>Asocie un usuario existente como guía local.</p>
+                </div>
+            </section>
+            <section th:replace="~{admin/fragmentos :: mensajes}"></section>
+
+            <section class="admin-panel">
+                <form th:action="@{/admin/guias/guardar}" th:object="${guia}" method="post" class="was-validated">
+                    <input type="hidden" th:field="*{idGuia}"/>
+                    <div class="form-grid">
+                        <div>
+                            <label class="form-label" for="idUsuario">Usuario</label>
+                            <select class="form-select" id="idUsuario" name="usuario.idUsuario" required>
+                                <option value="">Seleccione</option>
+                                <option th:each="usuario : ${usuarios}"
+                                        th:value="${usuario.idUsuario}"
+                                        th:selected="${guia.usuario != null and guia.usuario.idUsuario == usuario.idUsuario}"
+                                        th:text="${usuario.nombre + ' ' + usuario.apellidoPaterno + ' - ' + usuario.correo}">Usuario</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="form-label" for="idEstado">Estado</label>
+                            <select class="form-select" id="idEstado" name="estado.idEstado" required>
+                                <option value="">Seleccione</option>
+                                <option th:each="estado : ${estados}"
+                                        th:value="${estado.idEstado}"
+                                        th:selected="${guia.estado != null and guia.estado.idEstado == estado.idEstado}"
+                                        th:text="${estado.nombreEstado}">Activo</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="form-label" for="fechaIngreso">Fecha de ingreso</label>
+                            <input class="form-control" type="date" id="fechaIngreso" name="fechaIngreso"
+                                   th:value="${guia.fechaIngreso != null ? #temporals.format(guia.fechaIngreso, 'yyyy-MM-dd') : ''}"/>
+                        </div>
+                        <div>
+                            <label class="form-label" for="disponibilidad">Disponibilidad</label>
+                            <select class="form-select" th:field="*{disponibilidad}">
+                                <option value="">Seleccione</option>
+                                <option value="true">Disponible</option>
+                                <option value="false">No disponible</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-actions">
+                        <a class="btn btn-outline-dark" th:href="@{/admin/guias/listado}">Cancelar</a>
+                        <button class="btn btn-success" type="submit"><i class="fa-solid fa-floppy-disk"></i> Guardar</button>
+                    </div>
+                </form>
+            </section>
+        </main>
+        <th:block th:replace="~{aglo/fragmentos :: scripts('dashboard.js')}"></th:block>
+    </body>
+</html>

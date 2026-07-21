@@ -19,6 +19,6 @@ public class ActividadGuiaId implements Serializable {
     private Integer idActividad;
 
     @NotNull
-    @Column(name = "id_usuario")
-    private Integer idUsuario;
+    @Column(name = "id_guia")
+    private Integer idGuia;
 }

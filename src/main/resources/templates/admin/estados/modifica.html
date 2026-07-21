@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+    <head th:replace="~{aglo/fragmentos :: head('Estado | AGLO', 'dashboard.css')}"></head>
+    <body class="admin-page">
+        <header th:replace="~{admin/fragmentos :: nav}"></header>
+        <main class="admin-main">
+            <section class="admin-page-title">
+                <div>
+                    <h1 th:text="${estado.idEstado == null ? 'Nuevo estado' : 'Editar estado'}">Estado</h1>
+                    <p>Nombre del estado de catalogo.</p>
+                </div>
+            </section>
+            <section th:replace="~{admin/fragmentos :: mensajes}"></section>
+            <section class="admin-panel">
+                <form th:action="@{/admin/estados/guardar}" th:object="${estado}" method="post" class="was-validated">
+                    <input type="hidden" th:field="*{idEstado}"/>
+                    <div class="form-grid">
+                        <div class="full-row">
+                            <label class="form-label" for="nombreEstado">Nombre</label>
+                            <input class="form-control" type="text" th:field="*{nombreEstado}" maxlength="50" required/>
+                        </div>
+                    </div>
+                    <div class="form-actions">
+                        <a class="btn btn-outline-dark" th:href="@{/admin/estados/listado}">Cancelar</a>
+                        <button class="btn btn-success" type="submit">Guardar</button>
+                    </div>
+                </form>
+            </section>
+        </main>
+        <th:block th:replace="~{aglo/fragmentos :: scripts('dashboard.js')}"></th:block>
+    </body>
+</html>

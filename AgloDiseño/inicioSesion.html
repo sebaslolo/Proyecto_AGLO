@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Iniciar Sesión | AGLO</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
+    <link rel="stylesheet" href="inicioSesion.css">
+
+</head>
+
+<body>
+    <!-- fondo -->
+    <section class="fondo">
+        <div class="overlay"></div>
+        <!-- nav -->
+        <header class="navbar">
+            <div class="logo">
+                <img src="img/logoAglo.png" alt="Logo AGLO">
+                <h2>AGLO</h2>
+            </div>
+            <nav>
+                <a href="login.html" class="btnLogin">Iniciar Sesión</a>
+                <a href="registro.html" class="btnRegistro">Registrarse</a>
+            </nav>
+        </header>
+        <!-- div contenedor -->
+        <main class="contenedor">
+            <div class="cardRegistro">
+                <h1>Iniciar Sesión</h1>
+                <form id="formLogin">
+                    <!-- Correo -->
+                    <div class="grupo">
+                        <label for="correo">Correo electrónico</label>
+                        <input
+                            type="email"
+                            id="correo"
+                            placeholder="ejemplo@correo.com">
+                        <small id="errorCorreo"></small>
+                    </div>
+                    <!-- Contraseña -->
+                    <div class="grupo">
+                        <label for="password">Contraseña</label>
+                        <div class="inputPassword">
+                            <input
+                                type="password"
+                                id="password"
+                                placeholder="********">
+                            <i class="fa-regular fa-eye-slash ojo"></i>
+                        </div>
+                        <small id="errorPassword"></small>
+                    </div>
+                    <!-- btn-->
+                    <button type="submit" class="btnCrear">
+                        Iniciar Sesión
+                    </button>
+                    <!-- registro -->
+                    <p class="login">
+                        ¿No tienes cuenta?
+                        <a href="login.html">Regístrate</a>
+                    </p>
+                </form>
+            </div>
+        </main>
+        <!-- flechq regreso -->
+        <div class="flecha">
+            <i class="fa-solid fa-chevron-right"></i>
+        </div>
+    </section>
+     <script src="inicioSesion.js"></script>
+</body>
+</html>

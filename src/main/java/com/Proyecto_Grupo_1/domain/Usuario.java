@@ -2,13 +2,13 @@ package com.Proyecto_Grupo_1.domain;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import java.time.LocalDateTime;
@@ -25,27 +25,35 @@ public class Usuario {
     private Integer idUsuario;
 
     @NotBlank
-    @Column(name = "identificacion", length = 20, nullable = false, unique = true)
-    private String identificacion;
+    @Column(name = "username", length = 30, nullable = false, unique = true)
+    private String username;
+
+    @Column(name = "password", length = 512, nullable = false)
+    private String password;
 
     @NotBlank
-    @Column(name = "nombre", length = 50, nullable = false)
+    @Column(name = "nombre", length = 20, nullable = false)
     private String nombre;
 
     @NotBlank
-    @Column(name = "apellido_paterno", length = 50, nullable = false)
+    @Column(name = "apellido_paterno", length = 30, nullable = false)
     private String apellidoPaterno;
 
-    @Column(name = "apellido_materno", length = 50)
+    @Column(name = "apellido_materno", length = 30)
     private String apellidoMaterno;
 
-    @NotNull
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "id_tipo_usuario", nullable = false)
-    private TipoUsuario tipoUsuario;
+    @Email
+    @Column(name = "correo", length = 75, unique = true)
+    private String correo;
+
+    @Column(name = "telefono", length = 25)
+    private String telefono;
+
+    @Column(name = "ruta_imagen", length = 1024)
+    private String rutaImagen;
 
     @NotNull
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne
     @JoinColumn(name = "id_estado", nullable = false)
     private Estado estado;
 
