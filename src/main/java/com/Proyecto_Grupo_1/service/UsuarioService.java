@@ -52,11 +52,11 @@ public class UsuarioService {
     }
 
     @Transactional(readOnly = true)
-    public Optional<Usuario> getUsuarioPorIdentificador(String identificador) {
-        if (identificador == null || identificador.isBlank()) {
+    public Optional<Usuario> getUsuarioPorUsername(String username) {
+        if (username == null || username.isBlank()) {
             return Optional.empty();
         }
-        return buscarPorCorreoOUsername(identificador.trim());
+        return usuarioRepository.findByUsernameIgnoreCase(username.trim());
     }
 
     @Transactional(readOnly = true)
@@ -81,12 +81,15 @@ public class UsuarioService {
             Usuario existente = obtenerUsuario(usuario.getIdUsuario());
             if (usuario.getPassword() == null || usuario.getPassword().isBlank()) {
                 usuario.setPassword(existente.getPassword());
+            } else {
+                usuario.setPassword(passwordEncoder.encode(usuario.getPassword()));
             }
+        } else {
+            if (usuario.getPassword() == null || usuario.getPassword().isBlank()) {
+                throw new IllegalArgumentException("La contraseña es obligatoria.");
+            }
+            usuario.setPassword(passwordEncoder.encode(usuario.getPassword()));
         }
-        if (usuario.getPassword() == null || usuario.getPassword().isBlank()) {
-            throw new IllegalArgumentException("La contraseña es obligatoria.");
-        }
-        usuario.setPassword(codificarSiEsNecesario(usuario.getPassword()));
         return usuarioRepository.save(usuario);
     }
 
@@ -106,7 +109,7 @@ public class UsuarioService {
         usuario.setApellidoMaterno(limpiarOpcional(registroForm.getApellidoMaterno()));
         usuario.setCorreo(registroForm.getCorreo().trim());
         usuario.setTelefono(limpiarOpcional(registroForm.getTelefono()));
-        usuario.setPassword(codificarSiEsNecesario(registroForm.getPassword()));
+        usuario.setPassword(passwordEncoder.encode(registroForm.getPassword()));
         usuario.setEstado(estadoActivo);
         return usuarioRepository.save(usuario);
     }
@@ -152,23 +155,8 @@ public class UsuarioService {
                 .orElse(true);
     }
 
-    private Optional<Usuario> buscarPorCorreoOUsername(String identificador) {
-        Optional<Usuario> porCorreo = usuarioRepository.findByCorreoIgnoreCase(identificador);
-        if (porCorreo.isPresent()) {
-            return porCorreo;
-        }
-        return usuarioRepository.findByUsernameIgnoreCase(identificador);
-    }
-
     private String limpiarOpcional(String texto) {
         return texto == null || texto.isBlank() ? null : texto.trim();
     }
 
-    private String codificarSiEsNecesario(String password) {
-        return esBCrypt(password) ? password : passwordEncoder.encode(password);
-    }
-
-    private boolean esBCrypt(String password) {
-        return password != null && password.matches("^\\$2[aby]\\$.{56}$");
-    }
 }

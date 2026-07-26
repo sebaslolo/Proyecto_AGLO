@@ -10,4 +10,6 @@ public interface RutaRepository extends JpaRepository<Ruta, Integer> {
     Optional<Ruta> findByRuta(String ruta);
 
     List<Ruta> findByRolIdRol(Integer idRol);
+
+    List<Ruta> findAllByOrderByRequiereRolAsc();
 }

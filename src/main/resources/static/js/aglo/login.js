@@ -1,7 +1,7 @@
 const formLogin = document.getElementById("formLogin");
-const correo = document.getElementById("correo");
+const username = document.getElementById("username");
 const password = document.getElementById("password");
-const errorCorreo = document.getElementById("errorCorreo");
+const errorUsername = document.getElementById("errorUsername");
 const errorPassword = document.getElementById("errorPassword");
 const ojo = document.querySelector(".ojo");
 // ojito de contraseña
@@ -22,17 +22,17 @@ ojo?.addEventListener("click", function () {
 formLogin?.addEventListener("submit", function (e) {
     let valido = true;
     // limpiar campos
-    errorCorreo.textContent = "";
+    errorUsername.textContent = "";
     errorPassword.textContent = "";
-    correo.classList.remove("inputError", "inputCorrecto");
+    username.classList.remove("inputError", "inputCorrecto");
     password.classList.remove("inputError", "inputCorrecto");
-    // validar correo o usuario
-    if (correo.value.trim() === "") {
-        errorCorreo.textContent = "El correo o usuario es obligatorio";
-        correo.classList.add("inputError");
+    // validar usuario
+    if (username.value.trim() === "") {
+        errorUsername.textContent = "El usuario es obligatorio";
+        username.classList.add("inputError");
         valido = false;
     } else {
-        correo.classList.add("inputCorrecto");
+        username.classList.add("inputCorrecto");
     }
     //validacion de contraseña
     if (password.value.trim() === "") {

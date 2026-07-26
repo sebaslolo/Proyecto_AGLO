@@ -1,14 +1,15 @@
 package com.Proyecto_Grupo_1.controller;
 
 import com.Proyecto_Grupo_1.domain.Reservacion;
+import com.Proyecto_Grupo_1.domain.Usuario;
 import com.Proyecto_Grupo_1.dto.ReservacionForm;
 import com.Proyecto_Grupo_1.service.ActividadService;
 import com.Proyecto_Grupo_1.service.ReservacionService;
-import jakarta.servlet.http.HttpSession;
+import com.Proyecto_Grupo_1.service.UsuarioService;
 import jakarta.validation.Valid;
-import java.util.Collection;
 import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -23,13 +24,16 @@ public class ReservacionController {
 
     private final ReservacionService reservacionService;
     private final ActividadService actividadService;
+    private final UsuarioService usuarioService;
     private final MessageSource messageSource;
 
     public ReservacionController(ReservacionService reservacionService,
             ActividadService actividadService,
+            UsuarioService usuarioService,
             MessageSource messageSource) {
         this.reservacionService = reservacionService;
         this.actividadService = actividadService;
+        this.usuarioService = usuarioService;
         this.messageSource = messageSource;
     }
 
@@ -76,7 +80,7 @@ public class ReservacionController {
     @PostMapping("/reservaciones/guardar")
     public String guardar(@Valid ReservacionForm reservacionForm,
             BindingResult bindingResult,
-            HttpSession session,
+            Authentication authentication,
             Model model,
             RedirectAttributes redirectAttributes) {
         if (reservacionForm.getIdActividad() == null) {
@@ -93,7 +97,7 @@ public class ReservacionController {
             model.addAttribute("cupoDisponible", reservacionService.obtenerCupoDisponible(reservacionForm.getIdActividad()));
             return "/reservaciones/modifica";
         }
-        Integer idUsuario = (Integer) session.getAttribute("idUsuario");
+        Integer idUsuario = obtenerUsuarioActual(authentication).getIdUsuario();
         try {
             var guardada = reservacionService.crearReservacion(
                     idUsuario,
@@ -127,14 +131,17 @@ public class ReservacionController {
     }
 
     @GetMapping("/reservaciones/confirmacion/{idReservacion}")
-    public String confirmacion(@PathVariable Integer idReservacion, HttpSession session, Model model, RedirectAttributes redirectAttributes) {
+    public String confirmacion(@PathVariable Integer idReservacion,
+            Authentication authentication,
+            Model model,
+            RedirectAttributes redirectAttributes) {
         var reservacionOpt = reservacionService.getReservacion(idReservacion);
         if (reservacionOpt.isEmpty()) {
             redirectAttributes.addFlashAttribute("error", msg("reservacion.error.noExiste"));
             return "redirect:/catalogo/listado";
         }
         Reservacion reservacion = reservacionOpt.get();
-        if (!puedeVerReservacion(reservacion, session)) {
+        if (!puedeVerReservacion(reservacion, authentication)) {
             redirectAttributes.addFlashAttribute("error", msg("error.recurso.acceso"));
             return "redirect:/mis-reservaciones";
         }
@@ -149,32 +156,32 @@ public class ReservacionController {
     }
 
     @GetMapping("/mis-reservaciones/listado")
-    public String misReservaciones(HttpSession session, Model model) {
-        Integer idUsuario = (Integer) session.getAttribute("idUsuario");
+    public String misReservaciones(Authentication authentication, Model model) {
+        Integer idUsuario = obtenerUsuarioActual(authentication).getIdUsuario();
         var reservaciones = reservacionService.listarReservacionesPorUsuario(idUsuario);
         model.addAttribute("reservaciones", reservaciones);
         model.addAttribute("totalReservaciones", reservaciones.size());
         return "/reservaciones/mis-reservaciones";
     }
 
-    private boolean puedeVerReservacion(Reservacion reservacion, HttpSession session) {
-        if (tieneRol(session.getAttribute("rolesUsuario"), "ADMIN")) {
+    private boolean puedeVerReservacion(Reservacion reservacion, Authentication authentication) {
+        if (tieneRol(authentication, "ADMIN")) {
             return true;
         }
-        Integer idUsuario = (Integer) session.getAttribute("idUsuario");
+        Integer idUsuario = obtenerUsuarioActual(authentication).getIdUsuario();
         return reservacion.getUsuario() != null
                 && reservacion.getUsuario().getIdUsuario() != null
                 && reservacion.getUsuario().getIdUsuario().equals(idUsuario);
     }
 
-    private boolean tieneRol(Object roles, String esperado) {
-        if (roles instanceof Collection<?> coleccion) {
-            return coleccion.stream()
-                    .map(String::valueOf)
-                    .map(String::toUpperCase)
-                    .anyMatch(rol -> rol.contains(esperado));
-        }
-        return false;
+    private boolean tieneRol(Authentication authentication, String esperado) {
+        return authentication.getAuthorities().stream()
+                .anyMatch(authority -> authority.getAuthority().equals("ROLE_" + esperado));
+    }
+
+    private Usuario obtenerUsuarioActual(Authentication authentication) {
+        return usuarioService.getUsuarioPorUsername(authentication.getName())
+                .orElseThrow(() -> new IllegalStateException("Usuario autenticado no encontrado."));
     }
 
     private String msg(String key) {

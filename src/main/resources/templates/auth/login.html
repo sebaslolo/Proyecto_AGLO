@@ -25,13 +25,13 @@
                     <div th:if="${todoOk}" class="alert alert-success" role="alert" th:text="${todoOk}">Mensaje</div>
                     <form id="formLogin" th:action="@{/login}" th:object="${loginForm}" action="/login" method="post">
                         <div class="grupo">
-                            <label for="correo">Correo o usuario</label>
+                            <label for="username">Usuario</label>
                             <input
                                 type="text"
-                                id="correo"
-                                th:field="*{correo}"
-                                placeholder="tatiana.molina o ejemplo@correo.com"/>
-                            <small id="errorCorreo" th:text="${#fields.hasErrors('correo')} ? #{error.login} : ''"></small>
+                                id="username"
+                                th:field="*{username}"
+                                placeholder="tatiana.molina"/>
+                            <small id="errorUsername" th:text="${#fields.hasErrors('username')} ? #{error.login} : ''"></small>
                         </div>
 
                         <div class="grupo">
