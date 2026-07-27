@@ -1,37 +1,79 @@
 <!DOCTYPE html>
 <html lang="es" xmlns:th="http://www.thymeleaf.org">
     <head th:replace="~{aglo/fragmentos :: head('Confirmación | AGLO', 'dashboard.css')}"></head>
+
     <body class="public-page">
         <main class="public-main">
+
             <section class="public-page-title">
                 <div>
-                    <h1 th:text="${'Reservación #' + reservacion.idReservacion}">Reservación</h1>
-                    <p>Confirmación de reservación</p>
+                    <i class="fa-solid fa-circle-check text-success fa-3x mb-3"></i>
+
+                    <h1 th:text="${'Reservación #' + reservacion.idReservacion}">
+                        Reservación
+                    </h1>
+
+                    <p>
+                        Tu reservación ha sido confirmada correctamente.
+                    </p>
                 </div>
-                <a class="btn btn-light" th:href="@{/catalogo/listado}">Catálogo</a>
+
+                <a class="btn btn-light"
+                   th:href="@{/catalogo/listado}">
+                    Catálogo
+                </a>
             </section>
+
             <section th:replace="~{admin/fragmentos :: mensajes}"></section>
 
             <section class="admin-panel">
+
                 <div class="summary-grid">
+
                     <div class="summary-card">
                         <i class="fa-solid fa-calendar-check"></i>
                         <span>Fecha</span>
-                        <strong th:text="${reservacion.fechaReservacion != null ? #temporals.format(reservacion.fechaReservacion, 'dd/MM/yyyy') : 'Sin fecha'}">Fecha</strong>
+                        <strong th:text="${reservacion.fechaReservacion != null ? #temporals.format(reservacion.fechaReservacion, 'dd/MM/yyyy') : 'Sin fecha'}">
+                            Fecha
+                        </strong>
                     </div>
+
                     <div class="summary-card">
                         <i class="fa-solid fa-money-bill"></i>
                         <span>Monto</span>
-                        <strong th:text="${reservacion.montoTotal != null ? #numbers.formatCurrency(reservacion.montoTotal) : '₡0'}">₡0</strong>
+                        <strong th:text="${reservacion.montoTotal != null ? #numbers.formatCurrency(reservacion.montoTotal) : '₡0'}">
+                            ₡0
+                        </strong>
                     </div>
+
                     <div class="summary-card">
                         <i class="fa-solid fa-circle-info"></i>
                         <span>Estado</span>
-                        <strong th:text="${reservacion.estado != null ? reservacion.estado.nombreEstado : 'Sin estado'}">Pendiente</strong>
+                        <strong th:text="${reservacion.estado != null ? reservacion.estado.nombreEstado : 'Sin estado'}">
+                            Pendiente
+                        </strong>
                     </div>
+
                 </div>
+
+                <!-- NUEVO: Confirmación de correo -->
+                <div class="alert alert-info mt-4"
+                     th:if="${reservacion.usuario != null and reservacion.usuario.correo != null}">
+                    <i class="fa-solid fa-envelope"></i>
+
+                    Se ha enviado una confirmación de esta reservación al correo:
+
+                    <strong th:text="${reservacion.usuario.correo}"></strong>
+
+                    <br><br>
+
+                    Gracias por reservar con <strong>AGLO</strong>.
+                    Conserva este correo como respaldo de tu reservación.
+                </div>
+
                 <div class="table-responsive">
                     <table class="table admin-table align-middle">
+
                         <thead>
                             <tr>
                                 <th>Actividad</th>
@@ -40,22 +82,46 @@
                                 <th>Subtotal</th>
                             </tr>
                         </thead>
+
                         <tbody>
                             <tr th:each="detalle : ${detalles}">
-                                <td th:text="${detalle.actividad != null ? detalle.actividad.nombreActividad : 'Actividad'}">Actividad</td>
-                                <td th:text="${detalle.cantidadPersonas}">1</td>
-                                <td th:text="${detalle.precioUnitario != null ? #numbers.formatCurrency(detalle.precioUnitario) : '₡0'}">₡0</td>
-                                <td th:text="${detalle.subtotal != null ? #numbers.formatCurrency(detalle.subtotal) : '₡0'}">₡0</td>
+                                <td th:text="${detalle.actividad != null ? detalle.actividad.nombreActividad : 'Actividad'}">
+                                    Actividad
+                                </td>
+
+                                <td th:text="${detalle.cantidadPersonas}">
+                                    1
+                                </td>
+
+                                <td th:text="${detalle.precioUnitario != null ? #numbers.formatCurrency(detalle.precioUnitario) : '₡0'}">
+                                    ₡0
+                                </td>
+
+                                <td th:text="${detalle.subtotal != null ? #numbers.formatCurrency(detalle.subtotal) : '₡0'}">
+                                    ₡0
+                                </td>
                             </tr>
                         </tbody>
+
                     </table>
                 </div>
+
                 <div class="form-actions">
-                    <a class="btn btn-outline-dark" th:href="@{/mis-reservaciones}">Mis reservaciones</a>
-                    <a class="btn btn-success" th:href="@{/catalogo/listado}">Reservar otra actividad</a>
+                    <a class="btn btn-outline-dark"
+                       th:href="@{/mis-reservaciones}">
+                        Mis reservaciones
+                    </a>
+
+                    <a class="btn btn-success"
+                       th:href="@{/catalogo/listado}">
+                        Reservar otra actividad
+                    </a>
                 </div>
+
             </section>
+
         </main>
+
         <th:block th:replace="~{aglo/fragmentos :: scripts('dashboard.js')}"></th:block>
     </body>
 </html>
