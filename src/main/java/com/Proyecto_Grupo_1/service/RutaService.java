@@ -21,6 +21,11 @@ public class RutaService {
     }
 
     @Transactional(readOnly = true)
+    public List<Ruta> getRutas() {
+        return rutaRepository.findAllByOrderByRequiereRolAsc();
+    }
+
+    @Transactional(readOnly = true)
     public List<Ruta> getRutas(boolean sinFiltro) {
         return rutaRepository.findAll();
     }

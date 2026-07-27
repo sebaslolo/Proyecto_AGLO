@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+    <head th:replace="~{aglo/fragmentos :: head('Rol | AGLO', 'dashboard.css')}"></head>
+    <body class="admin-page">
+        <header th:replace="~{admin/fragmentos :: nav}"></header>
+        <main class="admin-main">
+            <section class="admin-page-title">
+                <div>
+                    <h1 th:text="${rol.idRol == null ? 'Nuevo rol' : 'Editar rol'}">Rol</h1>
+                    <p>Nombre del rol de acceso.</p>
+                </div>
+            </section>
+            <section th:replace="~{admin/fragmentos :: mensajes}"></section>
+            <section class="admin-panel">
+                <form th:action="@{/admin/roles/guardar}" th:object="${rol}" method="post" class="was-validated">
+                    <input type="hidden" th:field="*{idRol}"/>
+                    <div class="form-grid">
+                        <div class="full-row">
+                            <label class="form-label" for="rol">Rol</label>
+                            <input class="form-control" type="text" th:field="*{rol}" maxlength="20" required/>
+                        </div>
+                    </div>
+                    <div class="form-actions">
+                        <a class="btn btn-outline-dark" th:href="@{/admin/roles/listado}">Cancelar</a>
+                        <button class="btn btn-success" type="submit">Guardar</button>
+                    </div>
+                </form>
+            </section>
+        </main>
+        <th:block th:replace="~{aglo/fragmentos :: scripts('dashboard.js')}"></th:block>
+    </body>
+</html>

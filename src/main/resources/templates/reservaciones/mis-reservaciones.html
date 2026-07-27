@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+    <head th:replace="~{aglo/fragmentos :: head('Mis reservaciones | AGLO', 'dashboard.css')}"></head>
+    <body class="public-page">
+        <main class="public-main">
+            <section class="public-page-title">
+                <div>
+                    <h1>Mis reservaciones</h1>
+                    <p>Historial de reservaciones realizadas.</p>
+                </div>
+                <a class="btn btn-light" th:href="@{/catalogo/listado}">Catálogo</a>
+            </section>
+            <section th:replace="~{admin/fragmentos :: mensajes}"></section>
+
+            <section class="admin-panel">
+                <div class="table-responsive">
+                    <table class="table admin-table align-middle">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Fecha</th>
+                                <th>Monto</th>
+                                <th>Estado</th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr th:if="${reservaciones == null or reservaciones.empty}">
+                                <td colspan="5" class="empty-row">No hay reservaciones registradas.</td>
+                            </tr>
+                            <tr th:each="reservacion : ${reservaciones}">
+                                <td th:text="${reservacion.idReservacion}">1</td>
+                                <td th:text="${reservacion.fechaReservacion != null ? #temporals.format(reservacion.fechaReservacion, 'dd/MM/yyyy HH:mm') : 'Sin fecha'}">Fecha</td>
+                                <td th:text="${reservacion.montoTotal != null ? #numbers.formatCurrency(reservacion.montoTotal) : '₡0'}">₡0</td>
+                                <td th:text="${reservacion.estado != null ? reservacion.estado.nombreEstado : 'Sin estado'}">Pendiente</td>
+                                <td class="text-end">
+                                    <a class="btn btn-sm btn-outline-dark" th:href="@{/reservaciones/confirmacion/{id}(id=${reservacion.idReservacion})}">Detalle</a>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+        </main>
+        <th:block th:replace="~{aglo/fragmentos :: scripts('dashboard.js')}"></th:block>
+    </body>
+</html>

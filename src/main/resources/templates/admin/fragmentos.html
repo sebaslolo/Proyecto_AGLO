@@ -1,0 +1,63 @@
+<header xmlns:th="http://www.thymeleaf.org" th:fragment="nav" class="admin-navbar navbar navbar-expand-lg">
+    <div class="container-fluid px-3 px-lg-5">
+        <a class="navbar-brand admin-brand" th:href="@{/admin/dashboard}">
+            <img th:src="@{/img/logoAglo.png}" alt="Logo AGLO"/>
+            <span>AGLO</span>
+        </a>
+
+        <button class="navbar-toggler admin-toggler" type="button" data-bs-toggle="collapse"
+                data-bs-target="#adminNavbar" aria-controls="adminNavbar" aria-expanded="false"
+                aria-label="Mostrar navegación">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <nav class="collapse navbar-collapse" id="adminNavbar">
+            <ul class="navbar-nav me-auto mb-2 mb-lg-0 admin-links">
+                <li class="nav-item">
+                    <a class="nav-link" th:href="@{/admin/usuarios/listado}" th:text="#{navbar.usuarios}">Usuarios</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" th:href="@{/admin/actividades/listado}" th:text="#{navbar.actividades}">Actividades</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" th:href="@{/admin/reservaciones/listado}" th:text="#{navbar.reservaciones}">Reservaciones</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" th:href="@{/admin/guias/listado}" th:text="#{navbar.guias}">Guías</a>
+                </li>
+            </ul>
+
+            <div class="admin-actions">
+                <div class="dropdown">
+                    <button class="btn language-btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" th:text="#{navbar.idiomaActual}">
+                        Esp
+                    </button>
+                    <ul class="dropdown-menu dropdown-menu-end">
+                        <li><a class="dropdown-item" th:href="@{${#httpServletRequest.requestURI}(lang=es)}" th:text="#{idioma.es}">Español</a></li>
+                        <li><a class="dropdown-item" th:href="@{${#httpServletRequest.requestURI}(lang=en)}" th:text="#{idioma.en}">English</a></li>
+                        <li><a class="dropdown-item" th:href="@{${#httpServletRequest.requestURI}(lang=fr)}" th:text="#{idioma.fr}">Francés</a></li>
+                        <li><a class="dropdown-item" th:href="@{${#httpServletRequest.requestURI}(lang=it)}" th:text="#{idioma.it}">Italiano</a></li>
+                        <li><a class="dropdown-item" th:href="@{${#httpServletRequest.requestURI}(lang=pt)}" th:text="#{idioma.pt}">Portugués</a></li>
+                    </ul>
+                </div>
+                <form th:action="@{/logout}" method="post" class="d-inline">
+                    <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+                    <button class="btn logout-btn" type="submit" th:text="#{navbar.cerrarSesion}">Cerrar Sesión</button>
+                </form>
+            </div>
+        </nav>
+    </div>
+</header>
+
+<section xmlns:th="http://www.thymeleaf.org" th:fragment="mensajes">
+    <div class="admin-alerts">
+        <div th:if="${todoOk}" class="alert alert-success alert-dismissible fade show" role="alert">
+            <span th:text="${todoOk}">Operación realizada.</span>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Cerrar"></button>
+        </div>
+        <div th:if="${error}" class="alert alert-danger alert-dismissible fade show" role="alert">
+            <span th:text="${error}">Error.</span>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Cerrar"></button>
+        </div>
+    </div>
+</section>

@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+    <head th:replace="~{aglo/fragmentos :: head('Estados | AGLO', 'dashboard.css')}"></head>
+    <body class="admin-page">
+        <header th:replace="~{admin/fragmentos :: nav}"></header>
+        <main class="admin-main">
+            <section class="admin-page-title">
+                <div>
+                    <h1>Estados</h1>
+                    <p>Estados usados por usuarios, actividades y reservaciones.</p>
+                </div>
+                <a class="btn btn-light" th:href="@{/admin/estados/nuevo}">Nuevo</a>
+            </section>
+            <section th:replace="~{admin/fragmentos :: mensajes}"></section>
+            <section class="admin-panel">
+                <div class="table-responsive">
+                    <table class="table admin-table align-middle">
+                        <thead><tr><th>ID</th><th>Nombre</th><th></th></tr></thead>
+                        <tbody>
+                            <tr th:if="${estados == null or estados.empty}">
+                                <td colspan="3" class="empty-row">No hay estados registrados.</td>
+                            </tr>
+                            <tr th:each="estado : ${estados}">
+                                <td th:text="${estado.idEstado}">1</td>
+                                <td th:text="${estado.nombreEstado}">Activo</td>
+                                <td class="text-end">
+                                    <a class="btn btn-sm btn-outline-dark" th:href="@{/admin/estados/modificar/{id}(id=${estado.idEstado})}">Editar</a>
+                                    <form class="d-inline" th:action="@{/admin/estados/eliminar}" method="post">
+                                        <input type="hidden" name="idEstado" th:value="${estado.idEstado}"/>
+                                        <button class="btn btn-sm btn-outline-danger" type="submit">Eliminar</button>
+                                    </form>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+        </main>
+        <th:block th:replace="~{aglo/fragmentos :: scripts('dashboard.js')}"></th:block>
+    </body>
+</html>

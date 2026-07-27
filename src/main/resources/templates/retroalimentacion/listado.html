@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+    <head th:replace="~{aglo/fragmentos :: head('Retroalimentacion | AGLO', 'dashboard.css')}"></head>
+    <body class="public-page">
+        <main class="public-main">
+            <section class="public-page-title">
+                <div>
+                    <h1>Retroalimentacion</h1>
+                    <p>Opiniones y comentarios de visitantes.</p>
+                </div>
+                <a class="btn btn-light" th:href="@{/inicio}">Inicio</a>
+            </section>
+            <section class="admin-panel">
+                <p class="mb-0">Este modulo esta reservado para recopilar retroalimentacion de usuarios.</p>
+            </section>
+        </main>
+        <th:block th:replace="~{aglo/fragmentos :: scripts('dashboard.js')}"></th:block>
+    </body>
+</html>

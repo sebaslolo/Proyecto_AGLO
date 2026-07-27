@@ -9,7 +9,7 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotNull;
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 import lombok.Data;
 
 @Data
@@ -28,10 +28,10 @@ public class Guia {
     private Usuario usuario;
 
     @Column(name = "fecha_ingreso")
-    private LocalDateTime fechaIngreso;
+    private LocalDate fechaIngreso;
 
-    @Column(name = "disponibilidad", length = 100)
-    private String disponibilidad;
+    @Column(name = "disponibilidad")
+    private Boolean disponibilidad;
 
     @NotNull
     @ManyToOne
@@ -39,8 +39,8 @@ public class Guia {
     private Estado estado;
 
     @Column(name = "fecha_creacion", insertable = false, updatable = false)
-    private LocalDateTime fechaCreacion;
+    private java.time.LocalDateTime fechaCreacion;
 
     @Column(name = "fecha_modificacion", insertable = false, updatable = false)
-    private LocalDateTime fechaModificacion;
+    private java.time.LocalDateTime fechaModificacion;
 }

@@ -28,7 +28,6 @@ public class Usuario {
     @Column(name = "username", length = 30, nullable = false, unique = true)
     private String username;
 
-    @NotBlank
     @Column(name = "password", length = 512, nullable = false)
     private String password;
 

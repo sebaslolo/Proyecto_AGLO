@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+    <head th:replace="~{aglo/fragmentos :: head('Detalle de actividad | AGLO', 'dashboard.css')}"></head>
+    <body class="public-page">
+        <main class="public-main">
+            <section class="public-page-title">
+                <div>
+                    <h1 th:text="${actividad.nombreActividad}">Actividad</h1>
+                    <p th:text="${actividad.tipoActividad != null ? actividad.tipoActividad.nombreTipoActividad : 'Actividad turística'}">Tipo</p>
+                </div>
+                <a class="btn btn-light" th:href="@{/catalogo/listado}">Regresar</a>
+            </section>
+            <section th:replace="~{admin/fragmentos :: mensajes}"></section>
+
+            <section class="detail-layout">
+                <article class="detail-panel">
+                    <img class="detail-image" th:src="${actividad.imagenActividad != null and !actividad.imagenActividad.isEmpty() ? actividad.imagenActividad : (actividad.tipoActividad != null and actividad.tipoActividad.imagenTipoActividad != null and !actividad.tipoActividad.imagenTipoActividad.isEmpty() ? actividad.tipoActividad.imagenTipoActividad : 'https://vivemar.com.mx/wp-content/uploads/2022/01/Vivemar_Liberacion-%E2%80%93-monitoreo-nocturno-new-3.jpg')}" th:alt="${actividad.nombreActividad}"/>
+                    <div class="detail-body">
+                        <h2 th:text="${actividad.nombreActividad}">Actividad</h2>
+                        <p th:text="${actividad.tipoActividad != null ? actividad.tipoActividad.descripcionTipoActividad : 'Actividad turística en Playa Ostional.'}">Descripción</p>
+                    </div>
+                </article>
+
+                <aside class="admin-panel">
+                    <div class="catalog-meta">
+                        <span><strong>Inicio:</strong> <span th:text="${actividad.fechaHoraInicio != null ? #temporals.format(actividad.fechaHoraInicio, 'dd/MM/yyyy HH:mm') : 'Fecha por confirmar'}">Fecha</span></span>
+                        <span><strong>Fin:</strong> <span th:text="${actividad.fechaHoraFin != null ? #temporals.format(actividad.fechaHoraFin, 'dd/MM/yyyy HH:mm') : 'Fecha por confirmar'}">Fecha</span></span>
+                        <span><strong>Precio:</strong> <span th:text="${actividad.precioActual != null ? #numbers.formatCurrency(actividad.precioActual) : 'Precio por confirmar'}">Precio</span></span>
+                        <span><strong>Cupo disponible:</strong> <span th:text="${cupoDisponible}">0</span></span>
+                    </div>
+                    <h3 class="mt-4">Guías asignados</h3>
+                    <ul class="list-unstyled">
+                        <li th:if="${guias == null or guias.empty}">Sin guías asignados.</li>
+                        <li th:each="asignacion : ${guias}"
+                            th:text="${asignacion.guia != null and asignacion.guia.usuario != null ? asignacion.guia.usuario.nombre + ' ' + asignacion.guia.usuario.apellidoPaterno : 'Guía local'}">Guía</li>
+                    </ul>
+                    <a class="btn btn-success w-100"
+                       th:if="${cupoDisponible > 0}"
+                       th:href="@{/reservaciones/nueva(idActividad=${actividad.idActividad})}">Reservar</a>
+                    <button class="btn btn-secondary w-100" th:if="${cupoDisponible <= 0}" type="button" disabled>Actividad llena</button>
+                </aside>
+            </section>
+        </main>
+        <th:block th:replace="~{aglo/fragmentos :: scripts('dashboard.js')}"></th:block>
+    </body>
+</html>

@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+    <head th:replace="~{aglo/fragmentos :: head('Rutas | AGLO', 'dashboard.css')}"></head>
+    <body class="admin-page">
+        <header th:replace="~{admin/fragmentos :: nav}"></header>
+        <main class="admin-main">
+            <section class="admin-page-title">
+                <div>
+                    <h1>Rutas</h1>
+                    <p>Listado documental de rutas protegidas y publicas.</p>
+                </div>
+                <a class="btn btn-light" th:href="@{/admin/rutas/nuevo}">Nueva</a>
+            </section>
+            <section th:replace="~{admin/fragmentos :: mensajes}"></section>
+            <section class="admin-panel">
+                <div class="table-responsive">
+                    <table class="table admin-table align-middle">
+                        <thead><tr><th>ID</th><th>Ruta</th><th>Rol</th><th>Requiere rol</th><th></th></tr></thead>
+                        <tbody>
+                            <tr th:if="${rutas == null or rutas.empty}">
+                                <td colspan="5" class="empty-row">No hay rutas registradas.</td>
+                            </tr>
+                            <tr th:each="ruta : ${rutas}">
+                                <td th:text="${ruta.idRuta}">1</td>
+                                <td th:text="${ruta.ruta}">/admin/**</td>
+                                <td th:text="${ruta.rol != null ? ruta.rol.rol : 'Publica'}">ADMIN</td>
+                                <td th:text="${ruta.requiereRol ? 'Si' : 'No'}">Si</td>
+                                <td class="text-end">
+                                    <a class="btn btn-sm btn-outline-dark" th:href="@{/admin/rutas/modificar/{id}(id=${ruta.idRuta})}">Editar</a>
+                                    <form class="d-inline" th:action="@{/admin/rutas/eliminar}" method="post">
+                                        <input type="hidden" name="idRuta" th:value="${ruta.idRuta}"/>
+                                        <button class="btn btn-sm btn-outline-danger" type="submit">Eliminar</button>
+                                    </form>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+        </main>
+        <th:block th:replace="~{aglo/fragmentos :: scripts('dashboard.js')}"></th:block>
+    </body>
+</html>

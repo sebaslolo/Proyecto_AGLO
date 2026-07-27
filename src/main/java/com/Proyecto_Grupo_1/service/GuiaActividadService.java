@@ -8,6 +8,7 @@ import com.Proyecto_Grupo_1.domain.Guia;
 import com.Proyecto_Grupo_1.repository.ActividadGuiaRepository;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -65,6 +66,7 @@ public class GuiaActividadService {
         actividadGuia.setId(id);
         actividadGuia.setActividad(actividad);
         actividadGuia.setGuia(guia);
+        actividadGuia.setFechaAsignacion(LocalDateTime.now());
         actividadGuia.setEstado(estado);
         return actividadGuiaRepository.save(actividadGuia);
     }
