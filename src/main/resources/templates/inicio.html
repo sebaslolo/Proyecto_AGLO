@@ -46,9 +46,9 @@
                         <h1 th:text="#{inicio.bienvenida}">Bienvenido a AGLO</h1>
                         <p th:text="#{inicio.descripcion}">Trabajamos por la conservación de las tortugas marinas...</p>
                         <a href="#" class="hero-btn" id="abrirVideo">
-                            Ver video
+                            <span th:text="#{inicio.verVideo}">Ver video</span>
                             <i class="fa-solid fa-circle-play"></i>
-                        </a>
+</a>
 
                         <div class="video-modal" id="videoModal">
                             <span class="cerrar" id="cerrarVideo">&times;</span>
@@ -65,17 +65,12 @@
             <section class="nosotros" id="nosotros">
                 <div class="contenedor">
                     <div class="texto">
-                        <span>SOBRE NOSOTROS</span>
-                        <h2>
-                            Conservación, comunidad
-                            y turismo responsable
+                        <span th:text="#{nosotros.subtitulo}">SOBRE NOSOTROS</span>
+                        <h2 th:text="#{nosotros.titulo}">
+                            Conservación, comunidad y turismo responsable
                         </h2>
-                        <p>
-                            Se crea en 2006 para mantener bajo control la actividad turística durante el fenómeno de arribada, logrando reducir el impacto negativo del turismo sobre las especies que anidan en el Refugio.
-
-                            La Asociación de Guías Locales de Ostional (AGLO) es una organización comunitaria en Ostional, Costa Rica, enfocada en gestionar y controlar el turismo para mitigar su impacto negativo en la vida silvestre local, particularmente en las tortugas lora. Ofrecen visitas guiadas para educar a los visitantes sobre el fenómeno de anidación de las tortugas y los esfuerzos de conservación vigentes. AGLO también contribuye a diversas actividades comunitarias y atiende las necesidades de quienes solicitan su asistencia.
-
-                            Su misión es mantener el control sobre las actividades turísticas durante la arribada (temporada de anidación de tortugas), con el objetivo de reducir el impacto negativo del turismo en las especies que anidan en el Refugio Nacional de Vida Silvestre Ostional.
+                        <p th:text="#{nosotros.descripcion}">
+                            Se crea en 2006 para mantener bajo control la actividad turística...
                         </p>
                     </div>
                     <div class="imagen">
