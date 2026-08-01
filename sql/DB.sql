@@ -159,27 +159,73 @@ create table fide_actividad_guia_tb(
     index ndx_id_guia (id_guia)
 ) ENGINE = InnoDB;
 
-create table fide_voluntariado_tb(
-    id_voluntariado_registro int not null auto_increment,
+create table fide_voluntario_tb(
+    id_voluntario int not null auto_increment,
     id_usuario int not null,
-    id_estado int not null,
-    id_actividad int, -- Referencia opcional a fide_actividad_tb si aplica
-    fecha_ingreso date,
+    fecha_ingreso date not null,
     disponibilidad varchar(100),
-    horas_totales_acumuladas int default 0,
-    fecha_inscripcion datetime,
-    asistencia_confirmada boolean default false,
-    hora_entrada datetime,
-    hora_salida datetime,
-    cantidad_horas_sesion decimal(4,2),
-    fecha_sesion date,
+    horas_acumuladas decimal(10,2) not null default 0,
+    id_estado int not null,
     fecha_creacion timestamp default current_timestamp,
     fecha_modificacion timestamp default current_timestamp on update current_timestamp,
-    primary key (id_voluntariado_registro),
+    primary key (id_voluntario),
     foreign key (id_usuario) references fide_usuario_tb(id_usuario),
     foreign key (id_estado) references fide_estado_tb(id_estado),
-    index ndx_voluntariado_usuario (id_usuario),
-    index ndx_voluntariado_estado (id_estado)
+    unique (id_usuario),
+    index ndx_voluntario_estado (id_estado)
+) ENGINE = InnoDB;
+
+create table fide_inscripcion_voluntariado_tb(
+    id_inscripcion_voluntariado int not null auto_increment,
+    id_voluntario int not null,
+    id_actividad int not null,
+    fecha_inscripcion datetime default current_timestamp,
+    id_estado int not null,
+    fecha_creacion timestamp default current_timestamp,
+    fecha_modificacion timestamp default current_timestamp on update current_timestamp,
+    primary key (id_inscripcion_voluntariado),
+    foreign key (id_voluntario) references fide_voluntario_tb(id_voluntario),
+    foreign key (id_actividad) references fide_actividad_tb(id_actividad),
+    foreign key (id_estado) references fide_estado_tb(id_estado),
+    unique (id_voluntario, id_actividad),
+    index ndx_inscripcion_voluntariado_actividad (id_actividad),
+    index ndx_inscripcion_voluntariado_estado (id_estado)
+) ENGINE = InnoDB;
+
+create table fide_asistencia_voluntariado_tb(
+    id_asistencia_voluntariado int not null auto_increment,
+    id_inscripcion_voluntariado int not null,
+    asistencia boolean not null default false,
+    hora_entrada time null,
+    hora_salida time null,
+    id_estado int not null,
+    fecha_creacion timestamp default current_timestamp,
+    fecha_modificacion timestamp default current_timestamp on update current_timestamp,
+    primary key (id_asistencia_voluntariado),
+    foreign key (id_inscripcion_voluntariado) references fide_inscripcion_voluntariado_tb(id_inscripcion_voluntariado),
+    foreign key (id_estado) references fide_estado_tb(id_estado),
+    unique (id_inscripcion_voluntariado),
+    check (hora_salida is null or hora_entrada is null or hora_salida >= hora_entrada),
+    index ndx_asistencia_voluntariado_estado (id_estado)
+) ENGINE = InnoDB;
+
+create table fide_horas_voluntariado_tb(
+    id_horas_voluntariado int not null auto_increment,
+    id_voluntario int not null,
+    id_actividad int not null,
+    fecha date not null,
+    cantidad_horas decimal(5,2) not null,
+    id_estado int not null,
+    fecha_creacion timestamp default current_timestamp,
+    fecha_modificacion timestamp default current_timestamp on update current_timestamp,
+    primary key (id_horas_voluntariado),
+    foreign key (id_voluntario) references fide_voluntario_tb(id_voluntario),
+    foreign key (id_actividad) references fide_actividad_tb(id_actividad),
+    foreign key (id_estado) references fide_estado_tb(id_estado),
+    unique (id_voluntario, id_actividad, fecha),
+    check (cantidad_horas > 0),
+    index ndx_horas_voluntariado_actividad (id_actividad),
+    index ndx_horas_voluntariado_estado (id_estado)
 ) ENGINE = InnoDB;
 
 create table fide_monitoreo_tb(
