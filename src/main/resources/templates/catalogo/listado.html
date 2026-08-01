@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+    <head th:replace="~{aglo/fragmentos :: head('Catálogo | AGLO', 'dashboard.css')}"></head>
+    <body class="public-page">
+        <main class="public-main">
+            <section class="public-page-title">
+                <div>
+                    <h1>Catálogo de actividades turísticas</h1>
+                    <p>Actividades disponibles para visitar Playa Ostional.</p>
+                </div>
+                <div class="d-flex gap-2">
+                    <a class="btn btn-light" th:href="@{/inicio}">Inicio</a>
+                    <a class="btn btn-outline-light" th:href="@{/mis-reservaciones}">Mis reservaciones</a>
+                </div>
+            </section>
+            <section th:replace="~{admin/fragmentos :: mensajes}"></section>
+
+            <section class="catalog-grid">
+                <article class="catalog-card" th:if="${actividades == null or actividades.empty}">
+                    <div class="catalog-card-body">
+                        <h2>No hay actividades disponibles</h2>
+                        <p>Pronto publicaremos nuevas actividades.</p>
+                    </div>
+                </article>
+
+                <article class="catalog-card" th:each="actividad : ${actividades}">
+                    <img th:src="${actividad.imagenActividad != null and !actividad.imagenActividad.isEmpty() ? actividad.imagenActividad : (actividad.tipoActividad != null and actividad.tipoActividad.imagenTipoActividad != null and !actividad.tipoActividad.imagenTipoActividad.isEmpty() ? actividad.tipoActividad.imagenTipoActividad : 'https://vivemar.com.mx/wp-content/uploads/2022/01/Vivemar_Liberacion-%E2%80%93-monitoreo-nocturno-new-3.jpg')}" th:alt="${actividad.nombreActividad}"/>
+                    <div class="catalog-card-body">
+                        <h2 th:text="${actividad.nombreActividad}">Actividad</h2>
+                        <div class="catalog-meta">
+                            <span th:text="${actividad.tipoActividad != null ? actividad.tipoActividad.nombreTipoActividad : 'Actividad turística'}">Tipo</span>
+                            <span th:text="${actividad.fechaHoraInicio != null ? #temporals.format(actividad.fechaHoraInicio, 'dd/MM/yyyy HH:mm') : 'Fecha por confirmar'}">Fecha</span>
+                            <span th:text="${actividad.precioActual != null ? #numbers.formatCurrency(actividad.precioActual) : 'Precio por confirmar'}">Precio</span>
+                            <span th:text="${cuposDisponibles[actividad.idActividad] != null and cuposDisponibles[actividad.idActividad] > 0 ? 'Cupo disponible: ' + cuposDisponibles[actividad.idActividad] : 'Sin disponibilidad'}">Cupo</span>
+                        </div>
+                        <div class="d-flex gap-2">
+                            <a class="btn btn-outline-dark btn-sm" th:href="@{/catalogo/detalle/{id}(id=${actividad.idActividad})}">Detalle</a>
+                            <a class="btn btn-success btn-sm"
+                               th:if="${cuposDisponibles[actividad.idActividad] != null and cuposDisponibles[actividad.idActividad] > 0}"
+                               th:href="@{/reservaciones/nueva(idActividad=${actividad.idActividad})}">Reservar</a>
+                            <button class="btn btn-secondary btn-sm" th:if="${cuposDisponibles[actividad.idActividad] == null or cuposDisponibles[actividad.idActividad] <= 0}" type="button" disabled>Actividad llena</button>
+                        </div>
+                    </div>
+                </article>
+            </section>
+        </main>
+        <th:block th:replace="~{aglo/fragmentos :: scripts('dashboard.js')}"></th:block>
+    </body>
+</html>

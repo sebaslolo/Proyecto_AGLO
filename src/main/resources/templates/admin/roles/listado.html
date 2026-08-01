@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+    <head th:replace="~{aglo/fragmentos :: head('Roles | AGLO', 'dashboard.css')}"></head>
+    <body class="admin-page">
+        <header th:replace="~{admin/fragmentos :: nav}"></header>
+        <main class="admin-main">
+            <section class="admin-page-title">
+                <div>
+                    <h1>Roles</h1>
+                    <p>Roles usados por la sesion administrativa.</p>
+                </div>
+                <a class="btn btn-light" th:href="@{/admin/roles/nuevo}">Nuevo</a>
+            </section>
+            <section th:replace="~{admin/fragmentos :: mensajes}"></section>
+            <section class="admin-panel">
+                <div class="table-responsive">
+                    <table class="table admin-table align-middle">
+                        <thead><tr><th>ID</th><th>Rol</th><th></th></tr></thead>
+                        <tbody>
+                            <tr th:if="${roles == null or roles.empty}">
+                                <td colspan="3" class="empty-row">No hay roles registrados.</td>
+                            </tr>
+                            <tr th:each="rol : ${roles}">
+                                <td th:text="${rol.idRol}">1</td>
+                                <td th:text="${rol.rol}">ADMIN</td>
+                                <td class="text-end">
+                                    <a class="btn btn-sm btn-outline-dark" th:href="@{/admin/roles/modificar/{id}(id=${rol.idRol})}">Editar</a>
+                                    <form class="d-inline" th:action="@{/admin/roles/eliminar}" method="post">
+                                        <input type="hidden" name="idRol" th:value="${rol.idRol}"/>
+                                        <button class="btn btn-sm btn-outline-danger" type="submit">Eliminar</button>
+                                    </form>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+        </main>
+        <th:block th:replace="~{aglo/fragmentos :: scripts('dashboard.js')}"></th:block>
+    </body>
+</html>

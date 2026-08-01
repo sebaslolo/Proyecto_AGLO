@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+    <head th:replace="~{aglo/fragmentos :: head('Roles por usuario | AGLO', 'dashboard.css')}"></head>
+    <body class="admin-page">
+        <header th:replace="~{admin/fragmentos :: nav}"></header>
+        <main class="admin-main">
+            <section class="admin-page-title">
+                <div>
+                    <h1>Roles por usuario</h1>
+                    <p>Asignacion directa de roles a usuarios existentes.</p>
+                </div>
+                <a class="btn btn-light" th:href="@{/admin/usuarios/listado}">Usuarios</a>
+            </section>
+            <section th:replace="~{admin/fragmentos :: mensajes}"></section>
+            <section class="admin-panel">
+                <form class="form-grid" th:action="@{/admin/usuarios-roles/listado}" method="get">
+                    <div class="full-row">
+                        <label class="form-label" for="idUsuarioFiltro">Usuario</label>
+                        <select class="form-select" id="idUsuarioFiltro" name="idUsuario" onchange="this.form.submit()">
+                            <option value="">Seleccione</option>
+                            <option th:each="usuario : ${usuarios}" th:value="${usuario.idUsuario}"
+                                    th:selected="${idUsuario != null and idUsuario == usuario.idUsuario}"
+                                    th:text="${usuario.nombre + ' ' + usuario.apellidoPaterno + ' - ' + usuario.correo}">Usuario</option>
+                        </select>
+                    </div>
+                </form>
+            </section>
+            <section class="admin-panel" th:if="${idUsuario != null}">
+                <form class="form-grid" th:action="@{/admin/usuarios-roles/guardar}" method="post">
+                    <input type="hidden" name="idUsuario" th:value="${idUsuario}"/>
+                    <div>
+                        <label class="form-label" for="idRol">Rol</label>
+                        <select class="form-select" id="idRol" name="idRol" required>
+                            <option value="">Seleccione</option>
+                            <option th:each="rol : ${roles}" th:value="${rol.idRol}" th:text="${rol.rol}">CLIENTE</option>
+                        </select>
+                    </div>
+                    <div class="form-actions">
+                        <button class="btn btn-success" type="submit">Asignar</button>
+                    </div>
+                </form>
+            </section>
+            <section class="admin-panel">
+                <div class="table-responsive">
+                    <table class="table admin-table align-middle">
+                        <thead><tr><th>Usuario</th><th>Rol</th><th></th></tr></thead>
+                        <tbody>
+                            <tr th:if="${idUsuario == null}">
+                                <td colspan="3" class="empty-row">Seleccione un usuario para ver sus roles.</td>
+                            </tr>
+                            <tr th:if="${idUsuario != null and (asignaciones == null or asignaciones.empty)}">
+                                <td colspan="3" class="empty-row">Este usuario no tiene roles asignados.</td>
+                            </tr>
+                            <tr th:each="asignacion : ${asignaciones}">
+                                <td th:text="${asignacion.usuario != null ? asignacion.usuario.nombre + ' ' + asignacion.usuario.apellidoPaterno : 'Usuario'}">Usuario</td>
+                                <td th:text="${asignacion.rol != null ? asignacion.rol.rol : 'Rol'}">CLIENTE</td>
+                                <td class="text-end">
+                                    <form th:action="@{/admin/usuarios-roles/eliminar}" method="post">
+                                        <input type="hidden" name="idUsuario" th:value="${asignacion.usuario.idUsuario}"/>
+                                        <input type="hidden" name="idRol" th:value="${asignacion.rol.idRol}"/>
+                                        <button class="btn btn-sm btn-outline-danger" type="submit">Remover</button>
+                                    </form>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+        </main>
+        <th:block th:replace="~{aglo/fragmentos :: scripts('dashboard.js')}"></th:block>
+    </body>
+</html>

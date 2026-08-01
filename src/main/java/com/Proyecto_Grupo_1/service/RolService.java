@@ -31,6 +31,11 @@ public class RolService {
     }
 
     @Transactional(readOnly = true)
+    public Optional<Rol> getRolPorNombre(String rol) {
+        return rolRepository.findByRolIgnoreCase(rol);
+    }
+
+    @Transactional(readOnly = true)
     public Rol obtenerRol(Integer idRol) {
         return rolRepository.findById(idRol)
                 .orElseThrow(() -> new IllegalArgumentException("Rol no encontrado: " + idRol));

@@ -1,6 +1,8 @@
 package com.Proyecto_Grupo_1.service;
 
+import com.Proyecto_Grupo_1.domain.Estado;
 import com.Proyecto_Grupo_1.domain.Usuario;
+import com.Proyecto_Grupo_1.dto.RegistroForm;
 import com.Proyecto_Grupo_1.repository.UsuarioRepository;
 import jakarta.validation.Valid;
 import java.util.List;
@@ -9,15 +11,18 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 @Service
 @Validated
 public class UsuarioService {
 
     private final UsuarioRepository usuarioRepository;
+    private final PasswordEncoder passwordEncoder;
 
-    public UsuarioService(UsuarioRepository usuarioRepository) {
+    public UsuarioService(UsuarioRepository usuarioRepository, PasswordEncoder passwordEncoder) {
         this.usuarioRepository = usuarioRepository;
+        this.passwordEncoder = passwordEncoder;
     }
 
     @Transactional(readOnly = true)
@@ -42,11 +47,25 @@ public class UsuarioService {
     }
 
     @Transactional(readOnly = true)
+    public Optional<Usuario> getUsuarioPorCorreo(String correo) {
+        return usuarioRepository.findByCorreoIgnoreCase(correo);
+    }
+
+    @Transactional(readOnly = true)
+    public Optional<Usuario> getUsuarioPorUsername(String username) {
+        if (username == null || username.isBlank()) {
+            return Optional.empty();
+        }
+        return usuarioRepository.findByUsernameIgnoreCase(username.trim());
+    }
+
+    @Transactional(readOnly = true)
     public List<Usuario> buscarUsuarios(String termino) {
         if (termino == null || termino.isBlank()) {
             return listarUsuarios();
         }
-        return usuarioRepository.findByNombreContainingIgnoreCaseOrApellidoPaternoContainingIgnoreCase(
+        return usuarioRepository.findByNombreContainingIgnoreCaseOrApellidoPaternoContainingIgnoreCaseOrCorreoContainingIgnoreCase(
+                termino,
                 termino,
                 termino);
     }
@@ -58,6 +77,40 @@ public class UsuarioService {
 
     @Transactional
     public Usuario save(@Valid Usuario usuario) {
+        if (usuario.getIdUsuario() != null) {
+            Usuario existente = obtenerUsuario(usuario.getIdUsuario());
+            if (usuario.getPassword() == null || usuario.getPassword().isBlank()) {
+                usuario.setPassword(existente.getPassword());
+            } else {
+                usuario.setPassword(passwordEncoder.encode(usuario.getPassword()));
+            }
+        } else {
+            if (usuario.getPassword() == null || usuario.getPassword().isBlank()) {
+                throw new IllegalArgumentException("La contraseña es obligatoria.");
+            }
+            usuario.setPassword(passwordEncoder.encode(usuario.getPassword()));
+        }
+        return usuarioRepository.save(usuario);
+    }
+
+    @Transactional
+    public Usuario registrarCliente(RegistroForm registroForm, Estado estadoActivo) {
+        if (existeUsername(registroForm.getUsername())) {
+            throw new IllegalArgumentException("El usuario ya existe.");
+        }
+        if (existeCorreo(registroForm.getCorreo())) {
+            throw new IllegalArgumentException("El correo ya existe.");
+        }
+
+        Usuario usuario = new Usuario();
+        usuario.setUsername(registroForm.getUsername().trim());
+        usuario.setNombre(registroForm.getNombre().trim());
+        usuario.setApellidoPaterno(registroForm.getApellidoPaterno().trim());
+        usuario.setApellidoMaterno(limpiarOpcional(registroForm.getApellidoMaterno()));
+        usuario.setCorreo(registroForm.getCorreo().trim());
+        usuario.setTelefono(limpiarOpcional(registroForm.getTelefono()));
+        usuario.setPassword(passwordEncoder.encode(registroForm.getPassword()));
+        usuario.setEstado(estadoActivo);
         return usuarioRepository.save(usuario);
     }
 
@@ -80,8 +133,30 @@ public class UsuarioService {
 
     @Transactional(readOnly = true)
     public boolean existeCorreo(String correoElectronico) {
-        return usuarioRepository.findAll().stream()
-                .anyMatch(usuario -> correoElectronico != null
-                && correoElectronico.equalsIgnoreCase(usuario.getCorreo()));
+        return correoElectronico != null
+                && !correoElectronico.isBlank()
+                && usuarioRepository.existsByCorreoIgnoreCase(correoElectronico.trim());
     }
+
+    @Transactional(readOnly = true)
+    public boolean existeUsername(String username) {
+        return username != null
+                && !username.isBlank()
+                && usuarioRepository.existsByUsernameIgnoreCase(username.trim());
+    }
+
+    @Transactional(readOnly = true)
+    public boolean correoDisponible(String correoElectronico, Integer idUsuarioActual) {
+        if (correoElectronico == null || correoElectronico.isBlank()) {
+            return true;
+        }
+        return usuarioRepository.findByCorreoIgnoreCase(correoElectronico.trim())
+                .map(usuario -> usuario.getIdUsuario().equals(idUsuarioActual))
+                .orElse(true);
+    }
+
+    private String limpiarOpcional(String texto) {
+        return texto == null || texto.isBlank() ? null : texto.trim();
+    }
+
 }

@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+    <head th:replace="~{aglo/fragmentos :: head('Acceso denegado | AGLO', 'login.css')}"></head>
+    <body>
+        <section class="fondo">
+            <div class="overlay"></div>
+            <header class="navbar">
+                <div class="logo">
+                    <img th:src="@{/img/logoAglo.png}" src="/img/logoAglo.png" alt="Logo AGLO"/>
+                    <h2>AGLO</h2>
+                </div>
+            </header>
+            <main class="contenedor">
+                <div class="cardRegistro">
+                    <h1>Acceso denegado</h1>
+                    <p>No cuenta con permisos para acceder a esta página.</p>
+                    <p class="login"><a th:href="@{/}">Volver al inicio</a></p>
+                </div>
+            </main>
+        </section>
+        <th:block th:replace="~{aglo/fragmentos :: scripts('dashboard.js')}"></th:block>
+    </body>
+</html>

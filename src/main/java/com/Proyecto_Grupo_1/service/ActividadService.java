@@ -45,6 +45,14 @@ public class ActividadService {
     }
 
     @Transactional(readOnly = true)
+    public List<Actividad> buscarActividades(String termino) {
+        if (termino == null || termino.isBlank()) {
+            return listarActividades();
+        }
+        return actividadRepository.findByNombreActividadContainingIgnoreCase(termino);
+    }
+
+    @Transactional(readOnly = true)
     public Actividad obtenerActividad(Integer idActividad) {
         return actividadRepository.findById(idActividad)
                 .orElseThrow(() -> new IllegalArgumentException("Actividad no encontrada: " + idActividad));
@@ -54,6 +62,11 @@ public class ActividadService {
     public Actividad save(@Valid Actividad actividad) {
         if (actividad.getFechaHoraInicio() != null && actividad.getFechaHoraInicio().isBefore(LocalDateTime.now())) {
             throw new IllegalArgumentException("La fecha de inicio no puede ser anterior a la fecha actual");
+        }
+        if (actividad.getFechaHoraInicio() != null
+                && actividad.getFechaHoraFin() != null
+                && !actividad.getFechaHoraFin().isAfter(actividad.getFechaHoraInicio())) {
+            throw new IllegalArgumentException("La fecha de fin debe ser posterior a la fecha de inicio");
         }
         return actividadRepository.save(actividad);
     }

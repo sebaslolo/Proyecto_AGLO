@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+    <head th:replace="~{aglo/fragmentos :: head('Ruta | AGLO', 'dashboard.css')}"></head>
+    <body class="admin-page">
+        <header th:replace="~{admin/fragmentos :: nav}"></header>
+        <main class="admin-main">
+            <section class="admin-page-title">
+                <div>
+                    <h1 th:text="${ruta.idRuta == null ? 'Nueva ruta' : 'Editar ruta'}">Ruta</h1>
+                    <p>Rutas usadas como referencia de acceso.</p>
+                </div>
+            </section>
+            <section th:replace="~{admin/fragmentos :: mensajes}"></section>
+            <section class="admin-panel">
+                <form th:action="@{/admin/rutas/guardar}" th:object="${ruta}" method="post" class="was-validated">
+                    <input type="hidden" th:field="*{idRuta}"/>
+                    <div class="form-grid">
+                        <div>
+                            <label class="form-label" for="ruta">Ruta</label>
+                            <input class="form-control" type="text" th:field="*{ruta}" maxlength="255" required/>
+                        </div>
+                        <div>
+                            <label class="form-label" for="idRol">Rol</label>
+                            <select class="form-select" id="idRol" name="rol.idRol">
+                                <option value="">Publica</option>
+                                <option th:each="rol : ${roles}" th:value="${rol.idRol}"
+                                        th:selected="${ruta.rol != null and ruta.rol.idRol == rol.idRol}"
+                                        th:text="${rol.rol}">ADMIN</option>
+                            </select>
+                        </div>
+                        <div class="full-row form-check">
+                            <input class="form-check-input" type="checkbox" th:field="*{requiereRol}"/>
+                            <label class="form-check-label" for="requiereRol">Requiere rol</label>
+                        </div>
+                    </div>
+                    <div class="form-actions">
+                        <a class="btn btn-outline-dark" th:href="@{/admin/rutas/listado}">Cancelar</a>
+                        <button class="btn btn-success" type="submit">Guardar</button>
+                    </div>
+                </form>
+            </section>
+        </main>
+        <th:block th:replace="~{aglo/fragmentos :: scripts('dashboard.js')}"></th:block>
+    </body>
+</html>

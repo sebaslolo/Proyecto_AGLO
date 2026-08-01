@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+    <head th:replace="~{aglo/fragmentos :: head('Tipo de actividad | AGLO', 'dashboard.css')}"></head>
+    <body class="admin-page">
+        <header th:replace="~{admin/fragmentos :: nav}"></header>
+        <main class="admin-main">
+            <section class="admin-page-title">
+                <div>
+                    <h1 th:text="${tipoActividad.idTipoActividad == null ? 'Nuevo tipo de actividad' : 'Editar tipo de actividad'}">Tipo de actividad</h1>
+                    <p>Defina descripcion, precio base, duracion e imagen.</p>
+                </div>
+            </section>
+            <section th:replace="~{admin/fragmentos :: mensajes}"></section>
+            <section class="admin-panel">
+                <form th:action="@{/admin/tipos-actividad/guardar}" th:object="${tipoActividad}" method="post" class="was-validated">
+                    <input type="hidden" th:field="*{idTipoActividad}"/>
+                    <div class="form-grid">
+                        <div>
+                            <label class="form-label" for="nombreTipoActividad">Nombre</label>
+                            <input class="form-control" type="text" th:field="*{nombreTipoActividad}" maxlength="100" required/>
+                        </div>
+                        <div>
+                            <label class="form-label" for="idEstado">Estado</label>
+                            <select class="form-select" id="idEstado" name="estado.idEstado" required>
+                                <option value="">Seleccione</option>
+                                <option th:each="estado : ${estados}" th:value="${estado.idEstado}"
+                                        th:selected="${tipoActividad.estado != null and tipoActividad.estado.idEstado == estado.idEstado}"
+                                        th:text="${estado.nombreEstado}">Activo</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="form-label" for="precioBase">Precio base</label>
+                            <input class="form-control" type="number" th:field="*{precioBase}" min="0" step="0.01" required/>
+                        </div>
+                        <div>
+                            <label class="form-label" for="duracionEstimada">Duracion estimada</label>
+                            <input class="form-control" type="text" th:field="*{duracionEstimada}" maxlength="50" required/>
+                        </div>
+                        <div class="full-row">
+                            <label class="form-label" for="descripcionTipoActividad">Descripcion</label>
+                            <textarea class="form-control" th:field="*{descripcionTipoActividad}" maxlength="255" required></textarea>
+                        </div>
+                        <div class="full-row">
+                            <label class="form-label" for="imagenTipoActividad">Imagen</label>
+                            <input class="form-control" type="text" th:field="*{imagenTipoActividad}" maxlength="500" placeholder="URL de imagen"/>
+                        </div>
+                    </div>
+                    <div class="form-actions">
+                        <a class="btn btn-outline-dark" th:href="@{/admin/tipos-actividad/listado}">Cancelar</a>
+                        <button class="btn btn-success" type="submit">Guardar</button>
+                    </div>
+                </form>
+            </section>
+        </main>
+        <th:block th:replace="~{aglo/fragmentos :: scripts('dashboard.js')}"></th:block>
+    </body>
+</html>
