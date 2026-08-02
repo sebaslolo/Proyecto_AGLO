@@ -32,6 +32,7 @@ public class Actividad {
     @NotBlank
     @Column(name = "nombre_actividad", length = 100, nullable = false)
     private String nombreActividad;
+    
 
     @NotNull
     @Column(name = "fecha_hora_inicio", nullable = false)
@@ -62,4 +63,10 @@ public class Actividad {
 
     @Column(name = "fecha_modificacion", insertable = false, updatable = false)
     private LocalDateTime fechaModificacion;
+    
+    @Column(name = "descripcion", length = 500)
+    private String descripcion;
+    @Column(name = "ubicacion", length = 200)
+    private String ubicacion;
+    
 }
