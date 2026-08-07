@@ -64,9 +64,4 @@ public class Actividad {
     @Column(name = "fecha_modificacion", insertable = false, updatable = false)
     private LocalDateTime fechaModificacion;
     
-    @Column(name = "descripcion", length = 500)
-    private String descripcion;
-    @Column(name = "ubicacion", length = 200)
-    private String ubicacion;
-    
 }
