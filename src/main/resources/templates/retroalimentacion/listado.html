@@ -1,19 +1,164 @@
 <!DOCTYPE html>
 <html lang="es" xmlns:th="http://www.thymeleaf.org">
-    <head th:replace="~{aglo/fragmentos :: head('Retroalimentacion | AGLO', 'dashboard.css')}"></head>
+
+    <head th:replace="~{aglo/fragmentos :: head('Retroalimentación | AGLO', 'dashboard.css')}"></head>
+
     <body class="public-page">
+
         <main class="public-main">
+
             <section class="public-page-title">
+
                 <div>
-                    <h1>Retroalimentacion</h1>
-                    <p>Opiniones y comentarios de visitantes.</p>
+                    <h1>Retroalimentación</h1>
+                    <p>Opiniones y calificaciones de las experiencias de voluntariado.</p>
                 </div>
-                <a class="btn btn-light" th:href="@{/inicio}">Inicio</a>
+
+                <a class="btn btn-light"
+                   th:href="@{/inicio}">
+                    Inicio
+                </a>
+
             </section>
+
+            <section th:replace="~{admin/fragmentos :: mensajes}"></section>
+
             <section class="admin-panel">
-                <p class="mb-0">Este modulo esta reservado para recopilar retroalimentacion de usuarios.</p>
+
+                <div class="panel-heading">
+
+                    <div>
+                        <span class="section-kicker">Retroalimentación</span>
+                        <h2>Listado de evaluaciones</h2>
+                    </div>
+
+                    <span class="badge text-bg-success"
+                          th:text="'Total: ' + ${totalRetroalimentaciones}">
+                        Total: 0
+                    </span>
+
+                </div>
+
+                <div class="table-responsive">
+
+                    <table class="table admin-table align-middle">
+
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Voluntario</th>
+                                <th>Voluntariado</th>
+                                <th>Puntuación</th>
+                                <th>Comentarios</th>
+                                <th>Fecha</th>
+                                <th>Estado</th>
+                            </tr>
+                        </thead>
+
+                        <tbody>
+
+                            <tr th:if="${retroalimentaciones == null or retroalimentaciones.empty}">
+
+                                <td colspan="7"
+                                    class="empty-row">
+
+                                    No hay retroalimentaciones registradas.
+
+                                </td>
+
+                            </tr>
+
+                            <tr th:each="retroalimentacion : ${retroalimentaciones}">
+
+                                <td th:text="${retroalimentacion.idRetroalimentacion}">
+                                    1
+                                </td>
+
+                                <td>
+
+                                    <span th:if="${retroalimentacion.usuario != null}"
+                                          th:text="${retroalimentacion.usuario.nombre
+                                          + ' '
+                                          + retroalimentacion.usuario.apellidoPaterno}">
+                                        Usuario
+                                    </span>
+
+                                    <span th:if="${retroalimentacion.usuario == null}">
+                                        Sin usuario
+                                    </span>
+
+                                </td>
+
+                                <td th:text="${retroalimentacion.voluntariado != null
+                                        ? '#' + retroalimentacion.voluntariado.idVoluntariadoRegistro
+                                        : 'Sin voluntariado'}">
+                                    #1
+                                </td>
+
+                                <td>
+
+                                    <span th:text="${retroalimentacion.puntuacion + ' / 5'}">
+                                        5 / 5
+                                    </span>
+
+                                    <small>
+                                        <i class="fa-solid fa-star"></i>
+                                        Calificación
+                                    </small>
+
+                                </td>
+
+                                <td>
+
+                                    <span th:if="${retroalimentacion.comentarios != null
+                                            and !retroalimentacion.comentarios.isEmpty()}"
+                                          th:text="${retroalimentacion.comentarios}">
+                                        Excelente experiencia.
+                                    </span>
+
+                                    <span th:if="${retroalimentacion.comentarios == null
+                                            or retroalimentacion.comentarios.isEmpty()}"
+                                          class="text-muted">
+                                        Sin comentarios
+                                    </span>
+
+                                </td>
+
+                                <td th:text="${retroalimentacion.fechaCreacion != null
+                                        ? #temporals.format(retroalimentacion.fechaCreacion, 'dd/MM/yyyy HH:mm')
+                                        : 'Sin fecha'}">
+                                    08/08/2026
+                                </td>
+
+                                <td>
+
+                                    <span th:if="${retroalimentacion.estado != null}"
+                                          th:text="${retroalimentacion.estado.nombreEstado}"
+                                          class="status-pill status-active">
+                                        Activo
+                                    </span>
+
+                                    <span th:if="${retroalimentacion.estado == null}"
+                                          class="status-pill">
+                                        Sin estado
+                                    </span>
+
+                                </td>
+
+                            </tr>
+
+                        </tbody>
+
+                    </table>
+
+                </div>
+
             </section>
+
         </main>
+
         <th:block th:replace="~{aglo/fragmentos :: scripts('dashboard.js')}"></th:block>
+
     </body>
+
 </html>
