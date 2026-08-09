@@ -10,8 +10,10 @@ public interface RetroalimentacionRepository extends JpaRepository<Retroalimenta
 
     List<Retroalimentacion> findByUsuarioIdUsuario(Integer idUsuario);
 
-    List<Retroalimentacion> findByVoluntariadoIdVoluntariadoRegistro(Integer idVoluntariado);
+    List<Retroalimentacion> findByVoluntariadoIdVoluntariado(
+            Integer idVoluntariado);
 
-    boolean existsByUsuarioIdUsuarioAndVoluntariadoIdVoluntariadoRegistro(
-            Integer idUsuario, Integer idVoluntariado);
+    boolean existsByUsuarioIdUsuarioAndVoluntariadoIdVoluntariado(
+            Integer idUsuario,
+            Integer idVoluntariado);
 }

@@ -8,15 +8,17 @@
         <main class="public-main">
 
             <section class="public-page-title">
+
                 <div>
                     <h1>Calificar experiencia</h1>
                     <p>Cuéntanos cómo fue tu experiencia como voluntario.</p>
                 </div>
 
                 <a class="btn btn-light"
-                   th:href="@{/mis-voluntariados/listado}">
+                   th:href="@{/voluntariados/mis-voluntariados/listado}">
                     Regresar
                 </a>
+
             </section>
 
             <section th:replace="~{admin/fragmentos :: mensajes}"></section>
@@ -24,45 +26,72 @@
             <section class="admin-panel">
 
                 <div class="panel-heading">
+
                     <div>
-                        <span class="section-kicker">HU-5 · Retroalimentación</span>
+                        <span class="section-kicker">
+                            HU-5 · Retroalimentación
+                        </span>
+
                         <h2>Encuesta de voluntariado</h2>
                     </div>
+
                 </div>
 
-                <div class="alert alert-info" role="alert">
+                <div class="alert alert-info"
+                     role="alert">
+
                     <i class="fa-solid fa-circle-info"></i>
+
                     Esta retroalimentación no podrá ser modificada una vez enviada.
+
                 </div>
 
                 <div class="mb-4">
 
                     <p class="mb-2">
-                        <strong>Voluntariado:</strong>
 
-                        <span th:text="'#' + ${voluntariado.idVoluntariadoRegistro}">
-                            #1
+                        <strong>Actividad:</strong>
+
+                        <span th:text="${voluntariado.actividad != null
+                                ? voluntariado.actividad.nombreActividad
+                                : 'Sin actividad'}">
+
+                            Voluntariado Prueba HU5
+
                         </span>
+
                     </p>
 
                     <p class="mb-2">
-                        <strong>Fecha de la sesión:</strong>
 
-                        <span th:text="${voluntariado.fechaSesion != null
-                                ? #temporals.format(voluntariado.fechaSesion, 'dd/MM/yyyy')
+                        <strong>Fecha de la actividad:</strong>
+
+                        <span th:text="${voluntariado.actividad != null
+                                and voluntariado.actividad.fechaHoraInicio != null
+                                ? #temporals.format(
+                                    voluntariado.actividad.fechaHoraInicio,
+                                    'dd/MM/yyyy HH:mm')
                                 : 'Sin fecha registrada'}">
-                            08/08/2026
+
+                            06/08/2026 22:17
+
                         </span>
+
                     </p>
 
                     <p class="mb-0">
-                        <strong>Horas de la sesión:</strong>
 
-                        <span th:text="${voluntariado.cantidadHorasSesion != null
-                                ? voluntariado.cantidadHorasSesion + ' horas'
+                        <strong>Horas acumuladas:</strong>
+
+                        <span th:text="${voluntariado.voluntariado != null
+                                and voluntariado.voluntariado.horasAcumuladas != null
+                                ? voluntariado.voluntariado.horasAcumuladas + ' horas'
                                 : 'Sin horas registradas'}">
+
                             4 horas
+
                         </span>
+
                     </p>
 
                 </div>
@@ -74,7 +103,7 @@
 
                     <input type="hidden"
                            name="idVoluntariado"
-                           th:value="${voluntariado.idVoluntariadoRegistro}"/>
+                           th:value="${voluntariado.idInscripcionVoluntariado}"/>
 
                     <div class="form-grid">
 
@@ -99,8 +128,10 @@
 
                                 <label class="btn btn-outline-dark"
                                        for="puntuacion1">
+
                                     <i class="fa-solid fa-star"></i>
                                     1
+
                                 </label>
 
                                 <input class="btn-check"
@@ -111,8 +142,10 @@
 
                                 <label class="btn btn-outline-dark"
                                        for="puntuacion2">
+
                                     <i class="fa-solid fa-star"></i>
                                     2
+
                                 </label>
 
                                 <input class="btn-check"
@@ -123,8 +156,10 @@
 
                                 <label class="btn btn-outline-dark"
                                        for="puntuacion3">
+
                                     <i class="fa-solid fa-star"></i>
                                     3
+
                                 </label>
 
                                 <input class="btn-check"
@@ -135,8 +170,10 @@
 
                                 <label class="btn btn-outline-dark"
                                        for="puntuacion4">
+
                                     <i class="fa-solid fa-star"></i>
                                     4
+
                                 </label>
 
                                 <input class="btn-check"
@@ -147,8 +184,10 @@
 
                                 <label class="btn btn-outline-dark"
                                        for="puntuacion5">
+
                                     <i class="fa-solid fa-star"></i>
                                     5
+
                                 </label>
 
                             </div>
@@ -180,14 +219,16 @@
                     <div class="form-actions">
 
                         <a class="btn btn-outline-dark"
-                           th:href="@{/mis-voluntariados/listado}">
+                           th:href="@{/voluntariados/mis-voluntariados/listado}">
                             Cancelar
                         </a>
 
                         <button class="btn btn-success"
                                 type="submit">
+
                             <i class="fa-solid fa-paper-plane"></i>
                             Enviar retroalimentación
+
                         </button>
 
                     </div>

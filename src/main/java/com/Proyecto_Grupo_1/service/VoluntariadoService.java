@@ -1,53 +1,63 @@
 package com.Proyecto_Grupo_1.service;
 
 import com.Proyecto_Grupo_1.domain.Actividad;
+import com.Proyecto_Grupo_1.domain.Estado;
+import com.Proyecto_Grupo_1.domain.InscripcionVoluntariado;
 import com.Proyecto_Grupo_1.domain.Usuario;
 import com.Proyecto_Grupo_1.domain.Voluntariado;
+import com.Proyecto_Grupo_1.repository.InscripcionVoluntariadoRepository;
 import com.Proyecto_Grupo_1.repository.VoluntariadoRepository;
-import jakarta.validation.Valid;
+import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
-import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.validation.annotation.Validated;
 
 @Service
-@Validated
 public class VoluntariadoService {
 
     private final VoluntariadoRepository voluntariadoRepository;
+    private final InscripcionVoluntariadoRepository inscripcionVoluntariadoRepository;
     private final ActividadService actividadService;
     private final UsuarioService usuarioService;
+    private final EstadoService estadoService;
 
     public VoluntariadoService(
             VoluntariadoRepository voluntariadoRepository,
+            InscripcionVoluntariadoRepository inscripcionVoluntariadoRepository,
             ActividadService actividadService,
-            UsuarioService usuarioService) {
+            UsuarioService usuarioService,
+            EstadoService estadoService) {
 
         this.voluntariadoRepository = voluntariadoRepository;
+        this.inscripcionVoluntariadoRepository = inscripcionVoluntariadoRepository;
         this.actividadService = actividadService;
         this.usuarioService = usuarioService;
+        this.estadoService = estadoService;
     }
-
-    // Métodos de inscripción a voluntariados
 
     @Transactional(readOnly = true)
     public long obtenerCantidadInscritos(Integer idActividad) {
-        return voluntariadoRepository.countByActividadIdActividad(idActividad);
+
+        return inscripcionVoluntariadoRepository
+                .countByActividadIdActividad(idActividad);
     }
 
     @Transactional(readOnly = true)
     public long obtenerCuposDisponibles(Integer idActividad) {
 
-        Actividad actividad = actividadService.obtenerActividad(idActividad);
+        Actividad actividad =
+                actividadService.obtenerActividad(idActividad);
 
-        long cupoMaximo = actividad.getCupoMaximo() == null
+        long cupoMaximo =
+                actividad.getCupoMaximo() == null
                 ? 0
                 : actividad.getCupoMaximo();
 
-        long inscritos = obtenerCantidadInscritos(idActividad);
+        long inscritos =
+                obtenerCantidadInscritos(idActividad);
 
         return Math.max(0, cupoMaximo - inscritos);
     }
@@ -57,121 +67,161 @@ public class VoluntariadoService {
             Integer idUsuario,
             Integer idActividad) {
 
-        return voluntariadoRepository
-                .existsByUsuarioIdUsuarioAndActividadIdActividad(
+        return inscripcionVoluntariadoRepository
+                .existsByVoluntariadoUsuarioIdUsuarioAndActividadIdActividad(
                         idUsuario,
                         idActividad);
     }
 
     @Transactional
-    public Voluntariado inscribir(
+    public InscripcionVoluntariado inscribir(
             Integer idUsuario,
-            Integer idActividad,
-            String herramientasUtilizadas) {
+            Integer idActividad) {
 
-        Actividad actividad = actividadService.obtenerActividad(idActividad);
-        Usuario usuario = usuarioService.obtenerUsuario(idUsuario);
+        Actividad actividad =
+                actividadService.obtenerActividad(idActividad);
 
-        if (actividad.getFechaHoraInicio().isBefore(LocalDateTime.now())) {
+        Usuario usuario =
+                usuarioService.obtenerUsuario(idUsuario);
+
+        if (actividad.getFechaHoraInicio()
+                .isBefore(LocalDateTime.now())) {
+
             throw new IllegalStateException(
                     "Este voluntariado ya inició o finalizó.");
         }
 
-        if (usuarioYaInscrito(idUsuario, idActividad)) {
+        if (usuarioYaInscrito(
+                idUsuario,
+                idActividad)) {
+
             throw new IllegalStateException(
                     "Ya te encuentras inscrito en este voluntariado.");
         }
 
         if (obtenerCuposDisponibles(idActividad) <= 0) {
+
             throw new IllegalStateException(
                     "No hay cupos disponibles para este voluntariado.");
         }
 
-        Voluntariado inscripcion = new Voluntariado();
+        Voluntariado voluntariado =
+                obtenerOCrearVoluntario(usuario);
 
-        inscripcion.setUsuario(usuario);
+        Estado estadoInscripcion =
+                estadoService.obtenerEstadoPorNombre(
+                        "Confirmada");
+
+        InscripcionVoluntariado inscripcion =
+                new InscripcionVoluntariado();
+
+        inscripcion.setVoluntariado(voluntariado);
         inscripcion.setActividad(actividad);
-        inscripcion.setHerramientasUtilizadas(herramientasUtilizadas);
-        inscripcion.setFechaInscripcion(LocalDateTime.now());
+        inscripcion.setFechaInscripcion(
+                LocalDateTime.now());
+        inscripcion.setEstado(
+                estadoInscripcion);
 
-        return voluntariadoRepository.save(inscripcion);
+        return inscripcionVoluntariadoRepository
+                .save(inscripcion);
     }
 
-    @Transactional(readOnly = true)
-    public List<Voluntariado> listarPorUsuario(Integer idUsuario) {
-        return voluntariadoRepository
-                .findByUsuarioIdUsuarioOrderByFechaInscripcionDesc(idUsuario);
-    }
+    private Voluntariado obtenerOCrearVoluntario(
+            Usuario usuario) {
 
-    // Métodos utilizados por HU-5 Retroalimentación
+        Optional<Voluntariado> voluntariadoExistente =
+                voluntariadoRepository
+                        .findByUsuarioIdUsuario(
+                                usuario.getIdUsuario());
 
-    @Transactional(readOnly = true)
-    public List<Voluntariado> getVoluntariados(boolean sinFiltro) {
-        return voluntariadoRepository.findAll();
-    }
+        if (voluntariadoExistente.isPresent()) {
 
-    @Transactional(readOnly = true)
-    public Optional<Voluntariado> getVoluntariado(Integer idVoluntariado) {
-        return voluntariadoRepository.findById(idVoluntariado);
-    }
+            return voluntariadoExistente.get();
+        }
 
-    @Transactional(readOnly = true)
-    public List<Voluntariado> getVoluntariadosPorUsuario(Integer idUsuario) {
-        return voluntariadoRepository
-                .findByUsuarioIdUsuarioOrderByFechaInscripcionDesc(idUsuario);
-    }
-
-    @Transactional(readOnly = true)
-    public Voluntariado obtenerVoluntariado(Integer idVoluntariado) {
-
-        return voluntariadoRepository.findById(idVoluntariado)
-                .orElseThrow(() -> new IllegalArgumentException(
-                        "Voluntariado no encontrado: " + idVoluntariado));
-    }
-
-    // HU-5 - La retroalimentación se realiza después del voluntariado
-    @Transactional(readOnly = true)
-    public boolean puedeEnviarRetroalimentacion(Integer idVoluntariado) {
+        Estado estadoActivo =
+                estadoService.obtenerEstadoPorNombre(
+                        "Activo");
 
         Voluntariado voluntariado =
-                obtenerVoluntariado(idVoluntariado);
+                new Voluntariado();
+
+        voluntariado.setUsuario(usuario);
+        voluntariado.setFechaIngreso(
+                LocalDate.now());
+        voluntariado.setDisponibilidad(null);
+        voluntariado.setHorasAcumuladas(
+                BigDecimal.ZERO);
+        voluntariado.setEstado(
+                estadoActivo);
+
+        return voluntariadoRepository
+                .save(voluntariado);
+    }
+
+    @Transactional(readOnly = true)
+    public List<InscripcionVoluntariado>
+            listarPorUsuario(Integer idUsuario) {
+
+        return inscripcionVoluntariadoRepository
+                .findByVoluntariadoUsuarioIdUsuarioOrderByFechaInscripcionDesc(
+                        idUsuario);
+    }
+
+    @Transactional(readOnly = true)
+    public List<InscripcionVoluntariado>
+            getVoluntariadosPorUsuario(
+                    Integer idUsuario) {
+
+        return listarPorUsuario(idUsuario);
+    }
+
+    @Transactional(readOnly = true)
+    public List<InscripcionVoluntariado>
+            getVoluntariados(boolean sinFiltro) {
+
+        return inscripcionVoluntariadoRepository
+                .findAll();
+    }
+
+    @Transactional(readOnly = true)
+    public Optional<InscripcionVoluntariado>
+            getVoluntariado(
+                    Integer idInscripcion) {
+
+        return inscripcionVoluntariadoRepository
+                .findById(idInscripcion);
+    }
+
+    @Transactional(readOnly = true)
+    public InscripcionVoluntariado
+            obtenerVoluntariado(
+                    Integer idInscripcion) {
+
+        return inscripcionVoluntariadoRepository
+                .findById(idInscripcion)
+                .orElseThrow(() ->
+                        new IllegalArgumentException(
+                                "Inscripción de voluntariado no encontrada: "
+                                + idInscripcion));
+    }
+
+    @Transactional(readOnly = true)
+    public boolean puedeEnviarRetroalimentacion(
+            Integer idInscripcion) {
+
+        InscripcionVoluntariado voluntariado =
+                obtenerVoluntariado(idInscripcion);
 
         if (voluntariado.getActividad() == null
-                || voluntariado.getActividad().getFechaHoraInicio() == null) {
+                || voluntariado.getActividad()
+                        .getFechaHoraInicio() == null) {
+
             return false;
         }
 
-        LocalDateTime ahora = LocalDateTime.now();
-
-        return !ahora.isBefore(
-                voluntariado.getActividad().getFechaHoraInicio());
-    }
-
-    @Transactional
-    public Voluntariado save(@Valid Voluntariado voluntariado) {
-        return voluntariadoRepository.save(voluntariado);
-    }
-
-    @Transactional
-    public void delete(Integer idVoluntariado) {
-
-        if (!voluntariadoRepository.existsById(idVoluntariado)) {
-            throw new IllegalArgumentException(
-                    "El voluntariado con ID "
-                    + idVoluntariado
-                    + " no existe.");
-        }
-
-        try {
-
-            voluntariadoRepository.deleteById(idVoluntariado);
-
-        } catch (DataIntegrityViolationException e) {
-
-            throw new IllegalStateException(
-                    "No se puede eliminar el voluntariado. "
-                    + "Tiene datos asociados.",
-                    e);
-        }
+        return !LocalDateTime.now().isBefore(
+                voluntariado.getActividad()
+                        .getFechaHoraInicio());
     }
 }

@@ -1,19 +1,15 @@
 package com.Proyecto_Grupo_1.repository;
 
 import com.Proyecto_Grupo_1.domain.Voluntariado;
-import java.util.List;
+import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface VoluntariadoRepository extends JpaRepository<Voluntariado, Integer> {
+public interface VoluntariadoRepository
+        extends JpaRepository<Voluntariado, Integer> {
 
-    boolean existsByUsuarioIdUsuarioAndActividadIdActividad(
-            Integer idUsuario,
-            Integer idActividad);
+    Optional<Voluntariado> findByUsuarioIdUsuario(Integer idUsuario);
 
-    long countByActividadIdActividad(Integer idActividad);
-
-    List<Voluntariado> findByUsuarioIdUsuarioOrderByFechaInscripcionDesc(
-            Integer idUsuario);
+    boolean existsByUsuarioIdUsuario(Integer idUsuario);
 }

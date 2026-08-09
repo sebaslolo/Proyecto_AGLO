@@ -8,33 +8,29 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
-import java.math.BigDecimal;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import lombok.Data;
 
 @Data
 @Entity
-@Table(name = "fide_voluntario_tb")
-public class Voluntariado {
+@Table(name = "fide_inscripcion_voluntariado_tb")
+public class InscripcionVoluntariado {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id_voluntario")
-    private Integer idVoluntariado;
+    @Column(name = "id_inscripcion_voluntariado")
+    private Integer idInscripcionVoluntariado;
 
     @ManyToOne
-    @JoinColumn(name = "id_usuario", nullable = false)
-    private Usuario usuario;
+    @JoinColumn(name = "id_voluntario", nullable = false)
+    private Voluntariado voluntariado;
 
-    @Column(name = "fecha_ingreso", nullable = false)
-    private LocalDate fechaIngreso;
+    @ManyToOne
+    @JoinColumn(name = "id_actividad", nullable = false)
+    private Actividad actividad;
 
-    @Column(name = "disponibilidad", length = 100)
-    private String disponibilidad;
-
-    @Column(name = "horas_acumuladas", nullable = false)
-    private BigDecimal horasAcumuladas;
+    @Column(name = "fecha_inscripcion")
+    private LocalDateTime fechaInscripcion;
 
     @ManyToOne
     @JoinColumn(name = "id_estado", nullable = false)

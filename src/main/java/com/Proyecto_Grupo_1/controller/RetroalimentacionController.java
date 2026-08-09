@@ -46,15 +46,21 @@ public class RetroalimentacionController {
     public String listado(Model model) {
 
         var retroalimentaciones =
-                retroalimentacionService.getRetroalimentaciones(false);
+                retroalimentacionService
+                        .getRetroalimentaciones(false);
 
-        model.addAttribute("retroalimentaciones", retroalimentaciones);
-        model.addAttribute("totalRetroalimentaciones", retroalimentaciones.size());
+        model.addAttribute(
+                "retroalimentaciones",
+                retroalimentaciones);
+
+        model.addAttribute(
+                "totalRetroalimentaciones",
+                retroalimentaciones.size());
 
         return "/retroalimentacion/listado";
     }
 
-    // Formulario para calificar experiencia
+    // HU-5 - Formulario para calificar experiencia
     @GetMapping("/calificar/{idVoluntariado}")
     public String calificar(
             @PathVariable Integer idVoluntariado,
@@ -62,11 +68,15 @@ public class RetroalimentacionController {
             Model model,
             RedirectAttributes redirectAttributes) {
 
-        Usuario usuario = obtenerUsuarioActual(authentication);
-        Integer idUsuario = usuario.getIdUsuario();
+        Usuario usuario =
+                obtenerUsuarioActual(authentication);
+
+        Integer idUsuario =
+                usuario.getIdUsuario();
 
         var voluntariadoOpt =
-                voluntariadoService.getVoluntariado(idVoluntariado);
+                voluntariadoService
+                        .getVoluntariado(idVoluntariado);
 
         if (voluntariadoOpt.isEmpty()) {
 
@@ -74,42 +84,60 @@ public class RetroalimentacionController {
                     "error",
                     "El voluntariado no existe.");
 
-            return "redirect:/mis-voluntariados/listado";
+            return "redirect:/voluntariados/"
+                    + "mis-voluntariados/listado";
         }
 
-        var voluntariado = voluntariadoOpt.get();
+        var voluntariado =
+                voluntariadoOpt.get();
 
-        // Verificar que el voluntariado pertenezca al usuario
-        if (voluntariado.getUsuario() == null
-                || !voluntariado.getUsuario().getIdUsuario().equals(idUsuario)) {
+        // HU-5 - Verificar que el voluntariado
+        // pertenezca al usuario
+        if (voluntariado.getVoluntariado() == null
+                || voluntariado.getVoluntariado()
+                        .getUsuario() == null
+                || !voluntariado.getVoluntariado()
+                        .getUsuario()
+                        .getIdUsuario()
+                        .equals(idUsuario)) {
 
             redirectAttributes.addFlashAttribute(
                     "error",
-                    "No tiene permiso para calificar este voluntariado.");
+                    "No tiene permiso para calificar "
+                    + "este voluntariado.");
 
-            return "redirect:/mis-voluntariados/listado";
+            return "redirect:/voluntariados/"
+                    + "mis-voluntariados/listado";
         }
 
-        // HU-5 - Verificar que no haya enviado retroalimentación
+        // HU-5 - Verificar que no haya
+        // enviado retroalimentación
         if (retroalimentacionService
-                .yaEnvioRetroalimentacion(idUsuario, idVoluntariado)) {
+                .yaEnvioRetroalimentacion(
+                        idUsuario,
+                        idVoluntariado)) {
 
             redirectAttributes.addFlashAttribute(
                     "error",
                     msg("retroalimentacion.error.editable"));
 
-            return "redirect:/mis-voluntariados/listado";
+            return "redirect:/voluntariados/"
+                    + "mis-voluntariados/listado";
         }
 
-        // HU-5 - La retroalimentación se realiza después del voluntariado
+        // HU-5 - La retroalimentación
+        // se realiza después del voluntariado
         if (!voluntariadoService
-                .puedeEnviarRetroalimentacion(idVoluntariado)) {
+                .puedeEnviarRetroalimentacion(
+                        idVoluntariado)) {
 
             redirectAttributes.addFlashAttribute(
                     "error",
-                    "La retroalimentación estará disponible después de realizar el voluntariado.");
+                    "La retroalimentación estará disponible "
+                    + "después de realizar el voluntariado.");
 
-            return "redirect:/mis-voluntariados/listado";
+            return "redirect:/voluntariados/"
+                    + "mis-voluntariados/listado";
         }
 
         model.addAttribute(
@@ -123,7 +151,7 @@ public class RetroalimentacionController {
         return "/retroalimentacion/calificar";
     }
 
-    // Guardar retroalimentación
+    // HU-5 - Guardar retroalimentación
     @PostMapping("/guardar")
     public String guardar(
             Retroalimentacion retroalimentacion,
@@ -133,50 +161,87 @@ public class RetroalimentacionController {
 
         try {
 
-            Usuario usuario = obtenerUsuarioActual(authentication);
+            Usuario usuario =
+                    obtenerUsuarioActual(authentication);
 
             var voluntariado =
-                    voluntariadoService.obtenerVoluntariado(idVoluntariado);
+                    voluntariadoService
+                            .obtenerVoluntariado(
+                                    idVoluntariado);
 
-            // HU-5 - Verificar que la actividad ya se haya realizado
-            if (!voluntariadoService
-                    .puedeEnviarRetroalimentacion(idVoluntariado)) {
+            // HU-5 - Verificar que el voluntariado
+            // pertenezca al usuario
+            if (voluntariado.getVoluntariado() == null
+                    || voluntariado.getVoluntariado()
+                            .getUsuario() == null
+                    || !voluntariado.getVoluntariado()
+                            .getUsuario()
+                            .getIdUsuario()
+                            .equals(usuario.getIdUsuario())) {
 
                 throw new IllegalStateException(
-                        "La retroalimentación estará disponible después de realizar el voluntariado.");
+                        "No tiene permiso para calificar "
+                        + "este voluntariado.");
+            }
+
+            // HU-5 - Verificar que la actividad
+            // ya se haya realizado
+            if (!voluntariadoService
+                    .puedeEnviarRetroalimentacion(
+                            idVoluntariado)) {
+
+                throw new IllegalStateException(
+                        "La retroalimentación estará disponible "
+                        + "después de realizar el voluntariado.");
             }
 
             var estado =
-                    estadoService.obtenerEstadoPorNombre("Activo");
+                    estadoService
+                            .obtenerEstadoPorNombre(
+                                    "Activo");
 
-            retroalimentacion.setUsuario(usuario);
-            retroalimentacion.setVoluntariado(voluntariado);
-            retroalimentacion.setEstado(estado);
+            retroalimentacion.setUsuario(
+                    usuario);
 
-            retroalimentacionService.save(retroalimentacion);
+            retroalimentacion.setVoluntariado(
+                    voluntariado.getVoluntariado());
+
+            retroalimentacion.setEstado(
+                    estado);
+
+            retroalimentacionService
+                    .save(retroalimentacion);
 
             redirectAttributes.addFlashAttribute(
                     "todoOk",
                     msg("retroalimentacion.mensaje.enviada"));
 
-        } catch (IllegalArgumentException | IllegalStateException e) {
+        } catch (IllegalArgumentException
+                | IllegalStateException e) {
 
             redirectAttributes.addFlashAttribute(
                     "error",
                     e.getMessage());
         }
 
-        return "redirect:/mis-voluntariados/listado";
+        return "redirect:/voluntariados/"
+                + "mis-voluntariados/listado";
     }
 
-    private Usuario obtenerUsuarioActual(Authentication authentication) {
+    private Usuario obtenerUsuarioActual(
+            Authentication authentication) {
+
         return usuarioService
-                .getUsuarioPorUsername(authentication.getName())
-                .orElseThrow(() -> new IllegalStateException(
-                        "Usuario autenticado no encontrado."));
+                .getUsuarioPorUsername(
+                        authentication.getName())
+                .orElseThrow(() ->
+                        new IllegalStateException(
+                                "Usuario autenticado "
+                                + "no encontrado."));
     }
 
     private String msg(String key) {
+
         return messageSource.getMessage(
                 key,
                 null,

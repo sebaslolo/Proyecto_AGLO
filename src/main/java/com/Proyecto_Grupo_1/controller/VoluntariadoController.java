@@ -14,6 +14,9 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+import com.Proyecto_Grupo_1.domain.Usuario;
+import com.Proyecto_Grupo_1.service.UsuarioService;
+import org.springframework.security.core.Authentication;
 
 @Controller
 @RequestMapping("/voluntariados")
@@ -21,15 +24,17 @@ public class VoluntariadoController {
 
     private final ActividadService actividadService;
     private final VoluntariadoService voluntariadoService;
+    private final UsuarioService usuarioService;
 
     public VoluntariadoController(
             ActividadService actividadService,
-            VoluntariadoService voluntariadoService) {
+            VoluntariadoService voluntariadoService,
+            UsuarioService usuarioService) {
 
         this.actividadService = actividadService;
         this.voluntariadoService = voluntariadoService;
+        this.usuarioService = usuarioService;
     }
-
     @GetMapping
     public String index() {
         return "redirect:/voluntariados/listado";
@@ -38,7 +43,7 @@ public class VoluntariadoController {
     @GetMapping("/listado")
     public String listado(Model model, HttpSession sesion) {
 
-        var voluntariados = actividadService.listarVoluntariadosFuturos();
+        var voluntariados = actividadService.listarActividadesFuturas();
 
         Integer idUsuario = (Integer) sesion.getAttribute("idUsuario");
 
@@ -107,8 +112,7 @@ public class VoluntariadoController {
 
             voluntariadoService.inscribir(
                     idUsuario,
-                    voluntariadoForm.getIdActividad(),
-                    voluntariadoForm.getHerramientasUtilizadas()
+                    voluntariadoForm.getIdActividad()
             );
 
             redirectAttributes.addFlashAttribute(
@@ -163,27 +167,37 @@ public class VoluntariadoController {
     }
 
     // HU-5 - Historial de voluntariados del usuario
-    @GetMapping("/mis-voluntariados/listado")
+ @GetMapping("/mis-voluntariados/listado")
     public String misVoluntariados(
-            HttpSession sesion,
+            Authentication authentication,
             Model model,
             RedirectAttributes redirectAttributes) {
 
-        Integer idUsuario =
-                (Integer) sesion.getAttribute("idUsuario");
-
-        if (idUsuario == null) {
+        if (authentication == null
+                || !authentication.isAuthenticated()) {
 
             redirectAttributes.addFlashAttribute(
                     "error",
                     "Debe iniciar sesión.");
 
-            return "redirect:/auth/login";
+            return "redirect:/login";
         }
 
-        var voluntariados =
-                voluntariadoService.getVoluntariadosPorUsuario(
-                        idUsuario);
+        Usuario usuario
+                = usuarioService
+                        .getUsuarioPorUsername(
+                                authentication.getName())
+                        .orElseThrow(()
+                                -> new IllegalStateException(
+                                "Usuario autenticado no encontrado."));
+
+        Integer idUsuario
+                = usuario.getIdUsuario();
+
+        var voluntariados
+                = voluntariadoService
+                        .getVoluntariadosPorUsuario(
+                                idUsuario);
 
         model.addAttribute(
                 "voluntariados",
