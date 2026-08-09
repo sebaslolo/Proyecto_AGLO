@@ -1,7 +1,7 @@
+
 package com.Proyecto_Grupo_1.controller;
 
-import com.Proyecto_Grupo_1.domain.Avistamiento;
-import com.Proyecto_Grupo_1.service.AvistamientoService;
+import com.Proyecto_Grupo_1.domain.Tortuga;
 import com.Proyecto_Grupo_1.service.EstadoService;
 import com.Proyecto_Grupo_1.service.TortugaService;
 import jakarta.validation.Valid;
@@ -14,21 +14,18 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 @Controller
-@RequestMapping("/admin/avistamientos")
-public class AvistamientoController {
+@RequestMapping("/admin/tortugas")
+public class TortugaController {
 
-    private final AvistamientoService avistamientoService;
     private final TortugaService tortugaService;
     private final EstadoService estadoService;
     private final MessageSource messageSource;
 
-    public AvistamientoController(
-            AvistamientoService avistamientoService,
+    public TortugaController(
             TortugaService tortugaService,
             EstadoService estadoService,
             MessageSource messageSource){
 
-        this.avistamientoService=avistamientoService;
         this.tortugaService=tortugaService;
         this.estadoService=estadoService;
         this.messageSource=messageSource;
@@ -37,97 +34,96 @@ public class AvistamientoController {
 
     @GetMapping
     public String index(){
-        return "redirect:/admin/avistamientos/listado";
+        return "redirect:/admin/tortugas/listado";
     }
 
     @GetMapping("/listado")
     public String listado(Model model){
 
-        var avistamientos=avistamientoService.getAvistamientos(false);
+        var tortugas=tortugaService.getTortugas(false);
 
-        model.addAttribute("avistamientos",avistamientos);
-        model.addAttribute("totalAvistamientos",avistamientos.size());
+        model.addAttribute("tortugas",tortugas);
+        model.addAttribute("totalTortugas",tortugas.size());
 
-        return "/admin/avistamientos/listado";
+        return "/admin/tortugas/listado";
 
     }
 
     @GetMapping("/nuevo")
     public String nuevo(Model model){
 
-        model.addAttribute("avistamiento",new Avistamiento());
+        model.addAttribute("tortuga",new Tortuga());
 
         cargarCatalogos(model);
 
-        return "/admin/avistamientos/modifica";
+        return "/admin/tortugas/modifica";
 
     }
 
     @PostMapping("/guardar")
-    public String guardar(@Valid Avistamiento avistamiento,
+    public String guardar(@Valid Tortuga tortuga,
             BindingResult bindingResult,
             Model model,
             RedirectAttributes redirectAttributes){
 
         if(bindingResult.hasErrors()){
             cargarCatalogos(model);
-            return "/admin/avistamientos/modifica";
+            return "/admin/tortugas/modifica";
         }
 
-        avistamientoService.save(avistamiento);
+        tortugaService.save(tortuga);
 
-        redirectAttributes.addFlashAttribute("todoOk",msg("avistamiento.mensaje.guardado"));
+        redirectAttributes.addFlashAttribute("todoOk",msg("tortuga.mensaje.guardado"));
 
-        return "redirect:/admin/avistamientos/listado";
+        return "redirect:/admin/tortugas/listado";
 
     }
 
     @PostMapping("/eliminar")
-    public String eliminar(@RequestParam Integer idAvistamiento,
+    public String eliminar(@RequestParam String etiquetaTortuga,
             RedirectAttributes redirectAttributes){
 
         String titulo="todoOk";
-        String detalle=msg("avistamiento.mensaje.eliminado");
+        String detalle=msg("tortuga.mensaje.eliminado");
 
         try{
-            avistamientoService.delete(idAvistamiento);
+            tortugaService.delete(etiquetaTortuga);
         }catch(Exception e){
             titulo="error";
-            detalle=msg("avistamiento.error.noExiste");
+            detalle=msg("tortuga.error.noExiste");
         }
 
         redirectAttributes.addFlashAttribute(titulo,detalle);
 
-        return "redirect:/admin/avistamientos/listado";
+        return "redirect:/admin/tortugas/listado";
 
     }
 
-    @GetMapping("/modificar/{idAvistamiento}")
-    public String modificar(@PathVariable Integer idAvistamiento,
+    @GetMapping("/modificar/{etiquetaTortuga}")
+    public String modificar(@PathVariable String etiquetaTortuga,
             Model model,
             RedirectAttributes redirectAttributes){
 
-        var avistamiento=avistamientoService.getAvistamiento(idAvistamiento);
+        var tortuga=tortugaService.getTortuga(etiquetaTortuga);
 
-        if(avistamiento.isEmpty()){
+        if(tortuga.isEmpty()){
 
-            redirectAttributes.addFlashAttribute("error",msg("avistamiento.error.noExiste"));
+            redirectAttributes.addFlashAttribute("error",msg("tortuga.error.noExiste"));
 
-            return "redirect:/admin/avistamientos/listado";
+            return "redirect:/admin/tortugas/listado";
 
         }
 
-        model.addAttribute("avistamiento",avistamiento.get());
+        model.addAttribute("tortuga",tortuga.get());
 
         cargarCatalogos(model);
 
-        return "/admin/avistamientos/modifica";
+        return "/admin/tortugas/modifica";
 
     }
 
     private void cargarCatalogos(Model model){
 
-        model.addAttribute("tortugas",tortugaService.getTortugas(false));
         model.addAttribute("estados",estadoService.getEstados(false));
 
     }

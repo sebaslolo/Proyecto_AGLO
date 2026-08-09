@@ -10,4 +10,6 @@ public interface ActividadRepository extends JpaRepository<Actividad, Integer> {
     List<Actividad> findByFechaHoraInicioAfterOrderByFechaHoraInicioAsc(LocalDateTime fechaHoraInicio);
 
     List<Actividad> findByNombreActividadContainingIgnoreCase(String nombreActividad);
+    
+    List<Actividad> findByTipoActividadNombreTipoActividadIgnoreCaseAndFechaHoraInicioAfterOrderByFechaHoraInicioAsc(String nombreTipoActividad, LocalDateTime fechaActual);
 }

@@ -10,48 +10,25 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
-import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import lombok.Data;
 
 @Data
 @Entity
-@Table(name = "fide_actividad_tb")
-public class Actividad {
+@Table(name = "fide_herramientas_tb")
+public class Herramienta {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id_actividad")
-    private Integer idActividad;
-
-    @NotNull
-    @ManyToOne
-    @JoinColumn(name = "id_tipo_actividad", nullable = false)
-    private TipoActividad tipoActividad;
+    @Column(name = "id_herramienta")
+    private Integer idHerramienta;
 
     @NotBlank
-    @Column(name = "nombre_actividad", length = 100, nullable = false)
-    private String nombreActividad;
-    
+    @Column(name = "nombre_herramienta", length = 100)
+    private String nombreHerramienta;
 
-    @NotNull
-    @Column(name = "fecha_hora_inicio", nullable = false)
-    private LocalDateTime fechaHoraInicio;
-
-    @NotNull
-    @Column(name = "fecha_hora_fin", nullable = false)
-    private LocalDateTime fechaHoraFin;
-
-    @NotNull
-    @Column(name = "cupo_maximo", nullable = false)
-    private Integer cupoMaximo;
-
-    @NotNull
-    @Column(name = "precio_actual", nullable = false)
-    private BigDecimal precioActual;
-
-    @Column(name = "imagen_actividad", length = 500)
-    private String imagenActividad;
+    @Column(name = "descripcion", length = 255)
+    private String descripcion;
 
     @NotNull
     @ManyToOne
@@ -63,5 +40,4 @@ public class Actividad {
 
     @Column(name = "fecha_modificacion", insertable = false, updatable = false)
     private LocalDateTime fechaModificacion;
-    
 }
