@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+
+    <head th:replace="~{aglo/fragmentos :: head('Calificar experiencia | AGLO', 'dashboard.css')}"></head>
+
+    <body class="public-page">
+
+        <main class="public-main">
+
+            <section class="public-page-title">
+                <div>
+                    <h1>Calificar experiencia</h1>
+                    <p>Cuéntanos cómo fue tu experiencia como voluntario.</p>
+                </div>
+
+                <a class="btn btn-light"
+                   th:href="@{/mis-voluntariados/listado}">
+                    Regresar
+                </a>
+            </section>
+
+            <section th:replace="~{admin/fragmentos :: mensajes}"></section>
+
+            <section class="admin-panel">
+
+                <div class="panel-heading">
+                    <div>
+                        <span class="section-kicker">HU-5 · Retroalimentación</span>
+                        <h2>Encuesta de voluntariado</h2>
+                    </div>
+                </div>
+
+                <div class="alert alert-info" role="alert">
+                    <i class="fa-solid fa-circle-info"></i>
+                    Esta retroalimentación no podrá ser modificada una vez enviada.
+                </div>
+
+                <div class="mb-4">
+
+                    <p class="mb-2">
+                        <strong>Voluntariado:</strong>
+
+                        <span th:text="'#' + ${voluntariado.idVoluntariadoRegistro}">
+                            #1
+                        </span>
+                    </p>
+
+                    <p class="mb-2">
+                        <strong>Fecha de la sesión:</strong>
+
+                        <span th:text="${voluntariado.fechaSesion != null
+                                ? #temporals.format(voluntariado.fechaSesion, 'dd/MM/yyyy')
+                                : 'Sin fecha registrada'}">
+                            08/08/2026
+                        </span>
+                    </p>
+
+                    <p class="mb-0">
+                        <strong>Horas de la sesión:</strong>
+
+                        <span th:text="${voluntariado.cantidadHorasSesion != null
+                                ? voluntariado.cantidadHorasSesion + ' horas'
+                                : 'Sin horas registradas'}">
+                            4 horas
+                        </span>
+                    </p>
+
+                </div>
+
+                <form th:action="@{/retroalimentacion/guardar}"
+                      th:object="${retroalimentacion}"
+                      method="post"
+                      class="was-validated">
+
+                    <input type="hidden"
+                           name="idVoluntariado"
+                           th:value="${voluntariado.idVoluntariadoRegistro}"/>
+
+                    <div class="form-grid">
+
+                        <div class="full-row">
+
+                            <label class="form-label">
+                                Puntuación
+                            </label>
+
+                            <p class="text-muted small">
+                                Seleccione una puntuación del 1 al 5.
+                            </p>
+
+                            <div class="d-flex flex-wrap gap-2">
+
+                                <input class="btn-check"
+                                       type="radio"
+                                       th:field="*{puntuacion}"
+                                       id="puntuacion1"
+                                       value="1"
+                                       required/>
+
+                                <label class="btn btn-outline-dark"
+                                       for="puntuacion1">
+                                    <i class="fa-solid fa-star"></i>
+                                    1
+                                </label>
+
+                                <input class="btn-check"
+                                       type="radio"
+                                       th:field="*{puntuacion}"
+                                       id="puntuacion2"
+                                       value="2"/>
+
+                                <label class="btn btn-outline-dark"
+                                       for="puntuacion2">
+                                    <i class="fa-solid fa-star"></i>
+                                    2
+                                </label>
+
+                                <input class="btn-check"
+                                       type="radio"
+                                       th:field="*{puntuacion}"
+                                       id="puntuacion3"
+                                       value="3"/>
+
+                                <label class="btn btn-outline-dark"
+                                       for="puntuacion3">
+                                    <i class="fa-solid fa-star"></i>
+                                    3
+                                </label>
+
+                                <input class="btn-check"
+                                       type="radio"
+                                       th:field="*{puntuacion}"
+                                       id="puntuacion4"
+                                       value="4"/>
+
+                                <label class="btn btn-outline-dark"
+                                       for="puntuacion4">
+                                    <i class="fa-solid fa-star"></i>
+                                    4
+                                </label>
+
+                                <input class="btn-check"
+                                       type="radio"
+                                       th:field="*{puntuacion}"
+                                       id="puntuacion5"
+                                       value="5"/>
+
+                                <label class="btn btn-outline-dark"
+                                       for="puntuacion5">
+                                    <i class="fa-solid fa-star"></i>
+                                    5
+                                </label>
+
+                            </div>
+
+                        </div>
+
+                        <div class="full-row">
+
+                            <label class="form-label"
+                                   for="comentarios">
+                                Comentarios
+                            </label>
+
+                            <textarea class="form-control"
+                                      th:field="*{comentarios}"
+                                      id="comentarios"
+                                      rows="5"
+                                      maxlength="1000"
+                                      placeholder="Escriba un comentario sobre su experiencia..."></textarea>
+
+                            <div class="form-text">
+                                Los comentarios son opcionales.
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                    <div class="form-actions">
+
+                        <a class="btn btn-outline-dark"
+                           th:href="@{/mis-voluntariados/listado}">
+                            Cancelar
+                        </a>
+
+                        <button class="btn btn-success"
+                                type="submit">
+                            <i class="fa-solid fa-paper-plane"></i>
+                            Enviar retroalimentación
+                        </button>
+
+                    </div>
+
+                </form>
+
+            </section>
+
+        </main>
+
+        <th:block th:replace="~{aglo/fragmentos :: scripts('dashboard.js')}"></th:block>
+
+    </body>
+
+</html>
