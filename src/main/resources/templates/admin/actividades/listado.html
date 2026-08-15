@@ -4,22 +4,42 @@
     <body class="admin-page">
         <header th:replace="~{admin/fragmentos :: nav}"></header>
         <main class="admin-main">
+            <link
+                rel="stylesheet"
+                href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css"
+                />
+
             <section class="admin-page-title">
                 <div>
                     <h1>Actividades</h1>
                     <p>Oferta turística disponible para reservaciones.</p>
                 </div>
-                <a class="btn btn-light" th:href="@{/admin/actividades/nueva}">
-                    <i class="fa-solid fa-plus"></i> Nueva actividad
+                <a class="btn new-activity-btn"
+                   th:href="@{/admin/actividades/nueva}">
+                    <i class="fa-solid fa-plus"></i>
+                    Nueva actividad
                 </a>
             </section>
+
             <section th:replace="~{admin/fragmentos :: mensajes}"></section>
 
             <section class="admin-panel">
-                <form class="search-form mb-3" th:action="@{/admin/actividades/listado}" method="get">
-                    <input class="form-control form-control-sm" type="search" name="q" th:value="${q}" placeholder="Buscar actividad"/>
-                    <button class="btn btn-sm btn-outline-dark" type="submit"><i class="fa-solid fa-magnifying-glass"></i></button>
+                <form class="search-form mb-3"
+                      th:action="@{/admin/actividades/listado}"
+                      method="get">
+                    <input class="form-control form-control-sm"
+                           type="search"
+                           name="q"
+                           th:value="${q}"
+                           placeholder="Buscar actividad"
+                           aria-label="Buscar actividad"/>
+                    <button class="btn btn-sm search-btn"
+                            type="submit"
+                            aria-label="Buscar">
+                        <i class="fa-solid fa-magnifying-glass"></i>
+                    </button>
                 </form>
+
                 <div class="table-responsive">
                     <table class="table admin-table align-middle">
                         <thead>
@@ -31,34 +51,74 @@
                                 <th>Cupo</th>
                                 <th>Precio</th>
                                 <th>Estado</th>
-                                <th></th>
+                                <th class="actions-header">Acciones</th>
                             </tr>
                         </thead>
                         <tbody>
                             <tr th:if="${actividades == null or actividades.empty}">
-                                <td colspan="9" class="empty-row">No hay actividades registradas.</td>
+                                <td colspan="8" class="empty-row">No hay actividades registradas.</td>
                             </tr>
                             <tr th:each="actividad : ${actividades}">
-                                <td th:text="${actividad.idActividad}">1</td>
-                                <td th:text="${actividad.nombreActividad}">Tour</td>
-                                <td th:text="${actividad.tipoActividad != null ? actividad.tipoActividad.nombreTipoActividad : 'Sin tipo'}">Tipo</td>
-                                <td th:text="${actividad.fechaHoraInicio != null ? #temporals.format(actividad.fechaHoraInicio, 'dd/MM/yyyy HH:mm') : 'Sin fecha'}">Fecha</td>
-                                <td th:text="${actividad.fechaHoraFin != null ? #temporals.format(actividad.fechaHoraFin, 'dd/MM/yyyy HH:mm') : 'Sin fecha'}">Fecha</td>
-                                <td th:text="${actividad.cupoMaximo}">20</td>
-                                <td th:text="${actividad.precioActual != null ? #numbers.formatCurrency(actividad.precioActual) : 'Sin precio'}">₡0</td>
-                                <td th:text="${actividad.estado != null ? actividad.estado.nombreEstado : 'Sin estado'}">Activo</td>
-                                <td class="text-end">
-                                    <a class="btn btn-sm btn-outline-dark" th:href="@{/admin/actividades/{id}/guias/listado(id=${actividad.idActividad})}">
-                                        <i class="fa-solid fa-person-hiking"></i> Guías
+                                <td class="activity-name"
+                                    th:text="${actividad.nombreActividad}">
+                                    Tour
+                                </td>
+                                <td th:text="${actividad.tipoActividad != null
+                                    ? actividad.tipoActividad.nombreTipoActividad
+                                    : 'Sin tipo'}">
+                                    Tipo
+                                </td>
+                                <td th:text="${actividad.fechaHoraInicio != null
+                                    ? #temporals.format(actividad.fechaHoraInicio, 'dd/MM/yyyy HH:mm')
+                                    : 'Sin fecha'}">
+                                    15/08/2026 16:30
+                                </td>
+                                <td th:text="${actividad.fechaHoraFin != null
+                                    ? #temporals.format(actividad.fechaHoraFin, 'dd/MM/yyyy HH:mm')
+                                    : 'Sin fecha'}">
+                                    15/08/2026 18:30
+                                </td>
+                                <td class="capacity-cell"
+                                    th:text="${actividad.cupoMaximo}">
+                                    20
+                                </td>
+                                <td class="price-cell"
+                                    th:text="${actividad.precioActual != null
+                                    ? #numbers.formatCurrency(actividad.precioActual)
+                                    : 'Sin precio'}">
+                                    ₡0
+                                </td>
+                                <td>
+                                    <span class="activity-status"
+                                          th:classappend="${actividad.estado != null
+                                          and #strings.equalsIgnoreCase(actividad.estado.nombreEstado, 'Activo')
+                                          ? ' status-active'
+                                          : ' status-inactive'}"
+                                          th:text="${actividad.estado != null
+                                          ? actividad.estado.nombreEstado
+                                          : 'Sin estado'}">
+                                        Activo
+                                    </span>
+                                </td>
+                                <td class="activity-actions text-end">
+                                    <a class="btn btn-sm activity-action-btn"
+                                       th:href="@{/admin/actividades/{id}/guias/listado(id=${actividad.idActividad})}">
+                                        <i class="fa-solid fa-person-hiking"></i>
+                                        <span>Guías</span>
                                     </a>
-                                    <a class="btn btn-sm btn-outline-dark" th:href="@{/admin/actividades/modificar/{id}(id=${actividad.idActividad})}">
-                                        <i class="fa-solid fa-pen"></i> Editar
+                                    <a class="btn btn-sm activity-action-btn"
+                                       th:href="@{/admin/actividades/modificar/{id}(id=${actividad.idActividad})}">
+                                        <i class="fa-solid fa-pen"></i>
+                                        <span>Editar</span>
                                     </a>
-                                    <button class="btn btn-sm btn-outline-danger" type="button"
-                                            data-bs-toggle="modal" data-bs-target="#confirmDeleteModal"
+                                    <button class="btn btn-sm activity-action-btn delete-action-btn"
+                                            type="button"
+                                            data-bs-toggle="modal"
+                                            data-bs-target="#confirmDeleteModal"
                                             th:data-delete-id="${actividad.idActividad}"
                                             th:data-delete-name="${actividad.nombreActividad}">
-                                        <i class="fa-solid fa-trash"></i> Eliminar
+                                        <i class="fa-solid fa-trash-can"></i>
+                                        <span>Eliminar</span>
                                     </button>
                                 </td>
                             </tr>
@@ -88,6 +148,7 @@
                 </div>
             </div>
         </div>
-        <th:block th:replace="~{aglo/fragmentos :: scripts('dashboard.js')}"></th:block>
-    </body>
+
+    <th:block th:replace="~{aglo/fragmentos :: scripts('dashboard.js')}"></th:block>
+</body>
 </html>

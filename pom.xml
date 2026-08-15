@@ -27,8 +27,10 @@
         <url/>
     </scm>
     <properties>
+    <properties>
         <java.version>26</java.version>
         <maven.compiler.release>17</maven.compiler.release>
+        <start-class>com.Proyecto_Grupo_1.ProyectoGrupo1Application</start-class>
 
         <!-- Codificación UTF-8 -->
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -148,6 +150,7 @@
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
                 <configuration>
+                    <mainClass>${start-class}</mainClass>
                     <excludes>
                         <exclude>
                             <groupId>org.projectlombok</groupId>

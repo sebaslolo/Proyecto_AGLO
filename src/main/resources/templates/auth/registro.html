@@ -46,7 +46,7 @@
                                 id="nombre"
                                 th:field="*{nombre}"
                                 maxlength="20"
-                                placeholder="Ej. María"/>
+                                placeholder="Ingrese su nombre"/>
                             <small id="errorNombre" th:text="${#fields.hasErrors('nombre')} ? 'Ingrese su nombre.' : ''"></small>
                         </div>
 
@@ -57,7 +57,7 @@
                                 id="apellidoPaterno"
                                 th:field="*{apellidoPaterno}"
                                 maxlength="30"
-                                placeholder="Ej. López"/>
+                                placeholder="Ingrese su primer apellido"/>
                             <small id="errorApellidoPaterno" th:text="${#fields.hasErrors('apellidoPaterno')} ? 'Ingrese su apellido paterno.' : ''"></small>
                         </div>
 
@@ -79,7 +79,7 @@
                                 id="correo"
                                 th:field="*{correo}"
                                 maxlength="75"
-                                placeholder="ejemplo@correo.com"/>
+                                placeholder="Ingrese su correo"/>
                             <small id="errorCorreo" th:text="${#fields.hasErrors('correo')} ? 'Correo electrónico inválido o duplicado.' : ''"></small>
                         </div>
 
