@@ -1,14 +1,9 @@
 <!DOCTYPE html>
 <html lang="es" xmlns:th="http://www.thymeleaf.org">
-    <head th:replace="~{aglo/fragmentos :: head('Actividades | AGLO', 'dashboard.css')}"></head>
+    <head th:replace="~{aglo/fragmentos :: head('Actividades | AGLO', 'admin.css')}"></head>
     <body class="admin-page">
         <header th:replace="~{admin/fragmentos :: nav}"></header>
         <main class="admin-main">
-            <link
-                rel="stylesheet"
-                href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css"
-                />
-
             <section class="admin-page-title">
                 <div>
                     <h1>Actividades</h1>
@@ -41,7 +36,7 @@
                 </form>
 
                 <div class="table-responsive">
-                    <table class="table admin-table align-middle">
+                    <table class="table admin-table activities-table align-middle">
                         <thead>
                             <tr>
                                 <th>Nombre</th>
@@ -84,7 +79,7 @@
                                 </td>
                                 <td class="price-cell"
                                     th:text="${actividad.precioActual != null
-                                    ? #numbers.formatCurrency(actividad.precioActual)
+                                    ? @monedaCostaRica.formatear(actividad.precioActual)
                                     : 'Sin precio'}">
                                     ₡0
                                 </td>
@@ -116,6 +111,8 @@
                                             data-bs-toggle="modal"
                                             data-bs-target="#confirmDeleteModal"
                                             th:data-delete-id="${actividad.idActividad}"
+                                            th:data-delete-action="@{/admin/actividades/eliminar}"
+                                            data-delete-field="idActividad"
                                             th:data-delete-name="${actividad.nombreActividad}">
                                         <i class="fa-solid fa-trash-can"></i>
                                         <span>Eliminar</span>
@@ -128,26 +125,7 @@
             </section>
         </main>
 
-        <div class="modal fade" id="confirmDeleteModal" tabindex="-1" aria-hidden="true">
-            <div class="modal-dialog modal-dialog-centered">
-                <div class="modal-content">
-                    <form th:action="@{/admin/actividades/eliminar}" method="post">
-                        <input type="hidden" name="idActividad" id="deleteId"/>
-                        <div class="modal-header bg-warning">
-                            <h2 class="modal-title fs-5">Confirmar eliminación</h2>
-                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
-                        </div>
-                        <div class="modal-body">
-                            <p>¿Desea eliminar <strong id="deleteName">este registro</strong>?</p>
-                        </div>
-                        <div class="modal-footer">
-                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                            <button type="submit" class="btn btn-danger">Eliminar</button>
-                        </div>
-                    </form>
-                </div>
-            </div>
-        </div>
+        <th:block th:replace="~{admin/fragmentos :: delete-modal}"></th:block>
 
     <th:block th:replace="~{aglo/fragmentos :: scripts('dashboard.js')}"></th:block>
 </body>

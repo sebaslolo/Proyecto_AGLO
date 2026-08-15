@@ -15,9 +15,15 @@ import org.springframework.validation.annotation.Validated;
 public class AvistamientoService {
 
     private final AvistamientoRepository avistamientoRepository;
+    private final TortugaService tortugaService;
+    private final EstadoService estadoService;
 
-    public AvistamientoService(AvistamientoRepository avistamientoRepository){
+    public AvistamientoService(AvistamientoRepository avistamientoRepository,
+            TortugaService tortugaService,
+            EstadoService estadoService){
         this.avistamientoRepository=avistamientoRepository;
+        this.tortugaService = tortugaService;
+        this.estadoService = estadoService;
     }
 
     @Transactional(readOnly = true)
@@ -32,7 +38,36 @@ public class AvistamientoService {
 
     @Transactional
     public Avistamiento save(@Valid Avistamiento avistamiento){
-        return avistamientoRepository.save(avistamiento);
+        Avistamiento destino = avistamiento.getIdAvistamiento() == null
+                ? new Avistamiento()
+                : avistamientoRepository.findById(avistamiento.getIdAvistamiento())
+                        .orElseThrow(() -> new IllegalArgumentException("El avistamiento que se intenta actualizar no existe."));
+
+        destino.setTortuga(tortugaService.getTortuga(etiquetaTortuga(avistamiento))
+                .orElseThrow(() -> new IllegalArgumentException("La tortuga seleccionada no existe.")));
+        destino.setComportamiento(avistamiento.getComportamiento());
+        destino.setUbicacion(avistamiento.getUbicacion());
+        destino.setFechaAvistamiento(avistamiento.getFechaAvistamiento());
+        destino.setObservaciones(avistamiento.getObservaciones());
+        destino.setEstado(estadoService.obtenerEstado(idEstado(avistamiento)));
+
+        return avistamientoRepository.save(destino);
+    }
+
+    private String etiquetaTortuga(Avistamiento avistamiento) {
+        if (avistamiento.getTortuga() == null
+                || avistamiento.getTortuga().getEtiquetaTortuga() == null
+                || avistamiento.getTortuga().getEtiquetaTortuga().isBlank()) {
+            throw new IllegalArgumentException("Debe seleccionar una tortuga válida.");
+        }
+        return avistamiento.getTortuga().getEtiquetaTortuga();
+    }
+
+    private Integer idEstado(Avistamiento avistamiento) {
+        if (avistamiento.getEstado() == null || avistamiento.getEstado().getIdEstado() == null) {
+            throw new IllegalArgumentException("Debe seleccionar un estado válido.");
+        }
+        return avistamiento.getEstado().getIdEstado();
     }
 
     @Transactional

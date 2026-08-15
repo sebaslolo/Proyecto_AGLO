@@ -25,7 +25,7 @@
                     <div class="catalog-meta">
                         <span><strong>Inicio:</strong> <span th:text="${actividad.fechaHoraInicio != null ? #temporals.format(actividad.fechaHoraInicio, 'dd/MM/yyyy HH:mm') : 'Fecha por confirmar'}">Fecha</span></span>
                         <span><strong>Fin:</strong> <span th:text="${actividad.fechaHoraFin != null ? #temporals.format(actividad.fechaHoraFin, 'dd/MM/yyyy HH:mm') : 'Fecha por confirmar'}">Fecha</span></span>
-                        <span><strong>Precio:</strong> <span th:text="${actividad.precioActual != null ? #numbers.formatCurrency(actividad.precioActual) : 'Precio por confirmar'}">Precio</span></span>
+                        <span><strong>Precio:</strong> <span th:text="${actividad.precioActual != null ? @monedaCostaRica.formatear(actividad.precioActual) : 'Precio por confirmar'}">Precio</span></span>
                         <span><strong>Cupo disponible:</strong> <span th:text="${cupoDisponible}">0</span></span>
                     </div>
                     <h3 class="mt-4">Guías asignados</h3>

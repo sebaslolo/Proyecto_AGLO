@@ -518,7 +518,7 @@ nav ul li .activo::after{
     margin-bottom:60px;
 }
 
-.actividades span{
+.actividades .titulo > span{
     display:block;
     color:white;
     font-size:15px;
@@ -770,7 +770,7 @@ nav ul li .activo::after{
 .actividades .titulo{
     margin-bottom:60px;
 }
-.actividades span{
+.actividades .titulo > span{
     display:block;
     color:#fff;
     text-transform:uppercase;

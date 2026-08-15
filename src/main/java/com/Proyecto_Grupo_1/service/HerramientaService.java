@@ -15,9 +15,12 @@ import org.springframework.validation.annotation.Validated;
 public class HerramientaService {
 
     private final HerramientaRepository herramientaRepository;
+    private final EstadoService estadoService;
 
-    public HerramientaService(HerramientaRepository herramientaRepository) {
+    public HerramientaService(HerramientaRepository herramientaRepository,
+            EstadoService estadoService) {
         this.herramientaRepository = herramientaRepository;
+        this.estadoService = estadoService;
     }
 
     @Transactional(readOnly = true)
@@ -32,7 +35,23 @@ public class HerramientaService {
 
     @Transactional
     public Herramienta save(@Valid Herramienta herramienta){
-        return herramientaRepository.save(herramienta);
+        Herramienta destino = herramienta.getIdHerramienta() == null
+                ? new Herramienta()
+                : herramientaRepository.findById(herramienta.getIdHerramienta())
+                        .orElseThrow(() -> new IllegalArgumentException("La herramienta que se intenta actualizar no existe."));
+
+        destino.setNombreHerramienta(herramienta.getNombreHerramienta());
+        destino.setDescripcion(herramienta.getDescripcion());
+        destino.setEstado(estadoService.obtenerEstado(idEstado(herramienta)));
+
+        return herramientaRepository.save(destino);
+    }
+
+    private Integer idEstado(Herramienta herramienta) {
+        if (herramienta.getEstado() == null || herramienta.getEstado().getIdEstado() == null) {
+            throw new IllegalArgumentException("Debe seleccionar un estado válido.");
+        }
+        return herramienta.getEstado().getIdEstado();
     }
 
     @Transactional

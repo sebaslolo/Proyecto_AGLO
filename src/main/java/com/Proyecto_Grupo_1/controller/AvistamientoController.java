@@ -74,7 +74,13 @@ public class AvistamientoController {
             return "/admin/avistamientos/modifica";
         }
 
-        avistamientoService.save(avistamiento);
+        try {
+            avistamientoService.save(avistamiento);
+        } catch (IllegalArgumentException e) {
+            bindingResult.reject("formulario.invalido", e.getMessage());
+            cargarCatalogos(model);
+            return "/admin/avistamientos/modifica";
+        }
 
         redirectAttributes.addFlashAttribute("todoOk",msg("avistamiento.mensaje.guardado"));
 

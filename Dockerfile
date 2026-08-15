@@ -1,12 +1,14 @@
-#Etapa 1: Compilacion
-FROM maven:3.8.5-openjdk-17 as build
+# Etapa 1: compilación y pruebas
+FROM maven:3.9.9-eclipse-temurin-17 AS build
 WORKDIR /app
-COPY . .
-RUN mvn -f pom.xml clean package -DskipTests
+COPY pom.xml ./
+RUN mvn -B -ntp dependency:go-offline
+COPY src ./src
+RUN mvn -B -ntp clean verify
 
-#Etapa 2: Creacion de la imagen final
-FROM openjdk:17.0.1-jdk-slim
+# Etapa 2: imagen de ejecución
+FROM eclipse-temurin:17-jre
 WORKDIR /app
 COPY --from=build /app/target/*.jar ./app.jar
-EXPOSE 80
+EXPOSE 8080
 ENTRYPOINT ["java", "-jar", "app.jar"]

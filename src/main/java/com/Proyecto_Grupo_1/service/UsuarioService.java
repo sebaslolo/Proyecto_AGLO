@@ -1,9 +1,15 @@
 package com.Proyecto_Grupo_1.service;
 
 import com.Proyecto_Grupo_1.domain.Estado;
+import com.Proyecto_Grupo_1.domain.Rol;
 import com.Proyecto_Grupo_1.domain.Usuario;
+import com.Proyecto_Grupo_1.domain.UsuarioRol;
+import com.Proyecto_Grupo_1.domain.UsuarioRolId;
 import com.Proyecto_Grupo_1.dto.RegistroForm;
+import com.Proyecto_Grupo_1.repository.EstadoRepository;
+import com.Proyecto_Grupo_1.repository.RolRepository;
 import com.Proyecto_Grupo_1.repository.UsuarioRepository;
+import com.Proyecto_Grupo_1.repository.UsuarioRolRepository;
 import jakarta.validation.Valid;
 import java.util.List;
 import java.util.Optional;
@@ -18,10 +24,20 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 public class UsuarioService {
 
     private final UsuarioRepository usuarioRepository;
+    private final EstadoRepository estadoRepository;
+    private final RolRepository rolRepository;
+    private final UsuarioRolRepository usuarioRolRepository;
     private final PasswordEncoder passwordEncoder;
 
-    public UsuarioService(UsuarioRepository usuarioRepository, PasswordEncoder passwordEncoder) {
+    public UsuarioService(UsuarioRepository usuarioRepository,
+            EstadoRepository estadoRepository,
+            RolRepository rolRepository,
+            UsuarioRolRepository usuarioRolRepository,
+            PasswordEncoder passwordEncoder) {
         this.usuarioRepository = usuarioRepository;
+        this.estadoRepository = estadoRepository;
+        this.rolRepository = rolRepository;
+        this.usuarioRolRepository = usuarioRolRepository;
         this.passwordEncoder = passwordEncoder;
     }
 
@@ -75,6 +91,54 @@ public class UsuarioService {
         return getUsuarios(false);
     }
 
+    /**
+     * Usuarios que pueden recibir una herramienta en préstamo. Los perfiles de
+     * cliente no forman parte de este catálogo operativo.
+     */
+    @Transactional(readOnly = true)
+    public List<Usuario> listarUsuariosAsignablesAPrestamo() {
+        return usuarioRolRepository.findUsuariosAsignablesAPrestamo();
+    }
+
+    /**
+     * Resuelve un usuario permitido para préstamo, evitando que un identificador
+     * enviado manualmente desde el formulario eluda el catálogo mostrado.
+     */
+    @Transactional(readOnly = true)
+    public Usuario obtenerUsuarioAsignableAPrestamo(Integer idUsuario) {
+        Usuario usuario = obtenerUsuario(idUsuario);
+        if (!usuarioRolRepository.existsUsuarioAsignableAPrestamo(idUsuario)) {
+            throw new IllegalArgumentException("El usuario seleccionado debe tener rol ADMIN o GUIA.");
+        }
+        return usuario;
+    }
+
+    /**
+     * Catálogo seguro para las altas administrativas de reservaciones. Sólo los
+     * usuarios con rol CLIENTE y estado Activo pueden ser seleccionados.
+     */
+    @Transactional(readOnly = true)
+    public List<Usuario> listarClientesActivosParaReservacion() {
+        return usuarioRolRepository.findClientesActivosParaReservacion();
+    }
+
+    /**
+     * Valida nuevamente el cliente en el servidor para que un identificador
+     * manipulado no pueda reservar a nombre de una cuenta inactiva o sin rol
+     * CLIENTE.
+     */
+    @Transactional(readOnly = true)
+    public Usuario obtenerClienteActivoParaReservacion(Integer idUsuario) {
+        if (idUsuario == null) {
+            throw new IllegalArgumentException("Debe seleccionar un cliente activo válido.");
+        }
+        Usuario usuario = obtenerUsuario(idUsuario);
+        if (!usuarioRolRepository.existsClienteActivoParaReservacion(idUsuario)) {
+            throw new IllegalArgumentException("El usuario seleccionado debe tener rol CLIENTE y estar activo.");
+        }
+        return usuario;
+    }
+
     @Transactional
     public Usuario save(@Valid Usuario usuario) {
         if (usuario.getIdUsuario() != null) {
@@ -82,25 +146,30 @@ public class UsuarioService {
             if (usuario.getPassword() == null || usuario.getPassword().isBlank()) {
                 usuario.setPassword(existente.getPassword());
             } else {
+                validarPassword(usuario.getPassword());
                 usuario.setPassword(passwordEncoder.encode(usuario.getPassword()));
             }
         } else {
-            if (usuario.getPassword() == null || usuario.getPassword().isBlank()) {
-                throw new IllegalArgumentException("La contraseña es obligatoria.");
-            }
+            validarPassword(usuario.getPassword());
             usuario.setPassword(passwordEncoder.encode(usuario.getPassword()));
         }
         return usuarioRepository.save(usuario);
     }
 
     @Transactional
-    public Usuario registrarCliente(RegistroForm registroForm, Estado estadoActivo) {
+    public Usuario registrarCliente(RegistroForm registroForm) {
         if (existeUsername(registroForm.getUsername())) {
             throw new IllegalArgumentException("El usuario ya existe.");
         }
         if (existeCorreo(registroForm.getCorreo())) {
             throw new IllegalArgumentException("El correo ya existe.");
         }
+        validarPassword(registroForm.getPassword());
+
+        Estado estadoActivo = estadoRepository.findByNombreEstadoIgnoreCase("Activo")
+                .orElseThrow(() -> new IllegalStateException("No existe el estado Activo requerido para registrar usuarios."));
+        Rol rolCliente = rolRepository.findByRolIgnoreCase("CLIENTE")
+                .orElseThrow(() -> new IllegalStateException("No existe el rol CLIENTE requerido para registrar usuarios."));
 
         Usuario usuario = new Usuario();
         usuario.setUsername(registroForm.getUsername().trim());
@@ -111,7 +180,14 @@ public class UsuarioService {
         usuario.setTelefono(limpiarOpcional(registroForm.getTelefono()));
         usuario.setPassword(passwordEncoder.encode(registroForm.getPassword()));
         usuario.setEstado(estadoActivo);
-        return usuarioRepository.save(usuario);
+        Usuario guardado = usuarioRepository.save(usuario);
+
+        UsuarioRol usuarioRol = new UsuarioRol();
+        usuarioRol.setId(new UsuarioRolId(guardado.getIdUsuario(), rolCliente.getIdRol()));
+        usuarioRol.setUsuario(guardado);
+        usuarioRol.setRol(rolCliente);
+        usuarioRolRepository.save(usuarioRol);
+        return guardado;
     }
 
     @Transactional
@@ -157,6 +233,23 @@ public class UsuarioService {
 
     private String limpiarOpcional(String texto) {
         return texto == null || texto.isBlank() ? null : texto.trim();
+    }
+
+    private void validarPassword(String password) {
+        if (!cumplePoliticaPassword(password)) {
+            throw new IllegalArgumentException("La contraseña debe tener al menos 8 caracteres y un dígito.");
+        }
+    }
+
+    /**
+     * Exposes the server-side rule so MVC forms can present a binding error before
+     * invoking {@link #save(com.Proyecto_Grupo_1.domain.Usuario)}.
+     */
+    public boolean cumplePoliticaPassword(String password) {
+        return password != null
+                && !password.isBlank()
+                && password.length() >= 8
+                && password.chars().anyMatch(Character::isDigit);
     }
 
 }

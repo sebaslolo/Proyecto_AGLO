@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+    <head th:replace="~{aglo/fragmentos :: head('Avistamientos | AGLO', 'admin.css')}"></head>
+    <body class="admin-page">
+        <header th:replace="~{admin/fragmentos :: nav}"></header>
+        <main class="admin-main">
+            <section class="admin-page-title">
+                <div>
+                    <h1>Avistamientos</h1>
+                    <p>Registro de observaciones de tortugas en campo.</p>
+                </div>
+                <a class="btn page-action" th:href="@{/admin/avistamientos/nuevo}">
+                    <i class="fa-solid fa-plus"></i> Nuevo avistamiento
+                </a>
+            </section>
+            <section th:replace="~{admin/fragmentos :: mensajes}"></section>
+
+            <section class="admin-panel">
+                <p class="admin-summary" th:text="${totalAvistamientos} + ' avistamiento(s) registrado(s)'">0 avistamientos registrados</p>
+                <div class="table-responsive">
+                    <table class="table admin-table align-middle">
+                        <thead>
+                            <tr>
+                                <th>Tortuga</th>
+                                <th>Comportamiento</th>
+                                <th>Ubicación</th>
+                                <th>Fecha</th>
+                                <th>Estado</th>
+                                <th class="actions-header">Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr th:if="${avistamientos == null or avistamientos.empty}">
+                                <td colspan="6" class="empty-row">No hay avistamientos registrados.</td>
+                            </tr>
+                            <tr th:each="avistamiento : ${avistamientos}">
+                                <td th:text="${avistamiento.tortuga != null ? avistamiento.tortuga.etiquetaTortuga : 'Sin tortuga'}">T-001</td>
+                                <td th:text="${avistamiento.comportamiento}">Anidando</td>
+                                <td th:text="${avistamiento.ubicacion}">Playa</td>
+                                <td th:text="${avistamiento.fechaAvistamiento != null ? #temporals.format(avistamiento.fechaAvistamiento, 'dd/MM/yyyy HH:mm') : 'Sin fecha'}">14/08/2026 20:00</td>
+                                <td th:text="${avistamiento.estado != null ? avistamiento.estado.nombreEstado : 'Sin estado'}">Activo</td>
+                                <td class="table-actions">
+                                    <a class="btn btn-sm btn-outline-dark"
+                                       th:href="@{/admin/avistamientos/modificar/{id}(id=${avistamiento.idAvistamiento})}">
+                                        <i class="fa-solid fa-pen"></i> Editar
+                                    </a>
+                                    <button th:if="${isAdmin}" class="btn btn-sm btn-outline-danger" type="button"
+                                            data-bs-toggle="modal" data-bs-target="#confirmDeleteModal"
+                                            th:data-delete-action="@{/admin/avistamientos/eliminar}"
+                                            data-delete-field="idAvistamiento"
+                                            th:data-delete-id="${avistamiento.idAvistamiento}"
+                                            th:data-delete-name="${avistamiento.tortuga != null ? 'avistamiento de ' + avistamiento.tortuga.etiquetaTortuga : 'avistamiento sin tortuga asignada'}">
+                                        <i class="fa-solid fa-trash"></i> Eliminar
+                                    </button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+        </main>
+
+        <div th:replace="~{admin/fragmentos :: delete-modal}"></div>
+        <th:block th:replace="~{aglo/fragmentos :: scripts('dashboard.js')}"></th:block>
+    </body>
+</html>

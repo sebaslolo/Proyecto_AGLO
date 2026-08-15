@@ -2,8 +2,11 @@ package com.Proyecto_Grupo_1.controller;
 
 import com.Proyecto_Grupo_1.domain.Reservacion;
 import com.Proyecto_Grupo_1.domain.Usuario;
+import com.Proyecto_Grupo_1.dto.EstadoReservacionForm;
+import com.Proyecto_Grupo_1.dto.ReservacionAdminForm;
 import com.Proyecto_Grupo_1.dto.ReservacionForm;
 import com.Proyecto_Grupo_1.service.ActividadService;
+import com.Proyecto_Grupo_1.service.EstadoService;
 import com.Proyecto_Grupo_1.service.ReservacionService;
 import com.Proyecto_Grupo_1.service.UsuarioService;
 import jakarta.validation.Valid;
@@ -14,6 +17,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -24,15 +28,18 @@ public class ReservacionController {
 
     private final ReservacionService reservacionService;
     private final ActividadService actividadService;
+    private final EstadoService estadoService;
     private final UsuarioService usuarioService;
     private final MessageSource messageSource;
 
     public ReservacionController(ReservacionService reservacionService,
             ActividadService actividadService,
+            EstadoService estadoService,
             UsuarioService usuarioService,
             MessageSource messageSource) {
         this.reservacionService = reservacionService;
         this.actividadService = actividadService;
+        this.estadoService = estadoService;
         this.usuarioService = usuarioService;
         this.messageSource = messageSource;
     }
@@ -48,6 +55,90 @@ public class ReservacionController {
         model.addAttribute("reservaciones", reservaciones);
         model.addAttribute("totalReservaciones", reservaciones.size());
         return "/admin/reservaciones/listado";
+    }
+
+    @GetMapping("/admin/reservaciones/nuevo")
+    public String nuevoAdmin(Model model) {
+        model.addAttribute("reservacionAdminForm", new ReservacionAdminForm());
+        cargarCatalogosAltaAdmin(model);
+        return "/admin/reservaciones/modifica";
+    }
+
+    @PostMapping("/admin/reservaciones/guardar")
+    public String guardarAdmin(
+            @Valid @ModelAttribute("reservacionAdminForm") ReservacionAdminForm reservacionAdminForm,
+            BindingResult bindingResult,
+            Model model,
+            RedirectAttributes redirectAttributes) {
+        if (bindingResult.hasErrors()) {
+            cargarCatalogosAltaAdmin(model);
+            return "/admin/reservaciones/modifica";
+        }
+
+        try {
+            reservacionService.crearReservacionAdministrativa(
+                    reservacionAdminForm.getIdUsuario(),
+                    reservacionAdminForm.getIdActividad(),
+                    reservacionAdminForm.getCantidadPersonas());
+        } catch (IllegalArgumentException | IllegalStateException e) {
+            bindingResult.reject("formulario.invalido", msg("reservacion.admin.error.formulario"));
+            cargarCatalogosAltaAdmin(model);
+            return "/admin/reservaciones/modifica";
+        }
+
+        redirectAttributes.addFlashAttribute("todoOk", msg("reservacion.mensaje.guardada"));
+        return "redirect:/admin/reservaciones/listado";
+    }
+
+    @GetMapping("/admin/reservaciones/modificar/{idReservacion}")
+    public String modificarAdmin(
+            @PathVariable Integer idReservacion,
+            Model model,
+            RedirectAttributes redirectAttributes) {
+        var reservacionOpt = reservacionService.getReservacion(idReservacion);
+        if (reservacionOpt.isEmpty()) {
+            redirectAttributes.addFlashAttribute("error", msg("reservacion.error.noExiste"));
+            return "redirect:/admin/reservaciones/listado";
+        }
+
+        Reservacion reservacion = reservacionOpt.get();
+        EstadoReservacionForm estadoReservacionForm = new EstadoReservacionForm();
+        if (reservacion.getEstado() != null) {
+            estadoReservacionForm.setIdEstado(reservacion.getEstado().getIdEstado());
+        }
+        cargarFormularioEstadoAdmin(model, reservacion, estadoReservacionForm);
+        return "/admin/reservaciones/estado";
+    }
+
+    @PostMapping("/admin/reservaciones/modificar/{idReservacion}")
+    public String actualizarEstadoAdmin(
+            @PathVariable Integer idReservacion,
+            @Valid @ModelAttribute("estadoReservacionForm") EstadoReservacionForm estadoReservacionForm,
+            BindingResult bindingResult,
+            Model model,
+            RedirectAttributes redirectAttributes) {
+        var reservacionOpt = reservacionService.getReservacion(idReservacion);
+        if (reservacionOpt.isEmpty()) {
+            redirectAttributes.addFlashAttribute("error", msg("reservacion.error.noExiste"));
+            return "redirect:/admin/reservaciones/listado";
+        }
+
+        Reservacion reservacion = reservacionOpt.get();
+        if (bindingResult.hasErrors()) {
+            cargarFormularioEstadoAdmin(model, reservacion, estadoReservacionForm);
+            return "/admin/reservaciones/estado";
+        }
+
+        try {
+            reservacionService.actualizarEstadoReservacion(idReservacion, estadoReservacionForm.getIdEstado());
+        } catch (IllegalArgumentException | IllegalStateException e) {
+            bindingResult.reject("formulario.invalido", msg("reservacion.admin.error.formulario"));
+            cargarFormularioEstadoAdmin(model, reservacion, estadoReservacionForm);
+            return "/admin/reservaciones/estado";
+        }
+
+        redirectAttributes.addFlashAttribute("todoOk", msg("reservacion.mensaje.estadoActualizado"));
+        return "redirect:/admin/reservaciones/listado";
     }
 
     @GetMapping("/admin/reservaciones/detalle/{idReservacion}")
@@ -162,6 +253,21 @@ public class ReservacionController {
         model.addAttribute("reservaciones", reservaciones);
         model.addAttribute("totalReservaciones", reservaciones.size());
         return "/reservaciones/mis-reservaciones";
+    }
+
+    private void cargarCatalogosAltaAdmin(Model model) {
+        model.addAttribute("usuarios", usuarioService.listarClientesActivosParaReservacion());
+        model.addAttribute("actividades", actividadService.getActividades(false));
+    }
+
+    private void cargarFormularioEstadoAdmin(
+            Model model,
+            Reservacion reservacion,
+            EstadoReservacionForm estadoReservacionForm) {
+        model.addAttribute("reservacion", reservacion);
+        model.addAttribute("detalles", reservacionService.obtenerDetalle(reservacion.getIdReservacion()));
+        model.addAttribute("estados", estadoService.getEstados(false));
+        model.addAttribute("estadoReservacionForm", estadoReservacionForm);
     }
 
     private boolean puedeVerReservacion(Reservacion reservacion, Authentication authentication) {

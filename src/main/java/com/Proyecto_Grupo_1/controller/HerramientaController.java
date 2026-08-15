@@ -67,7 +67,13 @@ public class HerramientaController {
             return "/admin/herramientas/modifica";
         }
 
-        herramientaService.save(herramienta);
+        try {
+            herramientaService.save(herramienta);
+        } catch (IllegalArgumentException e) {
+            bindingResult.reject("formulario.invalido", e.getMessage());
+            cargarCatalogos(model);
+            return "/admin/herramientas/modifica";
+        }
 
         redirectAttributes.addFlashAttribute("todoOk",msg("herramienta.mensaje.guardado"));
 

@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+    <head th:replace="~{aglo/fragmentos :: head('Nidos | AGLO', 'admin.css')}"></head>
+    <body class="admin-page">
+        <header th:replace="~{admin/fragmentos :: nav}"></header>
+        <main class="admin-main">
+            <section class="admin-page-title">
+                <div>
+                    <h1>Nidos</h1>
+                    <p>Control de nidos registrados durante las temporadas.</p>
+                </div>
+                <a class="btn page-action" th:href="@{/admin/nidos/nuevo}">
+                    <i class="fa-solid fa-plus"></i> Nuevo nido
+                </a>
+            </section>
+            <section th:replace="~{admin/fragmentos :: mensajes}"></section>
+
+            <section class="admin-panel">
+                <p class="admin-summary" th:text="${totalNidos} + ' nido(s) registrado(s)'">0 nidos registrados</p>
+                <div class="table-responsive">
+                    <table class="table admin-table align-middle">
+                        <thead>
+                            <tr>
+                                <th>Tortuga</th>
+                                <th>Ubicación</th>
+                                <th>Anidación</th>
+                                <th>Huevos</th>
+                                <th>Estado</th>
+                                <th class="actions-header">Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr th:if="${nidos == null or nidos.empty}">
+                                <td colspan="6" class="empty-row">No hay nidos registrados.</td>
+                            </tr>
+                            <tr th:each="nido : ${nidos}">
+                                <td th:text="${nido.tortuga != null ? nido.tortuga.etiquetaTortuga : 'Sin tortuga'}">T-001</td>
+                                <td th:text="${nido.ubicacion ?: 'Sin ubicación'}">Playa</td>
+                                <td th:text="${nido.fechaAnidacion != null ? #temporals.format(nido.fechaAnidacion, 'dd/MM/yyyy HH:mm') : 'Sin fecha'}">14/08/2026</td>
+                                <td th:text="${nido.cantidadHuevos ?: 'Sin dato'}">80</td>
+                                <td th:text="${nido.estado != null ? nido.estado.nombreEstado : 'Sin estado'}">Activo</td>
+                                <td class="table-actions">
+                                    <a class="btn btn-sm btn-outline-dark"
+                                       th:href="@{/admin/nidos/modificar/{id}(id=${nido.idNido})}">
+                                        <i class="fa-solid fa-pen"></i> Editar
+                                    </a>
+                                    <button th:if="${isAdmin}" class="btn btn-sm btn-outline-danger" type="button"
+                                            data-bs-toggle="modal" data-bs-target="#confirmDeleteModal"
+                                            th:data-delete-action="@{/admin/nidos/eliminar}"
+                                            data-delete-field="idNido"
+                                            th:data-delete-id="${nido.idNido}"
+                                            th:data-delete-name="${nido.tortuga != null ? 'nido de ' + nido.tortuga.etiquetaTortuga : (nido.ubicacion ?: 'nido sin ubicación')}">
+                                        <i class="fa-solid fa-trash"></i> Eliminar
+                                    </button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+        </main>
+
+        <div th:replace="~{admin/fragmentos :: delete-modal}"></div>
+        <th:block th:replace="~{aglo/fragmentos :: scripts('dashboard.js')}"></th:block>
+    </body>
+</html>

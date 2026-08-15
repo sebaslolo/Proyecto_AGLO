@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+    <head th:replace="~{aglo/fragmentos :: head('Editar estado de reservación | AGLO', 'admin.css')}"></head>
+    <body class="admin-page">
+        <header th:replace="~{admin/fragmentos :: nav}"></header>
+        <main class="admin-main">
+            <section class="admin-page-title">
+                <div>
+                    <h1 th:text="#{reservacion.admin.estado.titulo}">Editar estado de reservación</h1>
+                    <p th:text="#{reservacion.admin.estado.descripcion}">Actualice únicamente el estado de la reservación.</p>
+                </div>
+                <a class="btn btn-light" th:href="@{/admin/reservaciones/detalle/{id}(id=${reservacion.idReservacion})}" th:text="#{accion.regresar}">Regresar</a>
+            </section>
+            <section th:replace="~{admin/fragmentos :: mensajes}"></section>
+
+            <section class="admin-panel">
+                <div class="summary-grid mb-4">
+                    <div class="summary-card">
+                        <i class="fa-solid fa-user" aria-hidden="true"></i>
+                        <span th:text="#{reservacion.admin.cliente}">Cliente</span>
+                        <strong th:text="${reservacion.usuario != null ? reservacion.usuario.nombre + ' ' + reservacion.usuario.apellidoPaterno : #messages.msg('reservacion.admin.sinUsuario')}">Cliente</strong>
+                    </div>
+                    <div class="summary-card">
+                        <i class="fa-solid fa-calendar" aria-hidden="true"></i>
+                        <span th:text="#{reservacion.fechaReservacion}">Fecha</span>
+                        <strong th:text="${reservacion.fechaReservacion != null ? #temporals.format(reservacion.fechaReservacion, 'dd/MM/yyyy HH:mm') : #messages.msg('reservacion.admin.sinFecha')}">Fecha</strong>
+                    </div>
+                    <div class="summary-card">
+                        <i class="fa-solid fa-money-bill" aria-hidden="true"></i>
+                        <span th:text="#{reservacion.montoTotal}">Monto</span>
+                        <strong th:text="${reservacion.montoTotal != null ? @monedaCostaRica.formatear(reservacion.montoTotal) : #messages.msg('reservacion.admin.sinMonto')}">₡0</strong>
+                    </div>
+                    <div class="summary-card">
+                        <i class="fa-solid fa-circle-check" aria-hidden="true"></i>
+                        <span th:text="#{reservacion.estado}">Estado</span>
+                        <strong th:text="${reservacion.estado != null ? reservacion.estado.nombreEstado : #messages.msg('reservacion.admin.sinEstado')}">Estado</strong>
+                    </div>
+                </div>
+
+                <div class="table-responsive mb-4">
+                    <table class="table admin-table align-middle">
+                        <thead>
+                            <tr>
+                                <th th:text="#{detalle.idActividad}">Actividad</th>
+                                <th th:text="#{detalle.cantidadPersonas}">Personas</th>
+                                <th th:text="#{detalle.precioUnitario}">Precio unitario</th>
+                                <th th:text="#{detalle.subtotal}">Subtotal</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr th:if="${detalles == null or detalles.empty}">
+                                <td colspan="4" class="empty-row" th:text="#{reservacion.admin.sinDetalles}">No hay detalles para esta reservación.</td>
+                            </tr>
+                            <tr th:each="detalle : ${detalles}">
+                                <td th:text="${detalle.actividad != null ? detalle.actividad.nombreActividad : #messages.msg('reservacion.admin.sinActividad')}">Actividad</td>
+                                <td th:text="${detalle.cantidadPersonas}">1</td>
+                                <td th:text="${detalle.precioUnitario != null ? @monedaCostaRica.formatear(detalle.precioUnitario) : #messages.msg('reservacion.admin.sinMonto')}">₡0</td>
+                                <td th:text="${detalle.subtotal != null ? @monedaCostaRica.formatear(detalle.subtotal) : #messages.msg('reservacion.admin.sinMonto')}">₡0</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <form th:action="@{/admin/reservaciones/modificar/{id}(id=${reservacion.idReservacion})}" th:object="${estadoReservacionForm}" method="post" class="was-validated">
+                    <div th:if="${#fields.hasAnyErrors()}" class="alert alert-danger form-errors" role="alert">
+                        <strong th:text="#{formulario.invalido}">Revise los datos indicados.</strong>
+                        <ul class="mb-0 mt-2">
+                            <li th:each="fieldError : ${#fields.allErrors()}" th:text="${fieldError}">Error de validación</li>
+                        </ul>
+                    </div>
+                    <div class="form-grid">
+                        <div class="full-row">
+                            <label class="form-label" for="idEstado" th:text="#{reservacion.estado}">Estado</label>
+                            <select class="form-select" id="idEstado" th:field="*{idEstado}" required>
+                                <option value="" th:text="#{reservacion.admin.seleccioneEstado}">Seleccione un estado</option>
+                                <option th:each="estado : ${estados}"
+                                        th:value="${estado.idEstado}"
+                                        th:text="${estado.nombreEstado}">Estado</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-actions">
+                        <a class="btn btn-outline-dark" th:href="@{/admin/reservaciones/detalle/{id}(id=${reservacion.idReservacion})}" th:text="#{accion.cancelar}">Cancelar</a>
+                        <button class="btn btn-success" type="submit">
+                            <i class="fa-solid fa-floppy-disk" aria-hidden="true"></i>
+                            <span th:text="#{accion.guardar}">Guardar</span>
+                        </button>
+                    </div>
+                </form>
+            </section>
+        </main>
+        <th:block th:replace="~{aglo/fragmentos :: scripts('dashboard.js')}"></th:block>
+    </body>
+</html>

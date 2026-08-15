@@ -30,7 +30,7 @@
                         <div class="catalog-meta">
                             <span th:text="${actividad.tipoActividad != null ? actividad.tipoActividad.nombreTipoActividad : 'Actividad turística'}">Tipo</span>
                             <span th:text="${actividad.fechaHoraInicio != null ? #temporals.format(actividad.fechaHoraInicio, 'dd/MM/yyyy HH:mm') : 'Fecha por confirmar'}">Fecha</span>
-                            <span th:text="${actividad.precioActual != null ? #numbers.formatCurrency(actividad.precioActual) : 'Precio por confirmar'}">Precio</span>
+                            <span th:text="${actividad.precioActual != null ? @monedaCostaRica.formatear(actividad.precioActual) : 'Precio por confirmar'}">Precio</span>
                             <span th:text="${cuposDisponibles[actividad.idActividad] != null and cuposDisponibles[actividad.idActividad] > 0 ? 'Cupo disponible: ' + cuposDisponibles[actividad.idActividad] : 'Sin disponibilidad'}">Cupo</span>
                         </div>
                         <div class="d-flex gap-2">

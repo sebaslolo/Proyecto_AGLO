@@ -85,7 +85,13 @@ public class NidoController {
         }
 
 
-        nidoService.save(nido);
+        try {
+            nidoService.save(nido);
+        } catch (IllegalArgumentException e) {
+            bindingResult.reject("formulario.invalido", e.getMessage());
+            cargarCatalogos(model);
+            return "/admin/nidos/modifica";
+        }
 
         redirectAttributes.addFlashAttribute(
                 "todoOk",

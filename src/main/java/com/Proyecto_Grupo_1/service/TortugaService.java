@@ -15,9 +15,12 @@ import org.springframework.validation.annotation.Validated;
 public class TortugaService {
 
     private final TortugaRepository tortugaRepository;
+    private final EstadoService estadoService;
 
-    public TortugaService(TortugaRepository tortugaRepository) {
+    public TortugaService(TortugaRepository tortugaRepository,
+            EstadoService estadoService) {
         this.tortugaRepository = tortugaRepository;
+        this.estadoService = estadoService;
     }
 
     @Transactional(readOnly = true)
@@ -32,7 +35,47 @@ public class TortugaService {
 
     @Transactional
     public Tortuga save(@Valid Tortuga tortuga){
-        return tortugaRepository.save(tortuga);
+        return save(tortuga, null);
+    }
+
+    /**
+     * Persists only the fields exposed by the tortuga form.  The original label is
+     * supplied by the edit form so a submitted primary-key change cannot be
+     * interpreted as a new record.
+     */
+    @Transactional
+    public Tortuga save(@Valid Tortuga tortuga, String etiquetaOriginal) {
+        boolean esEdicion = etiquetaOriginal != null && !etiquetaOriginal.isBlank();
+        Tortuga destino;
+
+        if (esEdicion) {
+            if (!etiquetaOriginal.equals(tortuga.getEtiquetaTortuga())) {
+                throw new IllegalArgumentException("La etiqueta de la tortuga no se puede modificar.");
+            }
+            destino = tortugaRepository.findById(etiquetaOriginal)
+                    .orElseThrow(() -> new IllegalArgumentException("La tortuga que se intenta actualizar no existe."));
+        } else {
+            if (tortugaRepository.existsById(tortuga.getEtiquetaTortuga())) {
+                throw new IllegalArgumentException("Ya existe una tortuga con esa etiqueta.");
+            }
+            destino = new Tortuga();
+            destino.setEtiquetaTortuga(tortuga.getEtiquetaTortuga());
+        }
+
+        destino.setEspecie(tortuga.getEspecie());
+        destino.setSexo(tortuga.getSexo());
+        destino.setFechaRegistro(tortuga.getFechaRegistro());
+        destino.setObservaciones(tortuga.getObservaciones());
+        destino.setEstado(estadoService.obtenerEstado(idEstado(tortuga)));
+
+        return tortugaRepository.save(destino);
+    }
+
+    private Integer idEstado(Tortuga tortuga) {
+        if (tortuga.getEstado() == null || tortuga.getEstado().getIdEstado() == null) {
+            throw new IllegalArgumentException("Debe seleccionar un estado válido.");
+        }
+        return tortuga.getEstado().getIdEstado();
     }
 
     @Transactional

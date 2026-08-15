@@ -15,11 +15,17 @@ import org.springframework.validation.annotation.Validated;
 public class NacimientoService {
 
     private final NacimientoRepository nacimientoRepository;
+    private final NidoService nidoService;
+    private final EstadoService estadoService;
 
 
-    public NacimientoService(NacimientoRepository nacimientoRepository){
+    public NacimientoService(NacimientoRepository nacimientoRepository,
+            NidoService nidoService,
+            EstadoService estadoService){
 
         this.nacimientoRepository = nacimientoRepository;
+        this.nidoService = nidoService;
+        this.estadoService = estadoService;
 
     }
 
@@ -43,8 +49,36 @@ public class NacimientoService {
     @Transactional
     public Nacimiento save(@Valid Nacimiento nacimiento){
 
-        return nacimientoRepository.save(nacimiento);
+        Nacimiento destino = nacimiento.getIdNacimiento() == null
+                ? new Nacimiento()
+                : nacimientoRepository.findById(nacimiento.getIdNacimiento())
+                        .orElseThrow(() -> new IllegalArgumentException("El nacimiento que se intenta actualizar no existe."));
 
+        destino.setNido(nidoService.getNido(idNido(nacimiento))
+                .orElseThrow(() -> new IllegalArgumentException("El nido seleccionado no existe.")));
+        destino.setFechaEclosion(nacimiento.getFechaEclosion());
+        destino.setCriasVivas(nacimiento.getCriasVivas());
+        destino.setCriasMuertas(nacimiento.getCriasMuertas());
+        destino.setCriasInfertiles(nacimiento.getCriasInfertiles());
+        destino.setObservaciones(nacimiento.getObservaciones());
+        destino.setEstado(estadoService.obtenerEstado(idEstado(nacimiento)));
+
+        return nacimientoRepository.save(destino);
+
+    }
+
+    private Integer idNido(Nacimiento nacimiento) {
+        if (nacimiento.getNido() == null || nacimiento.getNido().getIdNido() == null) {
+            throw new IllegalArgumentException("Debe seleccionar un nido válido.");
+        }
+        return nacimiento.getNido().getIdNido();
+    }
+
+    private Integer idEstado(Nacimiento nacimiento) {
+        if (nacimiento.getEstado() == null || nacimiento.getEstado().getIdEstado() == null) {
+            throw new IllegalArgumentException("Debe seleccionar un estado válido.");
+        }
+        return nacimiento.getEstado().getIdEstado();
     }
 
 

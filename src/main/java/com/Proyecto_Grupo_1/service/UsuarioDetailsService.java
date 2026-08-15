@@ -3,7 +3,7 @@ package com.Proyecto_Grupo_1.service;
 import com.Proyecto_Grupo_1.domain.Usuario;
 import com.Proyecto_Grupo_1.repository.UsuarioRepository;
 import com.Proyecto_Grupo_1.repository.UsuarioRolRepository;
-import jakarta.servlet.http.HttpSession;
+import java.util.Locale;
 import java.util.stream.Collectors;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.User;
@@ -18,14 +18,11 @@ public class UsuarioDetailsService implements UserDetailsService {
 
     private final UsuarioRepository usuarioRepository;
     private final UsuarioRolRepository usuarioRolRepository;
-    private final HttpSession session;
 
     public UsuarioDetailsService(UsuarioRepository usuarioRepository,
-            UsuarioRolRepository usuarioRolRepository,
-            HttpSession session) {
+            UsuarioRolRepository usuarioRolRepository) {
         this.usuarioRepository = usuarioRepository;
         this.usuarioRolRepository = usuarioRolRepository;
-        this.session = session;
     }
 
     @Override
@@ -35,13 +32,16 @@ public class UsuarioDetailsService implements UserDetailsService {
         Usuario usuario = usuarioRepository.findByUsernameAndEstado_NombreEstado(username, "Activo")
                 .orElseThrow(() -> new UsernameNotFoundException("Usuario no encontrado: " + username));
 
-        session.removeAttribute("imagenUsuario");
-        session.setAttribute("imagenUsuario", usuario.getRutaImagen());
-
         var roles = usuarioRolRepository.findByUsuarioIdUsuario(usuario.getIdUsuario()).stream()
-                .map(usuarioRol -> new SimpleGrantedAuthority("ROLE_" + usuarioRol.getRol().getRol()))
+                .map(usuarioRol -> usuarioRol.getRol())
+                .filter(rol -> rol != null && rol.getRol() != null && !rol.getRol().isBlank())
+                .map(rol -> new SimpleGrantedAuthority(normalizarAuthority(rol.getRol())))
                 .collect(Collectors.toSet());
 
         return new User(usuario.getUsername(), usuario.getPassword(), roles);
+    }
+
+    private String normalizarAuthority(String rol) {
+        return "ROLE_" + rol.trim().toUpperCase(Locale.ROOT);
     }
 }
