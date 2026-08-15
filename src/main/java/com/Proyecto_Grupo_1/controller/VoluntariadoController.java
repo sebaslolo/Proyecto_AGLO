@@ -3,6 +3,7 @@ package com.Proyecto_Grupo_1.controller;
 import com.Proyecto_Grupo_1.dto.VoluntariadoForm;
 import com.Proyecto_Grupo_1.service.ActividadService;
 import com.Proyecto_Grupo_1.service.VoluntariadoService;
+import com.Proyecto_Grupo_1.service.RetroalimentacionService;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import java.util.HashMap;
@@ -25,16 +26,20 @@ public class VoluntariadoController {
     private final ActividadService actividadService;
     private final VoluntariadoService voluntariadoService;
     private final UsuarioService usuarioService;
+    private final RetroalimentacionService retroalimentacionService;
 
     public VoluntariadoController(
             ActividadService actividadService,
             VoluntariadoService voluntariadoService,
-            UsuarioService usuarioService) {
+            UsuarioService usuarioService,
+            RetroalimentacionService retroalimentacionService) {
 
         this.actividadService = actividadService;
         this.voluntariadoService = voluntariadoService;
         this.usuarioService = usuarioService;
+        this.retroalimentacionService = retroalimentacionService;
     }
+
     @GetMapping
     public String index() {
         return "redirect:/voluntariados/listado";
@@ -87,8 +92,8 @@ public class VoluntariadoController {
             HttpSession sesion,
             RedirectAttributes redirectAttributes) {
 
-        Integer idUsuario =
-                (Integer) sesion.getAttribute("idUsuario");
+        Integer idUsuario
+                = (Integer) sesion.getAttribute("idUsuario");
 
         if (idUsuario == null) {
 
@@ -137,8 +142,8 @@ public class VoluntariadoController {
             Model model,
             RedirectAttributes redirectAttributes) {
 
-        Integer idUsuario =
-                (Integer) sesion.getAttribute("idUsuario");
+        Integer idUsuario
+                = (Integer) sesion.getAttribute("idUsuario");
 
         if (idUsuario == null) {
 
@@ -149,8 +154,8 @@ public class VoluntariadoController {
             return "redirect:/auth/login";
         }
 
-        var inscripciones =
-                voluntariadoService.listarPorUsuario(idUsuario);
+        var inscripciones
+                = voluntariadoService.listarPorUsuario(idUsuario);
 
         model.addAttribute(
                 "inscripciones",
@@ -167,7 +172,7 @@ public class VoluntariadoController {
     }
 
     // HU-5 - Historial de voluntariados del usuario
- @GetMapping("/mis-voluntariados/listado")
+    @GetMapping("/mis-voluntariados/listado")
     public String misVoluntariados(
             Authentication authentication,
             Model model,
@@ -199,9 +204,56 @@ public class VoluntariadoController {
                         .getVoluntariadosPorUsuario(
                                 idUsuario);
 
+        Map<Integer, Boolean> puedeCalificar
+                = new HashMap<>();
+
+        Map<Integer, Boolean> retroalimentacionesEnviadas
+                = new HashMap<>();
+
+        for (var voluntariado : voluntariados) {
+
+            Integer idInscripcion
+                    = voluntariado
+                            .getIdInscripcionVoluntariado();
+
+            boolean disponible
+                    = voluntariadoService
+                            .puedeEnviarRetroalimentacion(
+                                    idInscripcion);
+
+            boolean enviada = false;
+
+            if (voluntariado.getActividad() != null) {
+
+                enviada
+                        = retroalimentacionService
+                                .yaEnvioRetroalimentacion(
+                                        idUsuario,
+                                        voluntariado
+                                                .getActividad()
+                                                .getIdActividad());
+            }
+
+            puedeCalificar.put(
+                    idInscripcion,
+                    disponible && !enviada);
+
+            retroalimentacionesEnviadas.put(
+                    idInscripcion,
+                    enviada);
+        }
+
         model.addAttribute(
                 "voluntariados",
                 voluntariados);
+
+        model.addAttribute(
+                "puedeCalificar",
+                puedeCalificar);
+
+        model.addAttribute(
+                "retroalimentacionesEnviadas",
+                retroalimentacionesEnviadas);
 
         model.addAttribute(
                 "totalVoluntariados",

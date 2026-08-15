@@ -1,16 +1,21 @@
 package com.Proyecto_Grupo_1.controller;
 
-import com.Proyecto_Grupo_1.domain.Retroalimentacion;
 import com.Proyecto_Grupo_1.domain.Usuario;
+import com.Proyecto_Grupo_1.dto.RetroalimentacionForm;
 import com.Proyecto_Grupo_1.service.EstadoService;
 import com.Proyecto_Grupo_1.service.RetroalimentacionService;
 import com.Proyecto_Grupo_1.service.UsuarioService;
 import com.Proyecto_Grupo_1.service.VoluntariadoService;
+import com.Proyecto_Grupo_1.service.RespuestaService;
+import java.util.HashMap;
+import java.util.Map;
+import jakarta.validation.Valid;
 import java.util.Locale;
 import org.springframework.context.MessageSource;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -26,32 +31,102 @@ public class RetroalimentacionController {
     private final VoluntariadoService voluntariadoService;
     private final EstadoService estadoService;
     private final MessageSource messageSource;
+    private final RespuestaService respuestaService;
 
     public RetroalimentacionController(
             RetroalimentacionService retroalimentacionService,
             UsuarioService usuarioService,
             VoluntariadoService voluntariadoService,
+            RespuestaService respuestaService,
             EstadoService estadoService,
             MessageSource messageSource) {
 
-        this.retroalimentacionService = retroalimentacionService;
-        this.usuarioService = usuarioService;
-        this.voluntariadoService = voluntariadoService;
-        this.estadoService = estadoService;
-        this.messageSource = messageSource;
+        this.retroalimentacionService
+                = retroalimentacionService;
+
+        this.usuarioService
+                = usuarioService;
+
+        this.voluntariadoService
+                = voluntariadoService;
+
+        this.estadoService
+                = estadoService;
+
+        this.respuestaService = 
+                respuestaService;
+
+        this.messageSource
+                = messageSource;
     }
 
     // Listado admin
     @GetMapping("/listado")
     public String listado(Model model) {
 
-        var retroalimentaciones =
-                retroalimentacionService
-                        .getRetroalimentaciones(false);
+        var retroalimentaciones
+                = retroalimentacionService
+                        .getRetroalimentaciones();
+
+        Map<Integer, String> puntuaciones
+                = new HashMap<>();
+
+        Map<Integer, String> comentarios
+                = new HashMap<>();
+
+        for (var solicitud : retroalimentaciones) {
+
+            var respuestas
+                    = respuestaService
+                            .getRespuestasPorSolicitud(
+                                    solicitud.getIdSolicitud());
+
+            for (var respuesta : respuestas) {
+
+                if (respuesta.getPregunta() == null
+                        || respuesta.getPregunta()
+                                .getTipoRespuesta() == null
+                        || respuesta.getPregunta()
+                                .getTipoRespuesta()
+                                .getNombre() == null) {
+
+                    continue;
+                }
+
+                String tipo
+                        = respuesta.getPregunta()
+                                .getTipoRespuesta()
+                                .getNombre();
+
+                if (tipo.equalsIgnoreCase(
+                        "Calificacion de 1 a 5")) {
+
+                    puntuaciones.put(
+                            solicitud.getIdSolicitud(),
+                            respuesta.getRespuesta());
+                }
+
+                if (tipo.equalsIgnoreCase(
+                        "Comentario libre")) {
+
+                    comentarios.put(
+                            solicitud.getIdSolicitud(),
+                            respuesta.getRespuesta());
+                }
+            }
+        }
 
         model.addAttribute(
                 "retroalimentaciones",
                 retroalimentaciones);
+
+        model.addAttribute(
+                "puntuaciones",
+                puntuaciones);
+
+        model.addAttribute(
+                "comentarios",
+                comentarios);
 
         model.addAttribute(
                 "totalRetroalimentaciones",
@@ -68,14 +143,14 @@ public class RetroalimentacionController {
             Model model,
             RedirectAttributes redirectAttributes) {
 
-        Usuario usuario =
-                obtenerUsuarioActual(authentication);
+        Usuario usuario
+                = obtenerUsuarioActual(authentication);
 
-        Integer idUsuario =
-                usuario.getIdUsuario();
+        Integer idUsuario
+                = usuario.getIdUsuario();
 
-        var voluntariadoOpt =
-                voluntariadoService
+        var voluntariadoOpt
+                = voluntariadoService
                         .getVoluntariado(idVoluntariado);
 
         if (voluntariadoOpt.isEmpty()) {
@@ -88,11 +163,9 @@ public class RetroalimentacionController {
                     + "mis-voluntariados/listado";
         }
 
-        var voluntariado =
-                voluntariadoOpt.get();
+        var voluntariado
+                = voluntariadoOpt.get();
 
-        // HU-5 - Verificar que el voluntariado
-        // pertenezca al usuario
         if (voluntariado.getVoluntariado() == null
                 || voluntariado.getVoluntariado()
                         .getUsuario() == null
@@ -110,12 +183,11 @@ public class RetroalimentacionController {
                     + "mis-voluntariados/listado";
         }
 
-        // HU-5 - Verificar que no haya
-        // enviado retroalimentación
         if (retroalimentacionService
                 .yaEnvioRetroalimentacion(
                         idUsuario,
-                        idVoluntariado)) {
+                        voluntariado.getActividad()
+                                .getIdActividad())) {
 
             redirectAttributes.addFlashAttribute(
                     "error",
@@ -125,8 +197,6 @@ public class RetroalimentacionController {
                     + "mis-voluntariados/listado";
         }
 
-        // HU-5 - La retroalimentación
-        // se realiza después del voluntariado
         if (!voluntariadoService
                 .puedeEnviarRetroalimentacion(
                         idVoluntariado)) {
@@ -134,7 +204,8 @@ public class RetroalimentacionController {
             redirectAttributes.addFlashAttribute(
                     "error",
                     "La retroalimentación estará disponible "
-                    + "después de realizar el voluntariado.");
+                    + "desde la fecha del voluntariado "
+                    + "hasta 5 días después.");
 
             return "redirect:/voluntariados/"
                     + "mis-voluntariados/listado";
@@ -142,7 +213,7 @@ public class RetroalimentacionController {
 
         model.addAttribute(
                 "retroalimentacion",
-                new Retroalimentacion());
+                new RetroalimentacionForm());
 
         model.addAttribute(
                 "voluntariado",
@@ -154,23 +225,28 @@ public class RetroalimentacionController {
     // HU-5 - Guardar retroalimentación
     @PostMapping("/guardar")
     public String guardar(
-            Retroalimentacion retroalimentacion,
+            @Valid RetroalimentacionForm retroalimentacion,
+            BindingResult bindingResult,
             Integer idVoluntariado,
             Authentication authentication,
             RedirectAttributes redirectAttributes) {
 
         try {
 
-            Usuario usuario =
-                    obtenerUsuarioActual(authentication);
+            if (bindingResult.hasErrors()) {
 
-            var voluntariado =
-                    voluntariadoService
+                throw new IllegalArgumentException(
+                        "Revise la información ingresada.");
+            }
+
+            Usuario usuario
+                    = obtenerUsuarioActual(authentication);
+
+            var voluntariado
+                    = voluntariadoService
                             .obtenerVoluntariado(
                                     idVoluntariado);
 
-            // HU-5 - Verificar que el voluntariado
-            // pertenezca al usuario
             if (voluntariado.getVoluntariado() == null
                     || voluntariado.getVoluntariado()
                             .getUsuario() == null
@@ -184,33 +260,28 @@ public class RetroalimentacionController {
                         + "este voluntariado.");
             }
 
-            // HU-5 - Verificar que la actividad
-            // ya se haya realizado
             if (!voluntariadoService
                     .puedeEnviarRetroalimentacion(
                             idVoluntariado)) {
 
                 throw new IllegalStateException(
                         "La retroalimentación estará disponible "
-                        + "después de realizar el voluntariado.");
+                        + "desde la fecha del voluntariado "
+                        + "hasta 5 días después.");
             }
 
-            var estado =
-                    estadoService
+            var estado
+                    = estadoService
                             .obtenerEstadoPorNombre(
                                     "Activo");
 
-            retroalimentacion.setUsuario(
-                    usuario);
-
-            retroalimentacion.setVoluntariado(
-                    voluntariado.getVoluntariado());
-
-            retroalimentacion.setEstado(
-                    estado);
-
             retroalimentacionService
-                    .save(retroalimentacion);
+                    .guardarRetroalimentacion(
+                            usuario,
+                            voluntariado,
+                            retroalimentacion.getPuntuacion(),
+                            retroalimentacion.getComentarios(),
+                            estado);
 
             redirectAttributes.addFlashAttribute(
                     "todoOk",
@@ -234,10 +305,10 @@ public class RetroalimentacionController {
         return usuarioService
                 .getUsuarioPorUsername(
                         authentication.getName())
-                .orElseThrow(() ->
-                        new IllegalStateException(
-                                "Usuario autenticado "
-                                + "no encontrado."));
+                .orElseThrow(()
+                        -> new IllegalStateException(
+                        "Usuario autenticado "
+                        + "no encontrado."));
     }
 
     private String msg(String key) {

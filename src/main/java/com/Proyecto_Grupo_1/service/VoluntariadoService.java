@@ -48,16 +48,16 @@ public class VoluntariadoService {
     @Transactional(readOnly = true)
     public long obtenerCuposDisponibles(Integer idActividad) {
 
-        Actividad actividad =
-                actividadService.obtenerActividad(idActividad);
+        Actividad actividad
+                = actividadService.obtenerActividad(idActividad);
 
-        long cupoMaximo =
-                actividad.getCupoMaximo() == null
+        long cupoMaximo
+                = actividad.getCupoMaximo() == null
                 ? 0
                 : actividad.getCupoMaximo();
 
-        long inscritos =
-                obtenerCantidadInscritos(idActividad);
+        long inscritos
+                = obtenerCantidadInscritos(idActividad);
 
         return Math.max(0, cupoMaximo - inscritos);
     }
@@ -78,11 +78,11 @@ public class VoluntariadoService {
             Integer idUsuario,
             Integer idActividad) {
 
-        Actividad actividad =
-                actividadService.obtenerActividad(idActividad);
+        Actividad actividad
+                = actividadService.obtenerActividad(idActividad);
 
-        Usuario usuario =
-                usuarioService.obtenerUsuario(idUsuario);
+        Usuario usuario
+                = usuarioService.obtenerUsuario(idUsuario);
 
         if (actividad.getFechaHoraInicio()
                 .isBefore(LocalDateTime.now())) {
@@ -105,15 +105,15 @@ public class VoluntariadoService {
                     "No hay cupos disponibles para este voluntariado.");
         }
 
-        Voluntariado voluntariado =
-                obtenerOCrearVoluntario(usuario);
+        Voluntariado voluntariado
+                = obtenerOCrearVoluntario(usuario);
 
-        Estado estadoInscripcion =
-                estadoService.obtenerEstadoPorNombre(
+        Estado estadoInscripcion
+                = estadoService.obtenerEstadoPorNombre(
                         "Confirmada");
 
-        InscripcionVoluntariado inscripcion =
-                new InscripcionVoluntariado();
+        InscripcionVoluntariado inscripcion
+                = new InscripcionVoluntariado();
 
         inscripcion.setVoluntariado(voluntariado);
         inscripcion.setActividad(actividad);
@@ -129,8 +129,8 @@ public class VoluntariadoService {
     private Voluntariado obtenerOCrearVoluntario(
             Usuario usuario) {
 
-        Optional<Voluntariado> voluntariadoExistente =
-                voluntariadoRepository
+        Optional<Voluntariado> voluntariadoExistente
+                = voluntariadoRepository
                         .findByUsuarioIdUsuario(
                                 usuario.getIdUsuario());
 
@@ -139,12 +139,12 @@ public class VoluntariadoService {
             return voluntariadoExistente.get();
         }
 
-        Estado estadoActivo =
-                estadoService.obtenerEstadoPorNombre(
+        Estado estadoActivo
+                = estadoService.obtenerEstadoPorNombre(
                         "Activo");
 
-        Voluntariado voluntariado =
-                new Voluntariado();
+        Voluntariado voluntariado
+                = new Voluntariado();
 
         voluntariado.setUsuario(usuario);
         voluntariado.setFechaIngreso(
@@ -200,18 +200,19 @@ public class VoluntariadoService {
 
         return inscripcionVoluntariadoRepository
                 .findById(idInscripcion)
-                .orElseThrow(() ->
-                        new IllegalArgumentException(
-                                "Inscripción de voluntariado no encontrada: "
-                                + idInscripcion));
+                .orElseThrow(()
+                        -> new IllegalArgumentException(
+                        "Inscripción de voluntariado no encontrada: "
+                        + idInscripcion));
     }
 
     @Transactional(readOnly = true)
     public boolean puedeEnviarRetroalimentacion(
             Integer idInscripcion) {
 
-        InscripcionVoluntariado voluntariado =
-                obtenerVoluntariado(idInscripcion);
+        InscripcionVoluntariado voluntariado
+                = obtenerVoluntariado(
+                        idInscripcion);
 
         if (voluntariado.getActividad() == null
                 || voluntariado.getActividad()
@@ -220,8 +221,17 @@ public class VoluntariadoService {
             return false;
         }
 
-        return !LocalDateTime.now().isBefore(
-                voluntariado.getActividad()
-                        .getFechaHoraInicio());
+        LocalDateTime fechaActividad
+                = voluntariado.getActividad()
+                        .getFechaHoraInicio();
+
+        LocalDateTime fechaLimite
+                = fechaActividad.plusDays(5);
+
+        LocalDateTime fechaActual
+                = LocalDateTime.now();
+
+        return !fechaActual.isBefore(fechaActividad)
+                && !fechaActual.isAfter(fechaLimite);
     }
 }

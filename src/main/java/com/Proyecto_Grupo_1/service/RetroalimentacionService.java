@@ -1,110 +1,192 @@
 package com.Proyecto_Grupo_1.service;
 
-import com.Proyecto_Grupo_1.domain.Retroalimentacion;
-import com.Proyecto_Grupo_1.repository.RetroalimentacionRepository;
-import jakarta.validation.Valid;
+import com.Proyecto_Grupo_1.domain.Estado;
+import com.Proyecto_Grupo_1.domain.InscripcionVoluntariado;
+import com.Proyecto_Grupo_1.domain.Pregunta;
+import com.Proyecto_Grupo_1.domain.Respuesta;
+import com.Proyecto_Grupo_1.domain.Solicitud;
+import com.Proyecto_Grupo_1.domain.Usuario;
+import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Optional;
-import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.validation.annotation.Validated;
 
 @Service
-@Validated
 public class RetroalimentacionService {
 
-    private final RetroalimentacionRepository retroalimentacionRepository;
+    private final SolicitudService solicitudService;
+    private final TipoSolicitudService tipoSolicitudService;
+    private final PreguntaService preguntaService;
+    private final RespuestaService respuestaService;
 
     public RetroalimentacionService(
-            RetroalimentacionRepository retroalimentacionRepository) {
+            SolicitudService solicitudService,
+            TipoSolicitudService tipoSolicitudService,
+            PreguntaService preguntaService,
+            RespuestaService respuestaService) {
 
-        this.retroalimentacionRepository = retroalimentacionRepository;
+        this.solicitudService =
+                solicitudService;
+
+        this.tipoSolicitudService =
+                tipoSolicitudService;
+
+        this.preguntaService =
+                preguntaService;
+
+        this.respuestaService =
+                respuestaService;
     }
 
     @Transactional(readOnly = true)
-    public List<Retroalimentacion> getRetroalimentaciones(boolean sinFiltro) {
-        return retroalimentacionRepository.findAll();
-    }
+    public List<Solicitud> getRetroalimentaciones() {
 
-    @Transactional(readOnly = true)
-    public Optional<Retroalimentacion> getRetroalimentacion(
-            Integer idRetroalimentacion) {
-
-        return retroalimentacionRepository.findById(idRetroalimentacion);
-    }
-
-    @Transactional(readOnly = true)
-    public List<Retroalimentacion> getRetroalimentacionesPorUsuario(
-            Integer idUsuario) {
-
-        return retroalimentacionRepository
-                .findByUsuarioIdUsuario(idUsuario);
-    }
-
-    @Transactional(readOnly = true)
-    public List<Retroalimentacion> getRetroalimentacionesPorVoluntariado(
-            Integer idVoluntariado) {
-
-        return retroalimentacionRepository
-                .findByVoluntariadoIdVoluntariado(idVoluntariado);
+        return solicitudService
+                .getRetroalimentaciones();
     }
 
     @Transactional(readOnly = true)
     public boolean yaEnvioRetroalimentacion(
             Integer idUsuario,
-            Integer idVoluntariado) {
+            Integer idActividad) {
 
-        return retroalimentacionRepository
-                .existsByUsuarioIdUsuarioAndVoluntariadoIdVoluntariado(
+        return solicitudService
+                .yaEnvioRetroalimentacion(
                         idUsuario,
-                        idVoluntariado);
+                        idActividad);
     }
 
     @Transactional
-    public Retroalimentacion save(
-            @Valid Retroalimentacion retroalimentacion) {
+    public void guardarRetroalimentacion(
+            Usuario usuario,
+            InscripcionVoluntariado inscripcion,
+            Integer puntuacion,
+            String comentarios,
+            Estado estado) {
 
-        // HU-5 - La retroalimentación no puede editarse una vez enviada
-        if (retroalimentacion.getIdRetroalimentacion() != null) {
+        if (usuario == null
+                || inscripcion == null
+                || inscripcion.getActividad() == null) {
 
-            throw new IllegalStateException(
-                    "La retroalimentación no puede editarse una vez enviada.");
+            throw new IllegalArgumentException(
+                    "La información del voluntariado es inválida.");
         }
 
-        // HU-5 - Verificar que no exista retroalimentación previa
+        Integer idUsuario =
+                usuario.getIdUsuario();
+
+        Integer idActividad =
+                inscripcion.getActividad()
+                        .getIdActividad();
+
         if (yaEnvioRetroalimentacion(
-                retroalimentacion.getUsuario().getIdUsuario(),
-                retroalimentacion.getVoluntariado().getIdVoluntariado())) {
+                idUsuario,
+                idActividad)) {
 
             throw new IllegalStateException(
                     "Ya enviaste retroalimentación para este voluntariado.");
         }
 
-        return retroalimentacionRepository.save(retroalimentacion);
-    }
-
-    @Transactional
-    public void delete(Integer idRetroalimentacion) {
-
-        if (!retroalimentacionRepository.existsById(idRetroalimentacion)) {
+        if (puntuacion == null
+                || puntuacion < 1
+                || puntuacion > 5) {
 
             throw new IllegalArgumentException(
-                    "La retroalimentación con ID "
-                    + idRetroalimentacion
-                    + " no existe.");
+                    "La puntuación debe estar entre 1 y 5.");
         }
 
-        try {
+        var tipoSolicitud =
+                tipoSolicitudService
+                        .obtenerPorNombre(
+                                "Retroalimentacion");
 
-            retroalimentacionRepository.deleteById(idRetroalimentacion);
+        Solicitud solicitud =
+                new Solicitud();
 
-        } catch (DataIntegrityViolationException e) {
+        solicitud.setUsuario(
+                usuario);
 
-            throw new IllegalStateException(
-                    "No se puede eliminar la retroalimentación. "
-                    + "Tiene datos asociados.",
-                    e);
+        solicitud.setActividad(
+                inscripcion.getActividad());
+
+        solicitud.setTipoSolicitud(
+                tipoSolicitud);
+
+        solicitud.setEstado(
+                estado);
+
+        solicitud.setFechaEnvio(
+                LocalDateTime.now());
+
+        solicitud =
+                solicitudService.save(
+                        solicitud);
+
+        List<Pregunta> preguntas =
+                preguntaService.getPreguntas();
+
+        for (Pregunta pregunta : preguntas) {
+
+            if (pregunta.getTipoRespuesta() == null
+                    || pregunta.getTipoRespuesta()
+                            .getNombre() == null) {
+
+                continue;
+            }
+
+            String tipoRespuesta =
+                    pregunta.getTipoRespuesta()
+                            .getNombre();
+
+            if (tipoRespuesta.equalsIgnoreCase(
+                    "Calificacion de 1 a 5")) {
+
+                guardarRespuesta(
+                        solicitud,
+                        pregunta,
+                        String.valueOf(puntuacion),
+                        estado);
+            }
+
+            if (tipoRespuesta.equalsIgnoreCase(
+                    "Comentario libre")) {
+
+                String comentario =
+                        comentarios == null
+                        ? ""
+                        : comentarios;
+
+                guardarRespuesta(
+                        solicitud,
+                        pregunta,
+                        comentario,
+                        estado);
+            }
         }
+    }
+
+    private void guardarRespuesta(
+            Solicitud solicitud,
+            Pregunta pregunta,
+            String valor,
+            Estado estado) {
+
+        Respuesta respuesta =
+                new Respuesta();
+
+        respuesta.setSolicitud(
+                solicitud);
+
+        respuesta.setPregunta(
+                pregunta);
+
+        respuesta.setRespuesta(
+                valor);
+
+        respuesta.setEstado(
+                estado);
+
+        respuestaService.save(
+                respuesta);
     }
 }

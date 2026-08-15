@@ -1,161 +1,177 @@
 <!DOCTYPE html>
 <html lang="es" xmlns:th="http://www.thymeleaf.org">
 
-<head th:replace="~{aglo/fragmentos :: head('Mis voluntariados | AGLO', 'dashboard.css')}"></head>
+    <head th:replace="~{aglo/fragmentos :: head('Mis voluntariados | AGLO', 'dashboard.css')}"></head>
 
-<body class="public-page">
+    <body>
 
-    <main class="public-main">
+        <main class="admin-main">
 
-        <section class="public-page-title">
-
-            <div>
-                <h1>Mis voluntariados</h1>
-                <p>Consulta tus participaciones y califica tus experiencias.</p>
-            </div>
-
-            <a class="btn btn-light"
-               th:href="@{/inicio}">
-                Inicio
-            </a>
-
-        </section>
-
-        <section th:replace="~{admin/fragmentos :: mensajes}"></section>
-
-        <section class="admin-panel">
-
-            <div class="panel-heading">
+            <section class="admin-page-title">
 
                 <div>
-                    <span class="section-kicker">Voluntariado</span>
-                    <h2>Mis participaciones</h2>
+                    <h1>Mis voluntariados</h1>
+                    <p>Consulta tus participaciones y califica tus experiencias.</p>
                 </div>
 
-                <span class="badge text-bg-success"
-                      th:text="'Total: ' + ${totalVoluntariados}">
-                    Total: 0
-                </span>
+                <a class="btn btn-light"
+                   th:href="@{/inicio}">
+                    Inicio
+                </a>
 
-            </div>
+            </section>
 
-            <div class="table-responsive">
+            <section th:replace="~{admin/fragmentos :: mensajes}"></section>
 
-                <table class="table admin-table align-middle">
+            <section class="admin-panel">
 
-                    <thead>
+                <div class="admin-page-title">
 
-                        <tr>
-                            <th>ID</th>
-                            <th>Actividad</th>
-                            <th>Fecha de inscripción</th>
-                            <th>Fecha de actividad</th>
-                            <th>Horas acumuladas</th>
-                            <th>Estado</th>
-                            <th>Retroalimentación</th>
-                        </tr>
+                    <div>
+                        <h2>Mis participaciones</h2>
+                    </div>
 
-                    </thead>
+                    <span class="badge text-bg-success"
+                          th:text="'Total: ' + ${totalVoluntariados}">
+                        Total: 0
+                    </span>
 
-                    <tbody>
+                </div>
 
-                        <tr th:if="${voluntariados == null or voluntariados.empty}">
+                <div class="table-responsive">
 
-                            <td colspan="7"
-                                class="empty-row">
+                    <table class="table admin-table align-middle">
 
-                                No tienes voluntariados registrados.
+                        <thead>
 
-                            </td>
+                            <tr>
+                                <th>ID</th>
+                                <th>Actividad</th>
+                                <th>Fecha de inscripción</th>
+                                <th>Fecha de actividad</th>
+                                <th>Horas acumuladas</th>
+                                <th>Estado</th>
+                                <th>Retroalimentación</th>
+                            </tr>
 
-                        </tr>
+                        </thead>
 
-                        <tr th:each="voluntariado : ${voluntariados}">
+                        <tbody>
 
-                            <td th:text="${voluntariado.idInscripcionVoluntariado}">
-                                1
-                            </td>
+                            <tr th:if="${voluntariados == null or voluntariados.empty}">
 
-                            <td th:text="${voluntariado.actividad != null
+                                <td colspan="7"
+                                    class="empty-row">
+
+                                    No tienes voluntariados registrados.
+
+                                </td>
+
+                            </tr>
+
+                            <tr th:each="voluntariado : ${voluntariados}">
+
+                                <td th:text="${voluntariado.idInscripcionVoluntariado}">
+                                    1
+                                </td>
+
+                                <td th:text="${voluntariado.actividad != null
                                     ? voluntariado.actividad.nombreActividad
                                     : 'Sin actividad'}">
 
-                                Voluntariado ambiental
+                                    Voluntariado ambiental
 
-                            </td>
+                                </td>
 
-                            <td th:text="${voluntariado.fechaInscripcion != null
+                                <td th:text="${voluntariado.fechaInscripcion != null
                                     ? #temporals.format(voluntariado.fechaInscripcion, 'dd/MM/yyyy HH:mm')
                                     : 'Sin fecha'}">
 
-                                01/08/2026 10:00
+                                    01/08/2026 10:00
 
-                            </td>
+                                </td>
 
-                            <td th:text="${voluntariado.actividad != null
+                                <td th:text="${voluntariado.actividad != null
                                     and voluntariado.actividad.fechaHoraInicio != null
                                     ? #temporals.format(voluntariado.actividad.fechaHoraInicio, 'dd/MM/yyyy HH:mm')
                                     : 'Pendiente'}">
 
-                                08/08/2026 08:00
+                                    08/08/2026 08:00
 
-                            </td>
+                                </td>
 
-                            <td th:text="${voluntariado.voluntariado != null
+                                <td th:text="${voluntariado.voluntariado != null
                                     and voluntariado.voluntariado.horasAcumuladas != null
                                     ? voluntariado.voluntariado.horasAcumuladas
                                     : '0'}">
 
-                                4
+                                    4
 
-                            </td>
+                                </td>
 
-                            <td>
+                                <td>
 
-                                <span th:if="${voluntariado.estado != null}"
-                                      th:text="${voluntariado.estado.nombreEstado}"
-                                      class="status-pill status-active">
+                                    <span th:if="${voluntariado.estado != null}"
+                                          th:text="${voluntariado.estado.nombreEstado}"
+                                          class="activity-status status-active">
 
-                                    Confirmada
+                                        Confirmada
 
-                                </span>
+                                    </span>
 
-                                <span th:if="${voluntariado.estado == null}"
-                                      class="status-pill">
+                                    <span th:if="${voluntariado.estado == null}"
+                                          class="activity-status">
 
-                                    Sin estado
+                                        Sin estado
 
-                                </span>
+                                    </span>
 
-                            </td>
+                                </td>
 
-                            <td>
+                                <td>
 
-                                <a class="btn btn-sm btn-success"
-                                   th:href="@{/retroalimentacion/calificar/{id}
-                                   (id=${voluntariado.idInscripcionVoluntariado})}">
+                                    <a class="activity-action-btn"
+                                       th:if="${puedeCalificar[voluntariado.idInscripcionVoluntariado]}"
+                                       th:href="@{/retroalimentacion/calificar/{id}
+                                       (id=${voluntariado.idInscripcionVoluntariado})}">
 
-                                    <i class="fa-solid fa-star"></i>
-                                    Calificar experiencia
+                                        <i class="fa-solid fa-star"></i>
+                                        Calificar
 
-                                </a>
+                                    </a>
 
-                            </td>
+                                    <span class="activity-status status-active"
+                                          th:if="${retroalimentacionesEnviadas[voluntariado.idInscripcionVoluntariado]}">
 
-                        </tr>
+                                        <i class="fa-solid fa-check"></i>
+                                        Retroalimentación enviada
 
-                    </tbody>
+                                    </span>
 
-                </table>
+                                    <span class="text-muted"
+                                          th:if="${!puedeCalificar[voluntariado.idInscripcionVoluntariado]
+                                          and !retroalimentacionesEnviadas[voluntariado.idInscripcionVoluntariado]}">
 
-            </div>
+                                        No disponible
 
-        </section>
+                                    </span>
 
-    </main>
+                                </td>
 
-    <th:block th:replace="~{aglo/fragmentos :: scripts('dashboard.js')}"></th:block>
+                            </tr>
 
-</body>
+                        </tbody>
+
+                    </table>
+
+                </div>
+
+            </section>
+
+        </main>
+
+        <th:block th:replace="~{aglo/fragmentos :: scripts('dashboard.js')}"></th:block>
+
+    </body>
 
 </html>
