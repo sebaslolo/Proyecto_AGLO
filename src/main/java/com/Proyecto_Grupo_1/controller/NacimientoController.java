@@ -106,7 +106,13 @@ public class NacimientoController {
         }
 
 
-        nacimientoService.save(nacimiento);
+        try {
+            nacimientoService.save(nacimiento);
+        } catch (IllegalArgumentException e) {
+            bindingResult.reject("formulario.invalido", e.getMessage());
+            cargarCatalogos(model);
+            return "/admin/nacimientos/modifica";
+        }
 
 
         redirectAttributes.addFlashAttribute(

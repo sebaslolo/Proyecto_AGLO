@@ -21,7 +21,6 @@
                     <table class="table admin-table align-middle">
                         <thead>
                             <tr>
-                                <th>ID</th>
                                 <th>Nido</th>
                                 <th>Eclosión</th>
                                 <th>Vivas</th>
@@ -33,11 +32,10 @@
                         </thead>
                         <tbody>
                             <tr th:if="${nacimientos == null or nacimientos.empty}">
-                                <td colspan="8" class="empty-row">No hay nacimientos registrados.</td>
+                                <td colspan="7" class="empty-row">No hay nacimientos registrados.</td>
                             </tr>
                             <tr th:each="nacimiento : ${nacimientos}">
-                                <td th:text="${nacimiento.idNacimiento}">1</td>
-                                <td th:text="${nacimiento.nido != null ? 'Nido #' + nacimiento.nido.idNido : 'Sin nido'}">Nido #1</td>
+                                <td th:text="${nacimiento.nido != null and nacimiento.nido.tortuga != null ? 'Tortuga ' + nacimiento.nido.tortuga.etiquetaTortuga : (nacimiento.nido != null ? (nacimiento.nido.ubicacion ?: 'Nido sin datos de ubicación') : 'Sin nido')}">Tortuga T-001</td>
                                 <td th:text="${nacimiento.fechaEclosion != null ? #temporals.format(nacimiento.fechaEclosion, 'dd/MM/yyyy HH:mm') : 'Sin fecha'}">14/08/2026</td>
                                 <td th:text="${nacimiento.criasVivas ?: '0'}">50</td>
                                 <td th:text="${nacimiento.criasMuertas ?: '0'}">2</td>
@@ -48,12 +46,12 @@
                                        th:href="@{/admin/nacimientos/modificar/{id}(id=${nacimiento.idNacimiento})}">
                                         <i class="fa-solid fa-pen"></i> Editar
                                     </a>
-                                    <button class="btn btn-sm btn-outline-danger" type="button"
+                                    <button th:if="${isAdmin}" class="btn btn-sm btn-outline-danger" type="button"
                                             data-bs-toggle="modal" data-bs-target="#confirmDeleteModal"
                                             th:data-delete-action="@{/admin/nacimientos/eliminar}"
                                             data-delete-field="idNacimiento"
                                             th:data-delete-id="${nacimiento.idNacimiento}"
-                                            th:data-delete-name="${'nacimiento #' + nacimiento.idNacimiento}">
+                                            th:data-delete-name="${nacimiento.fechaEclosion != null ? 'nacimiento del ' + #temporals.format(nacimiento.fechaEclosion, 'dd/MM/yyyy') : 'nacimiento sin fecha registrada'}">
                                         <i class="fa-solid fa-trash"></i> Eliminar
                                     </button>
                                 </td>

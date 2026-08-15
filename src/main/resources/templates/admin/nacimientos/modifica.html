@@ -27,7 +27,7 @@
                                 <option th:each="nidoItem : ${nidos}"
                                         th:value="${nidoItem.idNido}"
                                         th:selected="${nacimiento.nido != null and nacimiento.nido.idNido == nidoItem.idNido}"
-                                        th:text="${'Nido #' + nidoItem.idNido}">Nido #1</option>
+                                        th:text="${nidoItem.tortuga != null ? 'Tortuga ' + nidoItem.tortuga.etiquetaTortuga : (nidoItem.ubicacion != null ? nidoItem.ubicacion : 'Nido sin datos de ubicación')}">Tortuga T-001</option>
                             </select>
                         </div>
                         <div>

@@ -6,211 +6,212 @@
         <header th:replace="~{admin/fragmentos :: nav}"></header>
 
         <main class="admin-main admin-content">
-                <h1 class="page-title" th:text="${dashboardTitle}">Panel administrativo</h1>
-                <section th:replace="~{admin/fragmentos :: mensajes}"></section>
+            <section class="dashboard-page-heading">
+                <div>
+                    <p class="dashboard-eyebrow">AGLO</p>
+                    <h1 th:text="#{dashboard.titulo}">Panel de control</h1>
+                    <p th:text="#{dashboard.descripcion}">Resumen administrativo del sistema.</p>
+                </div>
+                <a class="dashboard-primary-action" th:href="@{/admin/actividades/nueva}">
+                    <i class="fa-solid fa-plus" aria-hidden="true"></i>
+                    <span th:text="#{dashboard.accion.nuevaActividad}">Nueva actividad</span>
+                </a>
+            </section>
 
-                <section class="summary-grid" aria-label="Resumen administrativo">
-                    <a class="summary-card" th:href="@{/admin/usuarios/listado}" href="/admin/usuarios/listado">
-                        <i class="fa-solid fa-users"></i>
-                        <span>Usuarios</span>
-                        <strong th:text="${totalUsuarios}">0</strong>
-                    </a>
-                    <a class="summary-card" th:href="@{/admin/actividades/listado}" href="/admin/actividades/listado">
-                        <i class="fa-solid fa-route"></i>
-                        <span>Actividades</span>
-                        <strong th:text="${totalActividades}">0</strong>
-                    </a>
-                    <a class="summary-card" th:href="@{/admin/reservaciones/listado}" href="/admin/reservaciones/listado">
-                        <i class="fa-solid fa-calendar-check"></i>
-                        <span>Reservaciones</span>
-                        <strong th:text="${totalReservaciones}">0</strong>
-                    </a>
-                    <a class="summary-card" th:href="@{/admin/guias/listado}" href="/admin/guias/listado">
-                        <i class="fa-solid fa-person-hiking"></i>
-                        <span>Guías</span>
-                        <strong th:text="${totalGuias}">0</strong>
-                    </a>
-                </section>
+            <section th:replace="~{admin/fragmentos :: mensajes}"></section>
 
-                <section class="admin-panel primary-panel" id="usuarios">
-                    <div class="panel-heading">
+            <section class="dashboard-kpi-grid" aria-label="Indicadores principales">
+                <a class="dashboard-kpi-card dashboard-kpi-card--users" th:href="@{/admin/usuarios/listado}">
+                    <span class="dashboard-kpi-icon" aria-hidden="true"><i class="fa-solid fa-users"></i></span>
+                    <span class="dashboard-kpi-copy">
+                        <span th:text="#{dashboard.kpi.usuarios}">Usuarios registrados</span>
+                        <strong th:text="${dashboard.totalUsuarios}">0</strong>
+                    </span>
+                    <i class="fa-solid fa-arrow-up-right-from-square dashboard-kpi-link" aria-hidden="true"></i>
+                </a>
+
+                <a class="dashboard-kpi-card dashboard-kpi-card--activities" th:href="@{/admin/actividades/listado}">
+                    <span class="dashboard-kpi-icon" aria-hidden="true"><i class="fa-solid fa-calendar-days"></i></span>
+                    <span class="dashboard-kpi-copy">
+                        <span th:text="#{dashboard.kpi.actividades}">Actividades próximas</span>
+                        <strong th:text="${dashboard.totalActividadesProximas}">0</strong>
+                    </span>
+                    <i class="fa-solid fa-arrow-up-right-from-square dashboard-kpi-link" aria-hidden="true"></i>
+                </a>
+
+                <a class="dashboard-kpi-card dashboard-kpi-card--reservations" th:href="@{/admin/reservaciones/listado}">
+                    <span class="dashboard-kpi-icon" aria-hidden="true"><i class="fa-solid fa-calendar-check"></i></span>
+                    <span class="dashboard-kpi-copy">
+                        <span th:text="#{dashboard.kpi.reservaciones}">Reservaciones registradas</span>
+                        <strong th:text="${dashboard.totalReservaciones}">0</strong>
+                    </span>
+                    <i class="fa-solid fa-arrow-up-right-from-square dashboard-kpi-link" aria-hidden="true"></i>
+                </a>
+
+                <article class="dashboard-kpi-card dashboard-kpi-card--revenue">
+                    <span class="dashboard-kpi-icon" aria-hidden="true"><i class="fa-solid fa-coins"></i></span>
+                    <span class="dashboard-kpi-copy">
+                        <span th:text="#{dashboard.kpi.montoReservado}">Monto reservado</span>
+                        <strong th:text="${@monedaCostaRica.formatear(dashboard.montoReservado)}">₡0</strong>
+                    </span>
+                </article>
+            </section>
+
+            <section class="dashboard-insights-grid" aria-label="Resumen de reservaciones">
+                <article class="dashboard-panel dashboard-chart-panel dashboard-chart-panel--trend">
+                    <div class="dashboard-panel-heading">
                         <div>
-                            <span class="section-kicker">HU2</span>
-                            <h2>Usuarios registrados</h2>
-                        </div>
-                        <form class="search-form" th:action="@{/admin/usuarios/listado}" action="/admin/usuarios/listado" method="get">
-                            <input class="form-control form-control-sm" type="search" name="q" placeholder="Buscar usuario"/>
-                            <button class="btn btn-sm btn-outline-light" type="submit">
-                                <i class="fa-solid fa-magnifying-glass"></i>
-                            </button>
-                        </form>
-                    </div>
-
-                    <div class="table-responsive">
-                        <table class="table admin-table align-middle">
-                            <thead>
-                                <tr>
-                                    <th>Identificación</th>
-                                    <th>Correo</th>
-                                    <th>Contraseña</th>
-                                    <th>Tipo de Usuario</th>
-                                    <th>Estado</th>
-                                    <th>Fecha registro</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr th:if="${usuarios == null or usuarios.empty}">
-                                    <td colspan="6" class="empty-row">No hay usuarios registrados.</td>
-                                </tr>
-                                <tr th:each="usuario : ${usuarios}">
-                                    <td>
-                                        <span th:text="${usuario.idUsuario}">1</span>
-                                        <small th:text="${usuario.nombre + ' ' + usuario.apellidoPaterno}">Nombre usuario</small>
-                                    </td>
-                                    <td th:text="${usuario.correo != null and !usuario.correo.isEmpty() ? usuario.correo : 'Sin correo'}">correo@aglo.cr</td>
-                                    <td>********</td>
-                                    <td th:text="${rolesPorUsuario[usuario.idUsuario] != null and !rolesPorUsuario[usuario.idUsuario].isEmpty() ? rolesPorUsuario[usuario.idUsuario] : 'Sin rol'}">Cliente</td>
-                                    <td>
-                                        <span class="status-pill"
-                                              th:classappend="${usuario.estado != null and usuario.estado.nombreEstado != null and usuario.estado.nombreEstado.toLowerCase() == 'activo'} ? ' status-active' : ' status-inactive'"
-                                              th:text="${usuario.estado != null ? usuario.estado.nombreEstado : 'Sin estado'}">Activo</span>
-                                    </td>
-                                    <td th:text="${usuario.fechaCreacion != null ? #temporals.format(usuario.fechaCreacion, 'dd/MM/yyyy') : 'Sin fecha'}">01/01/2026</td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-
-                    <div class="panel-footer">
-                        <span>Vista Administrador</span>
-                        <div class="action-row">
-                            <a class="btn btn-light btn-sm" th:href="@{/admin/usuarios/nuevo}" href="/admin/usuarios/nuevo">
-                                <i class="fa-solid fa-plus"></i> Agregar
-                            </a>
-                            <a class="btn btn-light btn-sm" th:href="@{/admin/usuarios/listado}" href="/admin/usuarios/listado">
-                                <i class="fa-solid fa-pen"></i> Editar
-                            </a>
-                            <a class="btn btn-light btn-sm" th:href="@{/admin/usuarios/listado}" href="/admin/usuarios/listado">
-                                <i class="fa-solid fa-trash"></i> Eliminar
-                            </a>
+                            <span class="dashboard-panel-icon" aria-hidden="true"><i class="fa-solid fa-chart-line"></i></span>
+                            <h2 th:text="#{dashboard.grafica.mensual}">Reservaciones por mes</h2>
                         </div>
                     </div>
-                </section>
+                    <div class="dashboard-chart-wrap" th:if="${dashboard.hasReservaciones}">
+                        <canvas id="reservationsMonthlyChart" aria-label="Tendencia mensual de reservaciones" role="img"></canvas>
+                    </div>
+                    <p class="dashboard-empty-state" th:unless="${dashboard.hasReservaciones}">
+                        <i class="fa-regular fa-calendar-xmark" aria-hidden="true"></i>
+                        <span th:text="#{dashboard.vacio.reservaciones}">No hay reservaciones registradas.</span>
+                    </p>
+                </article>
 
-                <section class="dashboard-sections">
-                    <article class="admin-panel" id="actividades">
-                        <div class="panel-heading">
-                            <div>
-                                <span class="section-kicker">HU3</span>
-                                <h2>Actividades turísticas</h2>
-                            </div>
-                            <a class="btn btn-sm btn-light" th:href="@{/admin/actividades/nueva}" href="/admin/actividades/nueva">
-                                <i class="fa-solid fa-plus"></i> Nueva actividad
-                            </a>
-                        </div>
-                        <div class="table-responsive compact-scroll">
-                            <table class="table admin-table align-middle">
-                                <thead>
-                                    <tr>
-                                        <th>Nombre</th>
-                                        <th>Inicio</th>
-                                        <th>Cupo</th>
-                                        <th>Precio</th>
-                                        <th>Estado</th>
-                                        <th></th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr th:if="${actividades == null or actividades.empty}">
-                                        <td colspan="6" class="empty-row">No hay actividades registradas.</td>
-                                    </tr>
-                                    <tr th:each="actividad : ${actividades}">
-                                        <td th:text="${actividad.nombreActividad}">Tour Ostional</td>
-                                        <td th:text="${actividad.fechaHoraInicio != null ? #temporals.format(actividad.fechaHoraInicio, 'dd/MM/yyyy HH:mm') : 'Sin fecha'}">01/01/2026</td>
-                                        <td th:text="${actividad.cupoMaximo}">20</td>
-                                        <td th:text="${actividad.precioActual != null ? #numbers.formatCurrency(actividad.precioActual) : 'Sin precio'}">₡0</td>
-                                        <td th:text="${actividad.estado != null ? actividad.estado.nombreEstado : 'Sin estado'}">Activo</td>
-                                        <td class="text-end">
-                                            <a class="btn btn-sm btn-outline-dark"
-                                               th:href="@{/admin/actividades/modificar/{id}(id=${actividad.idActividad})}"
-                                               href="/admin/actividades/listado">Ver/Editar</a>
-                                        </td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                        </div>
-                    </article>
-
-                    <article class="admin-panel" id="guias">
-                        <div class="panel-heading">
-                            <div>
-                                <span class="section-kicker">HU4</span>
-                                <h2>Asignar guías</h2>
-                            </div>
-                            <a class="btn btn-sm btn-light" th:href="@{/admin/guias/listado}" href="/admin/guias/listado">
-                                <i class="fa-solid fa-person-hiking"></i> Guías
-                            </a>
-                        </div>
-                        <div class="assignment-list">
-                            <div class="assignment-item" th:if="${actividades == null or actividades.empty}">
-                                <span>No hay actividades disponibles para asignar guías.</span>
-                            </div>
-                            <a class="assignment-item" th:each="actividad : ${actividades}"
-                               th:href="@{/admin/actividades/{id}/guias/listado(id=${actividad.idActividad})}"
-                               href="/admin/actividades/1/guias/listado">
-                                <span th:text="${actividad.nombreActividad}">Actividad</span>
-                                <strong>Asignar guía</strong>
-                            </a>
-                        </div>
-                    </article>
-                </section>
-
-                <section class="admin-panel" id="reservaciones">
-                    <div class="panel-heading">
+                <article class="dashboard-panel dashboard-chart-panel dashboard-chart-panel--status">
+                    <div class="dashboard-panel-heading">
                         <div>
-                            <span class="section-kicker">HU5</span>
-                            <h2>Reservaciones recientes</h2>
+                            <span class="dashboard-panel-icon" aria-hidden="true"><i class="fa-solid fa-chart-pie"></i></span>
+                            <h2 th:text="#{dashboard.grafica.estados}">Reservaciones por estado</h2>
                         </div>
-                        <a class="btn btn-sm btn-light" th:href="@{/admin/reservaciones/listado}" href="/admin/reservaciones/listado">
-                            Ver listado
+                    </div>
+                    <div class="dashboard-chart-wrap dashboard-chart-wrap--doughnut" th:if="${dashboard.hasReservaciones}">
+                        <canvas id="reservationsStatusChart" aria-label="Distribución de reservaciones por estado" role="img"></canvas>
+                    </div>
+                    <p class="dashboard-empty-state" th:unless="${dashboard.hasReservaciones}">
+                        <i class="fa-regular fa-chart-bar" aria-hidden="true"></i>
+                        <span th:text="#{dashboard.vacio.reservaciones}">No hay reservaciones registradas.</span>
+                    </p>
+                </article>
+            </section>
+
+            <section class="dashboard-guide-card" aria-label="Disponibilidad de guías">
+                <div class="dashboard-guide-icon" aria-hidden="true"><i class="fa-solid fa-person-hiking"></i></div>
+                <div class="dashboard-guide-content">
+                    <span th:text="#{dashboard.guias.disponibles}">Guías disponibles</span>
+                    <strong>
+                        <span th:text="${dashboard.guiasDisponibles}">0</span>
+                        <small>/ <span th:text="${dashboard.totalGuias}">0</span></small>
+                    </strong>
+                </div>
+                <div class="dashboard-guide-meter" role="progressbar"
+                     th:attr="aria-valuenow=${dashboard.guiasDisponibles},aria-valuemax=${dashboard.totalGuias}"
+                     aria-valuemin="0">
+                    <span th:style="${dashboard.totalGuias > 0 ? 'width: ' + (dashboard.guiasDisponibles * 100 / dashboard.totalGuias) + '%' : 'width: 0%'}"></span>
+                </div>
+                <a class="dashboard-text-action" th:href="@{/admin/guias/listado}">
+                    <span th:text="#{dashboard.accion.verTodas}">Ver todas</span>
+                    <i class="fa-solid fa-arrow-right" aria-hidden="true"></i>
+                </a>
+            </section>
+
+            <section class="dashboard-lists-grid">
+                <article class="dashboard-panel dashboard-list-panel">
+                    <div class="dashboard-panel-heading">
+                        <div>
+                            <span class="dashboard-panel-icon" aria-hidden="true"><i class="fa-solid fa-route"></i></span>
+                            <h2 th:text="#{dashboard.actividades.proximas}">Próximas actividades</h2>
+                        </div>
+                        <a class="dashboard-text-action" th:href="@{/admin/actividades/listado}">
+                            <span th:text="#{dashboard.accion.verTodas}">Ver todas</span>
+                            <i class="fa-solid fa-arrow-right" aria-hidden="true"></i>
                         </a>
                     </div>
-                    <div class="table-responsive">
-                        <table class="table admin-table align-middle">
+
+                    <div class="dashboard-activity-list" th:if="${dashboard.actividadesProximas != null and !dashboard.actividadesProximas.empty}">
+                        <a class="dashboard-activity-item" th:each="actividad : ${dashboard.actividadesProximas}"
+                           th:href="@{/admin/actividades/modificar/{id}(id=${actividad.idActividad})}">
+                            <span class="dashboard-activity-date" th:text="${actividad.fechaHoraInicio != null ? #temporals.format(actividad.fechaHoraInicio, 'dd MMM') : '—'}">01 Ene</span>
+                            <span class="dashboard-activity-copy">
+                                <strong th:text="${actividad.nombreActividad}">Actividad</strong>
+                                <small th:text="${actividad.fechaHoraInicio != null ? #temporals.format(actividad.fechaHoraInicio, 'dd/MM/yyyy HH:mm') : '—'}">01/01/2026 08:00</small>
+                            </span>
+                            <span class="dashboard-activity-cupo">
+                                <i class="fa-solid fa-users" aria-hidden="true"></i>
+                                <span th:text="${actividad.cupoMaximo}">0</span>
+                            </span>
+                            <i class="fa-solid fa-chevron-right" aria-hidden="true"></i>
+                        </a>
+                    </div>
+                    <p class="dashboard-empty-state" th:if="${dashboard.actividadesProximas == null or dashboard.actividadesProximas.empty}">
+                        <i class="fa-regular fa-calendar-xmark" aria-hidden="true"></i>
+                        <span th:text="#{dashboard.vacio.actividades}">No hay actividades próximas.</span>
+                    </p>
+                </article>
+
+                <article class="dashboard-panel dashboard-list-panel">
+                    <div class="dashboard-panel-heading">
+                        <div>
+                            <span class="dashboard-panel-icon" aria-hidden="true"><i class="fa-solid fa-receipt"></i></span>
+                            <h2 th:text="#{dashboard.reservaciones.recientes}">Reservaciones recientes</h2>
+                        </div>
+                        <a class="dashboard-text-action" th:href="@{/admin/reservaciones/listado}">
+                            <span th:text="#{dashboard.accion.verTodas}">Ver todas</span>
+                            <i class="fa-solid fa-arrow-right" aria-hidden="true"></i>
+                        </a>
+                    </div>
+
+                    <div class="table-responsive" th:if="${dashboard.reservacionesRecientes != null and !dashboard.reservacionesRecientes.empty}">
+                        <table class="table dashboard-reservations-table align-middle mb-0">
                             <thead>
                                 <tr>
-                                    <th>Identificador</th>
-                                    <th>Usuario</th>
-                                    <th>Fecha</th>
-                                    <th>Monto total</th>
-                                    <th>Estado</th>
-                                    <th>Detalle</th>
+                                    <th th:text="#{dashboard.columna.usuario}">Usuario</th>
+                                    <th th:text="#{dashboard.columna.monto}">Monto</th>
+                                    <th th:text="#{dashboard.columna.estado}">Estado</th>
+                                    <th class="text-end"><span class="visually-hidden">Acciones</span></th>
                                 </tr>
                             </thead>
                             <tbody>
-                                <tr th:if="${reservaciones == null or reservaciones.empty}">
-                                    <td colspan="6" class="empty-row">No hay reservaciones registradas.</td>
-                                </tr>
-                                <tr th:each="reservacion : ${reservaciones}">
-                                    <td th:text="${reservacion.idReservacion}">1</td>
-                                    <td th:text="${reservacion.usuario != null ? reservacion.usuario.nombre + ' ' + reservacion.usuario.apellidoPaterno : 'Sin usuario'}">Cliente</td>
-                                    <td th:text="${reservacion.fechaReservacion != null ? #temporals.format(reservacion.fechaReservacion, 'dd/MM/yyyy HH:mm') : 'Sin fecha'}">01/01/2026</td>
-                                    <td th:text="${reservacion.montoTotal != null ? #numbers.formatCurrency(reservacion.montoTotal) : 'Sin monto'}">₡0</td>
-                                    <td th:text="${reservacion.estado != null ? reservacion.estado.nombreEstado : 'Sin estado'}">Pendiente</td>
+                                <tr th:each="reservacion : ${dashboard.reservacionesRecientes}">
                                     <td>
-                                        <a class="btn btn-sm btn-outline-dark"
+                                        <strong th:text="${reservacion.usuario != null ? reservacion.usuario.nombre + ' ' + reservacion.usuario.apellidoPaterno : '—'}">Usuario</strong>
+                                        <small th:text="${reservacion.fechaReservacion != null ? #temporals.format(reservacion.fechaReservacion, 'dd/MM/yyyy HH:mm') : '—'}">01/01/2026 08:00</small>
+                                    </td>
+                                    <td th:text="${reservacion.montoTotal != null ? @monedaCostaRica.formatear(reservacion.montoTotal) : '—'}">₡0</td>
+                                    <td>
+                                        <span class="dashboard-status"
+                                              th:classappend="${reservacion.estado != null and #strings.equalsIgnoreCase(reservacion.estado.nombreEstado, 'activo')} ? ' dashboard-status--success' : ' dashboard-status--neutral'"
+                                              th:text="${reservacion.estado != null ? reservacion.estado.nombreEstado : '—'}">Pendiente</span>
+                                    </td>
+                                    <td class="text-end">
+                                        <a class="dashboard-detail-link"
                                            th:href="@{/admin/reservaciones/detalle/{id}(id=${reservacion.idReservacion})}"
-                                           href="/admin/reservaciones/listado">
-                                            Ver detalle
+                                           th:title="#{dashboard.accion.verDetalle}">
+                                            <i class="fa-solid fa-arrow-up-right-from-square" aria-hidden="true"></i>
+                                            <span class="visually-hidden" th:text="#{dashboard.accion.verDetalle}">Ver detalle</span>
                                         </a>
                                     </td>
                                 </tr>
                             </tbody>
                         </table>
                     </div>
-                </section>
+                    <p class="dashboard-empty-state" th:if="${dashboard.reservacionesRecientes == null or dashboard.reservacionesRecientes.empty}">
+                        <i class="fa-regular fa-calendar-xmark" aria-hidden="true"></i>
+                        <span th:text="#{dashboard.vacio.reservaciones}">No hay reservaciones registradas.</span>
+                    </p>
+                </article>
+            </section>
         </main>
 
-        <th:block th:replace="~{aglo/fragmentos :: scripts('dashboard.js')}"></th:block>
+        <script th:inline="javascript">
+            window.agloDashboardData = {
+                monthly: {
+                    labels: /*[[${dashboard.reservacionesPorMes.labels}]]*/ [],
+                    values: /*[[${dashboard.reservacionesPorMes.values}]]*/ []
+                },
+                status: {
+                    labels: /*[[${dashboard.reservacionesPorEstado.labels}]]*/ [],
+                    values: /*[[${dashboard.reservacionesPorEstado.values}]]*/ []
+                }
+            };
+        </script>
+        <script th:src="@{/webjars/chartjs/4.5.1/dist/chart.umd.min.js}"></script>
+        <th:block th:replace="~{aglo/fragmentos :: scripts('admin-dashboard.js')}"></th:block>
     </body>
 </html>

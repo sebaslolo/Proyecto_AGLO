@@ -21,7 +21,7 @@
                             <option value="">Seleccione</option>
                             <option th:each="guia : ${guias}"
                                     th:value="${guia.idGuia}"
-                                    th:text="${guia.usuario != null ? guia.usuario.nombre + ' ' + guia.usuario.apellidoPaterno : 'Guía #' + guia.idGuia}">Guía</option>
+                                    th:text="${guia.usuario != null ? guia.usuario.nombre + ' ' + guia.usuario.apellidoPaterno : 'Guía sin usuario asociado'}">Guía</option>
                         </select>
                     </div>
                     <div>

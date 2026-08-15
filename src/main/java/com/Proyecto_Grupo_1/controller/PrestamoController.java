@@ -78,7 +78,13 @@ public class PrestamoController {
             return "/admin/prestamos/modifica";
         }
 
-        prestamoService.save(prestamo);
+        try {
+            prestamoService.save(prestamo);
+        } catch (IllegalArgumentException e) {
+            bindingResult.reject("formulario.invalido", e.getMessage());
+            cargarCatalogos(model);
+            return "/admin/prestamos/modifica";
+        }
 
         redirectAttributes.addFlashAttribute("todoOk",msg("prestamo.mensaje.guardado"));
 
@@ -132,7 +138,7 @@ public class PrestamoController {
     private void cargarCatalogos(Model model){
 
         model.addAttribute("herramientas",herramientaService.getHerramientas(false));
-        model.addAttribute("usuarios",usuarioService.getUsuarios(false));
+        model.addAttribute("usuarios",usuarioService.listarUsuariosAsignablesAPrestamo());
         model.addAttribute("estados",estadoService.getEstados(false));
 
     }

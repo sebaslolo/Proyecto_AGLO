@@ -21,7 +21,6 @@
                     <table class="table admin-table align-middle">
                         <thead>
                             <tr>
-                                <th>ID</th>
                                 <th>Tortuga</th>
                                 <th>Comportamiento</th>
                                 <th>Ubicación</th>
@@ -32,10 +31,9 @@
                         </thead>
                         <tbody>
                             <tr th:if="${avistamientos == null or avistamientos.empty}">
-                                <td colspan="7" class="empty-row">No hay avistamientos registrados.</td>
+                                <td colspan="6" class="empty-row">No hay avistamientos registrados.</td>
                             </tr>
                             <tr th:each="avistamiento : ${avistamientos}">
-                                <td th:text="${avistamiento.idAvistamiento}">1</td>
                                 <td th:text="${avistamiento.tortuga != null ? avistamiento.tortuga.etiquetaTortuga : 'Sin tortuga'}">T-001</td>
                                 <td th:text="${avistamiento.comportamiento}">Anidando</td>
                                 <td th:text="${avistamiento.ubicacion}">Playa</td>
@@ -46,12 +44,12 @@
                                        th:href="@{/admin/avistamientos/modificar/{id}(id=${avistamiento.idAvistamiento})}">
                                         <i class="fa-solid fa-pen"></i> Editar
                                     </a>
-                                    <button class="btn btn-sm btn-outline-danger" type="button"
+                                    <button th:if="${isAdmin}" class="btn btn-sm btn-outline-danger" type="button"
                                             data-bs-toggle="modal" data-bs-target="#confirmDeleteModal"
                                             th:data-delete-action="@{/admin/avistamientos/eliminar}"
                                             data-delete-field="idAvistamiento"
                                             th:data-delete-id="${avistamiento.idAvistamiento}"
-                                            th:data-delete-name="${'avistamiento #' + avistamiento.idAvistamiento}">
+                                            th:data-delete-name="${avistamiento.tortuga != null ? 'avistamiento de ' + avistamiento.tortuga.etiquetaTortuga : 'avistamiento sin tortuga asignada'}">
                                         <i class="fa-solid fa-trash"></i> Eliminar
                                     </button>
                                 </td>

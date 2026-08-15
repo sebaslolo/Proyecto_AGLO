@@ -91,6 +91,54 @@ public class UsuarioService {
         return getUsuarios(false);
     }
 
+    /**
+     * Usuarios que pueden recibir una herramienta en préstamo. Los perfiles de
+     * cliente no forman parte de este catálogo operativo.
+     */
+    @Transactional(readOnly = true)
+    public List<Usuario> listarUsuariosAsignablesAPrestamo() {
+        return usuarioRolRepository.findUsuariosAsignablesAPrestamo();
+    }
+
+    /**
+     * Resuelve un usuario permitido para préstamo, evitando que un identificador
+     * enviado manualmente desde el formulario eluda el catálogo mostrado.
+     */
+    @Transactional(readOnly = true)
+    public Usuario obtenerUsuarioAsignableAPrestamo(Integer idUsuario) {
+        Usuario usuario = obtenerUsuario(idUsuario);
+        if (!usuarioRolRepository.existsUsuarioAsignableAPrestamo(idUsuario)) {
+            throw new IllegalArgumentException("El usuario seleccionado debe tener rol ADMIN o GUIA.");
+        }
+        return usuario;
+    }
+
+    /**
+     * Catálogo seguro para las altas administrativas de reservaciones. Sólo los
+     * usuarios con rol CLIENTE y estado Activo pueden ser seleccionados.
+     */
+    @Transactional(readOnly = true)
+    public List<Usuario> listarClientesActivosParaReservacion() {
+        return usuarioRolRepository.findClientesActivosParaReservacion();
+    }
+
+    /**
+     * Valida nuevamente el cliente en el servidor para que un identificador
+     * manipulado no pueda reservar a nombre de una cuenta inactiva o sin rol
+     * CLIENTE.
+     */
+    @Transactional(readOnly = true)
+    public Usuario obtenerClienteActivoParaReservacion(Integer idUsuario) {
+        if (idUsuario == null) {
+            throw new IllegalArgumentException("Debe seleccionar un cliente activo válido.");
+        }
+        Usuario usuario = obtenerUsuario(idUsuario);
+        if (!usuarioRolRepository.existsClienteActivoParaReservacion(idUsuario)) {
+            throw new IllegalArgumentException("El usuario seleccionado debe tener rol CLIENTE y estar activo.");
+        }
+        return usuario;
+    }
+
     @Transactional
     public Usuario save(@Valid Usuario usuario) {
         if (usuario.getIdUsuario() != null) {

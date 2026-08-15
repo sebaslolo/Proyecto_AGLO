@@ -17,7 +17,6 @@
                     <table class="table admin-table align-middle">
                         <thead>
                             <tr>
-                                <th>ID</th>
                                 <th>Nombre</th>
                                 <th>Precio</th>
                                 <th>Duracion</th>
@@ -27,15 +26,14 @@
                         </thead>
                         <tbody>
                             <tr th:if="${tiposActividad == null or tiposActividad.empty}">
-                                <td colspan="6" class="empty-row">No hay tipos de actividad registrados.</td>
+                                <td colspan="5" class="empty-row">No hay tipos de actividad registrados.</td>
                             </tr>
                             <tr th:each="tipo : ${tiposActividad}">
-                                <td th:text="${tipo.idTipoActividad}">1</td>
                                 <td>
                                     <strong th:text="${tipo.nombreTipoActividad}">Tour</strong>
                                     <small class="d-block" th:text="${tipo.descripcionTipoActividad}">Descripcion</small>
                                 </td>
-                                <td th:text="${tipo.precioBase != null ? #numbers.formatCurrency(tipo.precioBase) : 'Sin precio'}">0</td>
+                                <td th:text="${tipo.precioBase != null ? @monedaCostaRica.formatear(tipo.precioBase) : 'Sin precio'}">₡0</td>
                                 <td th:text="${tipo.duracionEstimada}">2 horas</td>
                                 <td th:text="${tipo.estado != null ? tipo.estado.nombreEstado : 'Sin estado'}">Activo</td>
                                 <td class="text-end">

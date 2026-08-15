@@ -63,15 +63,28 @@ public class TortugaController {
     @PostMapping("/guardar")
     public String guardar(@Valid Tortuga tortuga,
             BindingResult bindingResult,
+            @RequestParam(value = "etiquetaOriginal", required = false) String etiquetaOriginal,
             Model model,
             RedirectAttributes redirectAttributes){
+
+        if (etiquetaOriginal != null && !etiquetaOriginal.isBlank()
+                && !etiquetaOriginal.equals(tortuga.getEtiquetaTortuga())) {
+            bindingResult.rejectValue("etiquetaTortuga", "tortuga.etiqueta.inmutable",
+                    "La etiqueta de la tortuga no se puede modificar.");
+        }
 
         if(bindingResult.hasErrors()){
             cargarCatalogos(model);
             return "/admin/tortugas/modifica";
         }
 
-        tortugaService.save(tortuga);
+        try {
+            tortugaService.save(tortuga, etiquetaOriginal);
+        } catch (IllegalArgumentException e) {
+            bindingResult.reject("formulario.invalido", e.getMessage());
+            cargarCatalogos(model);
+            return "/admin/tortugas/modifica";
+        }
 
         redirectAttributes.addFlashAttribute("todoOk",msg("tortuga.mensaje.guardado"));
 

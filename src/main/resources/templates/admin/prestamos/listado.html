@@ -21,7 +21,6 @@
                     <table class="table admin-table align-middle">
                         <thead>
                             <tr>
-                                <th>ID</th>
                                 <th>Herramienta</th>
                                 <th>Usuario</th>
                                 <th>Fecha de préstamo</th>
@@ -32,10 +31,9 @@
                         </thead>
                         <tbody>
                             <tr th:if="${prestamos == null or prestamos.empty}">
-                                <td colspan="7" class="empty-row">No hay préstamos registrados.</td>
+                                <td colspan="6" class="empty-row">No hay préstamos registrados.</td>
                             </tr>
                             <tr th:each="prestamo : ${prestamos}">
-                                <td th:text="${prestamo.idPrestamo}">1</td>
                                 <td th:text="${prestamo.herramienta != null ? prestamo.herramienta.nombreHerramienta : 'Sin herramienta'}">Linterna</td>
                                 <td th:text="${prestamo.usuario != null ? prestamo.usuario.nombre + ' ' + prestamo.usuario.apellidoPaterno : 'Sin usuario'}">Usuario</td>
                                 <td th:text="${prestamo.fechaPrestamo != null ? #temporals.format(prestamo.fechaPrestamo, 'dd/MM/yyyy') : 'Sin fecha'}">14/08/2026</td>
@@ -46,12 +44,12 @@
                                        th:href="@{/admin/prestamos/modificar/{id}(id=${prestamo.idPrestamo})}">
                                         <i class="fa-solid fa-pen"></i> Editar
                                     </a>
-                                    <button class="btn btn-sm btn-outline-danger" type="button"
+                                    <button th:if="${isAdmin}" class="btn btn-sm btn-outline-danger" type="button"
                                             data-bs-toggle="modal" data-bs-target="#confirmDeleteModal"
                                             th:data-delete-action="@{/admin/prestamos/eliminar}"
                                             data-delete-field="idPrestamo"
                                             th:data-delete-id="${prestamo.idPrestamo}"
-                                            th:data-delete-name="${'préstamo #' + prestamo.idPrestamo}">
+                                            th:data-delete-name="${prestamo.herramienta != null ? 'préstamo de ' + prestamo.herramienta.nombreHerramienta : 'préstamo sin herramienta asignada'}">
                                         <i class="fa-solid fa-trash"></i> Eliminar
                                     </button>
                                 </td>

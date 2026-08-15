@@ -5,8 +5,8 @@
         <main class="public-main">
             <section class="public-page-title">
                 <div>
-                    <h1 th:text="${'Reservación #' + reservacion.idReservacion}">Reservación</h1>
-                    <p>Confirmación de reservación</p>
+                    <h1 th:text="#{reservacion.confirmacion}">Confirmación de reservación</h1>
+                    <p th:text="#{reservacion.confirmacion}">Confirmación de reservación</p>
                 </div>
                 <a class="btn btn-light" th:href="@{/catalogo/listado}">Catálogo</a>
             </section>
@@ -22,7 +22,7 @@
                     <div class="summary-card">
                         <i class="fa-solid fa-money-bill"></i>
                         <span>Monto</span>
-                        <strong th:text="${reservacion.montoTotal != null ? #numbers.formatCurrency(reservacion.montoTotal) : '₡0'}">₡0</strong>
+                        <strong th:text="${reservacion.montoTotal != null ? @monedaCostaRica.formatear(reservacion.montoTotal) : '₡0'}">₡0</strong>
                     </div>
                     <div class="summary-card">
                         <i class="fa-solid fa-circle-info"></i>
@@ -44,8 +44,8 @@
                             <tr th:each="detalle : ${detalles}">
                                 <td th:text="${detalle.actividad != null ? detalle.actividad.nombreActividad : 'Actividad'}">Actividad</td>
                                 <td th:text="${detalle.cantidadPersonas}">1</td>
-                                <td th:text="${detalle.precioUnitario != null ? #numbers.formatCurrency(detalle.precioUnitario) : '₡0'}">₡0</td>
-                                <td th:text="${detalle.subtotal != null ? #numbers.formatCurrency(detalle.subtotal) : '₡0'}">₡0</td>
+                                <td th:text="${detalle.precioUnitario != null ? @monedaCostaRica.formatear(detalle.precioUnitario) : '₡0'}">₡0</td>
+                                <td th:text="${detalle.subtotal != null ? @monedaCostaRica.formatear(detalle.subtotal) : '₡0'}">₡0</td>
                             </tr>
                         </tbody>
                     </table>

@@ -15,13 +15,12 @@
             <section class="admin-panel">
                 <div class="table-responsive">
                     <table class="table admin-table align-middle">
-                        <thead><tr><th>ID</th><th>Nombre</th><th></th></tr></thead>
+                        <thead><tr><th>Nombre</th><th></th></tr></thead>
                         <tbody>
                             <tr th:if="${estados == null or estados.empty}">
-                                <td colspan="3" class="empty-row">No hay estados registrados.</td>
+                                <td colspan="2" class="empty-row">No hay estados registrados.</td>
                             </tr>
                             <tr th:each="estado : ${estados}">
-                                <td th:text="${estado.idEstado}">1</td>
                                 <td th:text="${estado.nombreEstado}">Activo</td>
                                 <td class="text-end">
                                     <a class="btn btn-sm btn-outline-dark" th:href="@{/admin/estados/modificar/{id}(id=${estado.idEstado})}">Editar</a>

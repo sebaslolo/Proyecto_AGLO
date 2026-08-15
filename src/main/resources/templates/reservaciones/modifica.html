@@ -19,7 +19,7 @@
                         <h2 th:text="${actividad.nombreActividad}">Actividad</h2>
                         <div class="catalog-meta">
                             <span th:text="${actividad.fechaHoraInicio != null ? #temporals.format(actividad.fechaHoraInicio, 'dd/MM/yyyy HH:mm') : 'Fecha por confirmar'}">Fecha</span>
-                            <span th:text="${actividad.precioActual != null ? #numbers.formatCurrency(actividad.precioActual) + ' por persona' : 'Precio por confirmar'}">Precio</span>
+                            <span th:text="${actividad.precioActual != null ? @monedaCostaRica.formatear(actividad.precioActual) + ' por persona' : 'Precio por confirmar'}">Precio</span>
                             <span th:text="${'Cupo disponible: ' + cupoDisponible}">Cupo</span>
                         </div>
                     </div>

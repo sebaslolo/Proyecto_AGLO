@@ -15,9 +15,15 @@ import org.springframework.validation.annotation.Validated;
 public class NidoService {
 
     private final NidoRepository nidoRepository;
+    private final TortugaService tortugaService;
+    private final EstadoService estadoService;
 
-    public NidoService(NidoRepository nidoRepository) {
+    public NidoService(NidoRepository nidoRepository,
+            TortugaService tortugaService,
+            EstadoService estadoService) {
         this.nidoRepository = nidoRepository;
+        this.tortugaService = tortugaService;
+        this.estadoService = estadoService;
     }
 
     @Transactional(readOnly = true)
@@ -32,7 +38,37 @@ public class NidoService {
 
     @Transactional
     public Nido save(@Valid Nido nido){
-        return nidoRepository.save(nido);
+        Nido destino = nido.getIdNido() == null
+                ? new Nido()
+                : nidoRepository.findById(nido.getIdNido())
+                        .orElseThrow(() -> new IllegalArgumentException("El nido que se intenta actualizar no existe."));
+
+        destino.setTortuga(tortugaService.getTortuga(etiquetaTortuga(nido))
+                .orElseThrow(() -> new IllegalArgumentException("La tortuga seleccionada no existe.")));
+        destino.setUbicacion(nido.getUbicacion());
+        destino.setFechaAnidacion(nido.getFechaAnidacion());
+        destino.setCantidadHuevos(nido.getCantidadHuevos());
+        destino.setProfundidadNido(nido.getProfundidadNido());
+        destino.setObservaciones(nido.getObservaciones());
+        destino.setEstado(estadoService.obtenerEstado(idEstado(nido)));
+
+        return nidoRepository.save(destino);
+    }
+
+    private String etiquetaTortuga(Nido nido) {
+        if (nido.getTortuga() == null
+                || nido.getTortuga().getEtiquetaTortuga() == null
+                || nido.getTortuga().getEtiquetaTortuga().isBlank()) {
+            throw new IllegalArgumentException("Debe seleccionar una tortuga válida.");
+        }
+        return nido.getTortuga().getEtiquetaTortuga();
+    }
+
+    private Integer idEstado(Nido nido) {
+        if (nido.getEstado() == null || nido.getEstado().getIdEstado() == null) {
+            throw new IllegalArgumentException("Debe seleccionar un estado válido.");
+        }
+        return nido.getEstado().getIdEstado();
     }
 
     @Transactional

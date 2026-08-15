@@ -15,13 +15,12 @@
             <section class="admin-panel">
                 <div class="table-responsive">
                     <table class="table admin-table align-middle">
-                        <thead><tr><th>ID</th><th>Rol</th><th></th></tr></thead>
+                        <thead><tr><th>Rol</th><th></th></tr></thead>
                         <tbody>
                             <tr th:if="${roles == null or roles.empty}">
-                                <td colspan="3" class="empty-row">No hay roles registrados.</td>
+                                <td colspan="2" class="empty-row">No hay roles registrados.</td>
                             </tr>
                             <tr th:each="rol : ${roles}">
-                                <td th:text="${rol.idRol}">1</td>
                                 <td th:text="${rol.rol}">ADMIN</td>
                                 <td class="text-end">
                                     <a class="btn btn-sm btn-outline-dark" th:href="@{/admin/roles/modificar/{id}(id=${rol.idRol})}">Editar</a>

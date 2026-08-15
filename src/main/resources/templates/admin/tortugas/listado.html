@@ -44,7 +44,7 @@
                                        th:href="@{/admin/tortugas/modificar/{etiqueta}(etiqueta=${tortuga.etiquetaTortuga})}">
                                         <i class="fa-solid fa-pen"></i> Editar
                                     </a>
-                                    <button class="btn btn-sm btn-outline-danger" type="button"
+                                    <button th:if="${isAdmin}" class="btn btn-sm btn-outline-danger" type="button"
                                             data-bs-toggle="modal" data-bs-target="#confirmDeleteModal"
                                             th:data-delete-action="@{/admin/tortugas/eliminar}"
                                             data-delete-field="etiquetaTortuga"

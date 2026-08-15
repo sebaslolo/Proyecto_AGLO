@@ -6,10 +6,16 @@
         <main class="admin-main">
             <section class="admin-page-title">
                 <div>
-                    <h1 th:text="${'Reservación #' + reservacion.idReservacion}">Reservación</h1>
-                    <p th:text="${reservacion.usuario != null ? reservacion.usuario.nombre + ' ' + reservacion.usuario.apellidoPaterno : 'Sin usuario'}">Cliente</p>
+                    <h1 th:text="#{reservacion.admin.detalle.titulo}">Detalle de reservación</h1>
+                    <p th:text="${reservacion.usuario != null ? reservacion.usuario.nombre + ' ' + reservacion.usuario.apellidoPaterno : #messages.msg('reservacion.admin.sinUsuario')}">Cliente</p>
                 </div>
-                <a class="btn btn-light" th:href="@{/admin/reservaciones/listado}">Regresar</a>
+                <div class="d-flex flex-wrap gap-2">
+                    <a class="btn btn-success" th:href="@{/admin/reservaciones/modificar/{id}(id=${reservacion.idReservacion})}">
+                        <i class="fa-solid fa-pen" aria-hidden="true"></i>
+                        <span th:text="#{reservacion.admin.editarEstado}">Editar estado</span>
+                    </a>
+                    <a class="btn btn-light" th:href="@{/admin/reservaciones/listado}" th:text="#{accion.regresar}">Regresar</a>
+                </div>
             </section>
             <section th:replace="~{admin/fragmentos :: mensajes}"></section>
 
@@ -17,41 +23,41 @@
                 <div class="summary-grid">
                     <div class="summary-card">
                         <i class="fa-solid fa-calendar"></i>
-                        <span>Fecha</span>
-                        <strong th:text="${reservacion.fechaReservacion != null ? #temporals.format(reservacion.fechaReservacion, 'dd/MM/yyyy') : 'Sin fecha'}">Fecha</strong>
+                        <span th:text="#{reservacion.fechaReservacion}">Fecha</span>
+                        <strong th:text="${reservacion.fechaReservacion != null ? #temporals.format(reservacion.fechaReservacion, 'dd/MM/yyyy') : #messages.msg('reservacion.admin.sinFecha')}">Fecha</strong>
                     </div>
                     <div class="summary-card">
                         <i class="fa-solid fa-money-bill"></i>
-                        <span>Monto</span>
-                        <strong th:text="${reservacion.montoTotal != null ? #numbers.formatCurrency(reservacion.montoTotal) : '₡0'}">₡0</strong>
+                        <span th:text="#{reservacion.montoTotal}">Monto</span>
+                        <strong th:text="${reservacion.montoTotal != null ? @monedaCostaRica.formatear(reservacion.montoTotal) : #messages.msg('reservacion.admin.sinMonto')}">₡0</strong>
                     </div>
                     <div class="summary-card">
                         <i class="fa-solid fa-circle-check"></i>
-                        <span>Estado</span>
-                        <strong th:text="${reservacion.estado != null ? reservacion.estado.nombreEstado : 'Sin estado'}">Pendiente</strong>
+                        <span th:text="#{reservacion.estado}">Estado</span>
+                        <strong th:text="${reservacion.estado != null ? reservacion.estado.nombreEstado : #messages.msg('reservacion.admin.sinEstado')}">Pendiente</strong>
                     </div>
                 </div>
                 <div class="table-responsive">
                     <table class="table admin-table align-middle">
                         <thead>
                             <tr>
-                                <th>Actividad</th>
-                                <th>Personas</th>
-                                <th>Precio unitario</th>
-                                <th>Subtotal</th>
-                                <th>Estado</th>
+                                <th th:text="#{detalle.idActividad}">Actividad</th>
+                                <th th:text="#{detalle.cantidadPersonas}">Personas</th>
+                                <th th:text="#{detalle.precioUnitario}">Precio unitario</th>
+                                <th th:text="#{detalle.subtotal}">Subtotal</th>
+                                <th th:text="#{detalle.estado}">Estado</th>
                             </tr>
                         </thead>
                         <tbody>
                             <tr th:if="${detalles == null or detalles.empty}">
-                                <td colspan="5" class="empty-row">No hay detalle para esta reservación.</td>
+                                <td colspan="5" class="empty-row" th:text="#{reservacion.admin.sinDetalles}">No hay detalle para esta reservación.</td>
                             </tr>
                             <tr th:each="detalle : ${detalles}">
-                                <td th:text="${detalle.actividad != null ? detalle.actividad.nombreActividad : 'Sin actividad'}">Actividad</td>
+                                <td th:text="${detalle.actividad != null ? detalle.actividad.nombreActividad : #messages.msg('reservacion.admin.sinActividad')}">Actividad</td>
                                 <td th:text="${detalle.cantidadPersonas}">1</td>
-                                <td th:text="${detalle.precioUnitario != null ? #numbers.formatCurrency(detalle.precioUnitario) : '₡0'}">₡0</td>
-                                <td th:text="${detalle.subtotal != null ? #numbers.formatCurrency(detalle.subtotal) : '₡0'}">₡0</td>
-                                <td th:text="${detalle.estado != null ? detalle.estado.nombreEstado : 'Sin estado'}">Pendiente</td>
+                                <td th:text="${detalle.precioUnitario != null ? @monedaCostaRica.formatear(detalle.precioUnitario) : '₡0'}">₡0</td>
+                                <td th:text="${detalle.subtotal != null ? @monedaCostaRica.formatear(detalle.subtotal) : '₡0'}">₡0</td>
+                                <td th:text="${detalle.estado != null ? detalle.estado.nombreEstado : #messages.msg('reservacion.admin.sinEstado')}">Pendiente</td>
                             </tr>
                         </tbody>
                     </table>

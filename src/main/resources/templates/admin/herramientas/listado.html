@@ -21,7 +21,6 @@
                     <table class="table admin-table align-middle">
                         <thead>
                             <tr>
-                                <th>ID</th>
                                 <th>Nombre</th>
                                 <th>Descripción</th>
                                 <th>Estado</th>
@@ -31,10 +30,9 @@
                         </thead>
                         <tbody>
                             <tr th:if="${herramientas == null or herramientas.empty}">
-                                <td colspan="6" class="empty-row">No hay herramientas registradas.</td>
+                                <td colspan="5" class="empty-row">No hay herramientas registradas.</td>
                             </tr>
                             <tr th:each="herramienta : ${herramientas}">
-                                <td th:text="${herramienta.idHerramienta}">1</td>
                                 <td th:text="${herramienta.nombreHerramienta}">Linterna</td>
                                 <td th:text="${herramienta.descripcion ?: 'Sin descripción'}">Descripción</td>
                                 <td th:text="${herramienta.estado != null ? herramienta.estado.nombreEstado : 'Sin estado'}">Activo</td>
@@ -44,7 +42,7 @@
                                        th:href="@{/admin/herramientas/modificar/{id}(id=${herramienta.idHerramienta})}">
                                         <i class="fa-solid fa-pen"></i> Editar
                                     </a>
-                                    <button class="btn btn-sm btn-outline-danger" type="button"
+                                    <button th:if="${isAdmin}" class="btn btn-sm btn-outline-danger" type="button"
                                             data-bs-toggle="modal" data-bs-target="#confirmDeleteModal"
                                             th:data-delete-action="@{/admin/herramientas/eliminar}"
                                             data-delete-field="idHerramienta"

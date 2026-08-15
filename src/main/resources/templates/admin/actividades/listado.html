@@ -79,7 +79,7 @@
                                 </td>
                                 <td class="price-cell"
                                     th:text="${actividad.precioActual != null
-                                    ? #numbers.formatCurrency(actividad.precioActual)
+                                    ? @monedaCostaRica.formatear(actividad.precioActual)
                                     : 'Sin precio'}">
                                     ₡0
                                 </td>

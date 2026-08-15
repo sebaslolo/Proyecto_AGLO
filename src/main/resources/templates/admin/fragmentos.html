@@ -2,7 +2,11 @@
         th:with="uri=${requestUri}"
         class="admin-navbar navbar navbar-expand-xl">
     <div class="container-fluid px-3 px-lg-4">
-        <a class="navbar-brand admin-brand" th:href="@{/admin/dashboard}">
+        <a th:if="${isAdmin}" class="navbar-brand admin-brand" th:href="@{/admin/dashboard}">
+            <img th:src="@{/img/logoAglo.png}" alt="Logo AGLO"/>
+            <span>AGLO</span>
+        </a>
+        <a th:if="${!isAdmin and canOperateGuide}" class="navbar-brand admin-brand" th:href="@{/guia/agenda}">
             <img th:src="@{/img/logoAglo.png}" alt="Logo AGLO"/>
             <span>AGLO</span>
         </a>
@@ -13,9 +17,9 @@
             <span class="navbar-toggler-icon"></span>
         </button>
 
-        <nav class="collapse navbar-collapse" id="adminNavbar" aria-label="Navegación administrativa">
+        <nav class="collapse navbar-collapse" id="adminNavbar" aria-label="Navegación de cuenta">
             <ul class="navbar-nav me-auto mb-2 mb-xl-0 admin-links">
-                <li class="nav-item">
+                <li th:if="${isAdmin}" class="nav-item">
                     <a class="nav-link"
                        th:classappend="${#strings.contains(uri, '/admin/dashboard')} ? ' active' : ''"
                        th:href="@{/admin/dashboard}">
@@ -24,7 +28,16 @@
                     </a>
                 </li>
 
-                <li class="nav-item dropdown">
+                <li th:if="${!isAdmin and canOperateGuide}" class="nav-item">
+                    <a class="nav-link"
+                       th:classappend="${#strings.contains(uri, '/guia/agenda')} ? ' active' : ''"
+                       th:href="@{/guia/agenda}">
+                        <i class="fa-solid fa-calendar-check" aria-hidden="true"></i>
+                        <span th:text="#{navbar.agenda}">Agenda</span>
+                    </a>
+                </li>
+
+                <li th:if="${isAdmin}" class="nav-item dropdown">
                     <a class="nav-link dropdown-toggle"
                        th:classappend="${#strings.contains(uri, '/admin/actividades') or #strings.contains(uri, '/admin/reservaciones') or #strings.contains(uri, '/admin/guias')} ? ' active' : ''"
                        href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
@@ -38,7 +51,7 @@
                     </ul>
                 </li>
 
-                <li class="nav-item dropdown">
+                <li th:if="${canOperateGuide}" class="nav-item dropdown">
                     <a class="nav-link dropdown-toggle"
                        th:classappend="${#strings.contains(uri, '/admin/monitoreos') or #strings.contains(uri, '/admin/avistamientos') or #strings.contains(uri, '/admin/tortugas') or #strings.contains(uri, '/admin/nidos') or #strings.contains(uri, '/admin/nacimientos')} ? ' active' : ''"
                        href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
@@ -54,7 +67,7 @@
                     </ul>
                 </li>
 
-                <li class="nav-item dropdown">
+                <li th:if="${canOperateGuide}" class="nav-item dropdown">
                     <a class="nav-link dropdown-toggle"
                        th:classappend="${#strings.contains(uri, '/admin/herramientas') or #strings.contains(uri, '/admin/prestamos')} ? ' active' : ''"
                        href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
@@ -67,7 +80,7 @@
                     </ul>
                 </li>
 
-                <li class="nav-item dropdown">
+                <li th:if="${isAdmin}" class="nav-item dropdown">
                     <a class="nav-link dropdown-toggle"
                        th:classappend="${#strings.contains(uri, '/admin/usuarios') or #strings.contains(uri, '/admin/roles') or #strings.contains(uri, '/admin/tipos-actividad') or #strings.contains(uri, '/admin/estados') or #strings.contains(uri, '/admin/rutas')} ? ' active' : ''"
                        href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
@@ -121,7 +134,7 @@
     </div>
 </section>
 
-<div xmlns:th="http://www.thymeleaf.org" th:fragment="delete-modal"
+<div xmlns:th="http://www.thymeleaf.org" th:fragment="delete-modal" th:if="${isAdmin}"
      class="modal fade" id="confirmDeleteModal" tabindex="-1" aria-labelledby="confirmDeleteTitle" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content admin-delete-modal">

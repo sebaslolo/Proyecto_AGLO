@@ -8,7 +8,6 @@ import com.Proyecto_Grupo_1.domain.Reservacion;
 import com.Proyecto_Grupo_1.domain.Usuario;
 import com.Proyecto_Grupo_1.repository.ActividadDetalleRepository;
 import com.Proyecto_Grupo_1.repository.ReservacionRepository;
-import jakarta.validation.Valid;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -85,18 +84,40 @@ public class ReservacionService {
     }
 
     @Transactional
-    public Reservacion save(@Valid Reservacion reservacion) {
-        return reservacionRepository.save(reservacion);
+    public Reservacion crearReservacion(Integer idUsuario, Integer idActividad, Integer cantidadPersonas) {
+        return crearReservacionConUsuario(
+                usuarioService.obtenerUsuario(validarIdUsuario(idUsuario)),
+                idActividad,
+                cantidadPersonas);
     }
 
+    /**
+     * Alta administrativa segura: el usuario enviado por el formulario debe
+     * seguir siendo un CLIENTE activo cuando se procesa la solicitud.
+     */
     @Transactional
-    public Reservacion crearReservacion(Integer idUsuario, Integer idActividad, Integer cantidadPersonas) {
+    public Reservacion crearReservacionAdministrativa(
+            Integer idUsuario,
+            Integer idActividad,
+            Integer cantidadPersonas) {
+        return crearReservacionConUsuario(
+                usuarioService.obtenerClienteActivoParaReservacion(idUsuario),
+                idActividad,
+                cantidadPersonas);
+    }
+
+    private Reservacion crearReservacionConUsuario(
+            Usuario usuario,
+            Integer idActividad,
+            Integer cantidadPersonas) {
         if (cantidadPersonas == null || cantidadPersonas < 1) {
             throw new IllegalArgumentException("La cantidad de personas debe ser mayor a cero.");
         }
+        if (idActividad == null) {
+            throw new IllegalArgumentException("Debe seleccionar una actividad válida.");
+        }
 
         Actividad actividad = actividadService.obtenerActividad(idActividad);
-        Usuario usuario = usuarioService.obtenerUsuario(idUsuario);
         Estado estadoPendiente = estadoService.obtenerEstadoPorNombre("Pendiente");
         long cupoDisponible = obtenerCupoDisponible(idActividad);
         if (cantidadPersonas > cupoDisponible) {
@@ -104,6 +125,9 @@ public class ReservacionService {
         }
 
         BigDecimal precioUnitario = actividad.getPrecioActual();
+        if (precioUnitario == null) {
+            throw new IllegalStateException("La actividad seleccionada no tiene un precio válido.");
+        }
         BigDecimal subtotal = precioUnitario.multiply(BigDecimal.valueOf(cantidadPersonas));
 
         Reservacion reservacion = new Reservacion();
@@ -127,8 +151,31 @@ public class ReservacionService {
     }
 
     @Transactional
-    public Reservacion guardarReservacion(@Valid Reservacion reservacion) {
-        return save(reservacion);
+    public Reservacion actualizarEstadoReservacion(Integer idReservacion, Integer idEstado) {
+        if (idReservacion == null) {
+            throw new IllegalArgumentException("La reservación seleccionada no existe.");
+        }
+        if (idEstado == null) {
+            throw new IllegalArgumentException("Debe seleccionar un estado válido.");
+        }
+
+        Reservacion reservacion = reservacionRepository.findById(idReservacion)
+                .orElseThrow(() -> new IllegalArgumentException("La reservación seleccionada no existe."));
+        Estado estado = estadoService.obtenerEstado(idEstado);
+
+        reservacion.setEstado(estado);
+        List<ActividadDetalle> detalles = actividadDetalleRepository.findByReservacionIdReservacion(idReservacion);
+        detalles.forEach(detalle -> detalle.setEstado(estado));
+        actividadDetalleRepository.saveAll(detalles);
+
+        return reservacionRepository.save(reservacion);
+    }
+
+    private Integer validarIdUsuario(Integer idUsuario) {
+        if (idUsuario == null) {
+            throw new IllegalArgumentException("No se encontró el usuario de la reservación.");
+        }
+        return idUsuario;
     }
 
     @Transactional

@@ -79,7 +79,13 @@ public class MonitoreoController {
             return "/admin/monitoreos/modifica";
         }
 
-        monitoreoService.save(monitoreo);
+        try {
+            monitoreoService.save(monitoreo);
+        } catch (IllegalArgumentException e) {
+            bindingResult.reject("formulario.invalido", e.getMessage());
+            cargarCatalogos(model);
+            return "/admin/monitoreos/modifica";
+        }
 
         redirectAttributes.addFlashAttribute(
                 "todoOk",

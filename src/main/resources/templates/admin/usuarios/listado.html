@@ -25,7 +25,6 @@
                     <table class="table admin-table align-middle">
                         <thead>
                             <tr>
-                                <th>ID</th>
                                 <th>Nombre</th>
                                 <th>Correo</th>
                                 <th>Rol</th>
@@ -36,10 +35,9 @@
                         </thead>
                         <tbody>
                             <tr th:if="${usuarios == null or usuarios.empty}">
-                                <td colspan="7" class="empty-row">No hay usuarios registrados.</td>
+                                <td colspan="6" class="empty-row">No hay usuarios registrados.</td>
                             </tr>
                             <tr th:each="usuario : ${usuarios}">
-                                <td th:text="${usuario.idUsuario}">1</td>
                                 <td th:text="${usuario.nombre + ' ' + usuario.apellidoPaterno}">Nombre</td>
                                 <td th:text="${usuario.correo}">correo@aglo.cr</td>
                                 <td th:text="${rolesPorUsuario[usuario.idUsuario] != null and !rolesPorUsuario[usuario.idUsuario].isEmpty() ? rolesPorUsuario[usuario.idUsuario] : 'Sin rol'}">CLIENTE</td>

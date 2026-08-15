@@ -103,7 +103,7 @@
                                     <h3 th:text="${actividad.nombreActividad}">Actividad turística</h3>
                                     <p><i class="fa-regular fa-calendar"></i> <span th:text="${actividad.fechaHoraInicio != null ? #temporals.format(actividad.fechaHoraInicio, 'dd/MM/yyyy HH:mm') : 'Fecha por confirmar'}">10 de junio, 2026</span></p>
                                     <p><i class="fa-solid fa-location-dot"></i> Playa Ostional</p>
-                                    <p class="precio" th:text="${actividad.precioActual != null ? #numbers.formatCurrency(actividad.precioActual) + ' por persona' : 'Precio por confirmar'}">₡10 000 por persona</p>
+                                    <p class="precio" th:text="${actividad.precioActual != null ? @monedaCostaRica.formatear(actividad.precioActual) + ' por persona' : 'Precio por confirmar'}">₡10 000 por persona</p>
                                     <button class="btn-reserva" type="button"
                                             th:data-descripcion="${actividad.tipoActividad != null ? actividad.tipoActividad.descripcionTipoActividad : 'Actividad turística en Playa Ostional.'}"
                                             th:data-detalle="@{/catalogo/detalle/{id}(id=${actividad.idActividad})}"

@@ -1,17 +1,14 @@
 <!DOCTYPE html>
 <html lang="es" xmlns:th="http://www.thymeleaf.org">
-    <head th:replace="~{aglo/fragmentos :: head('Agenda de guía | AGLO', 'dashboard.css')}"></head>
-    <body class="public-page">
-        <main class="public-main">
-            <section class="public-page-title">
+    <head th:replace="~{aglo/fragmentos :: head('Agenda de guía | AGLO', 'admin.css')}"></head>
+    <body class="admin-page">
+        <header th:replace="~{admin/fragmentos :: nav}"></header>
+        <main class="admin-main">
+            <section class="admin-page-title">
                 <div>
                     <h1>Agenda del guía</h1>
                     <p>Actividades turísticas asignadas.</p>
                 </div>
-                <form th:action="@{/logout}" method="post">
-                    <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
-                    <button class="btn btn-light" type="submit">Cerrar sesión</button>
-                </form>
             </section>
             <section th:replace="~{admin/fragmentos :: mensajes}"></section>
 

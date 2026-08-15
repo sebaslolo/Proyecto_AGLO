@@ -14,6 +14,8 @@
 
             <section class="admin-panel">
                 <form th:action="@{/admin/tortugas/guardar}" th:object="${tortuga}" method="post" class="was-validated">
+                    <input type="hidden" name="etiquetaOriginal" th:if="${tortuga.etiquetaTortuga != null}"
+                           th:value="${tortuga.etiquetaTortuga}"/>
                     <div th:if="${#fields.hasAnyErrors()}" class="alert alert-danger form-errors" role="alert">
                         <strong>Revise los datos indicados.</strong>
                         <ul class="mb-0 mt-2"><li th:each="fieldError : ${#fields.allErrors()}" th:text="${fieldError}">Error de validación</li></ul>
