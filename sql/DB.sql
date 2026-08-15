@@ -1,3 +1,5 @@
+DROP DATABASE IF EXISTS AGLO;
+
 CREATE database AGLO
   DEFAULT CHARACTER SET utf8mb4
   DEFAULT COLLATE utf8mb4_unicode_ci;
@@ -228,6 +230,23 @@ create table fide_horas_voluntariado_tb(
     index ndx_horas_voluntariado_estado (id_estado)
 ) ENGINE = InnoDB;
 
+-- Inscripciones usadas por la entidad Voluntariado vigente. Se mantiene
+-- separada de las tablas históricas de perfiles y asistencias de voluntarios.
+create table fide_voluntariado_tb(
+    id_voluntariado int not null auto_increment,
+    id_usuario int not null,
+    id_actividad int not null,
+    herramientas_utilizadas varchar(500),
+    fecha_inscripcion datetime not null,
+    fecha_creacion timestamp default current_timestamp,
+    fecha_modificacion timestamp default current_timestamp on update current_timestamp,
+    primary key (id_voluntariado),
+    foreign key (id_usuario) references fide_usuario_tb(id_usuario),
+    foreign key (id_actividad) references fide_actividad_tb(id_actividad),
+    unique (id_usuario, id_actividad),
+    index ndx_voluntariado_actividad (id_actividad)
+) ENGINE = InnoDB;
+
 create table fide_monitoreo_tb(
     id_monitoreo int not null auto_increment,
     id_guia int not null,
@@ -243,16 +262,14 @@ create table fide_monitoreo_tb(
 )   ENGINE = InnoDB;
 
 create table fide_tortuga_tb(
-    etiqueta_tortuga varchar(50) primary key auto_increment,
-    id_monitoreo int not null,
-    especie varchar(100),
-    sexo varchar(10),
+    etiqueta_tortuga varchar(50) primary key,
+    especie varchar(100) not null,
+    sexo varchar(10) not null,
     fecha_registro datetime,
     observaciones varchar(255),
     id_estado int not null,
     fecha_creacion timestamp default current_timestamp,
     fecha_modificacion timestamp default current_timestamp on update current_timestamp,
-    foreign key (id_monitoreo) references fide_monitoreo_tb(id_monitoreo),
     foreign key (id_estado) references fide_estado_tb(id_estado),
     index ndx_etiqueta_tortuga (etiqueta_tortuga),
     index ndx_especie (especie)
@@ -260,17 +277,15 @@ create table fide_tortuga_tb(
 
 create table fide_avistamiento_tb(
     id_avistamiento int primary key auto_increment,
-    id_monitoreo int not null,
     etiqueta_tortuga varchar(50) not null,
-    comportamiento varchar(100),
-    ubicacion varchar(100),
+    comportamiento varchar(100) not null,
+    ubicacion varchar(100) not null,
     fecha_avistamiento datetime,
     observaciones varchar(255),
     id_estado int not null,
     fecha_creacion timestamp default current_timestamp,
     fecha_modificacion timestamp default current_timestamp on update current_timestamp,
     foreign key (etiqueta_tortuga) references fide_tortuga_tb(etiqueta_tortuga),
-    foreign key (id_monitoreo) references fide_monitoreo_tb(id_monitoreo),
     foreign key (id_estado) references fide_estado_tb(id_estado),
     index ndx_etiqueta_tortuga (etiqueta_tortuga),
     index ndx_id_estado (id_estado)
@@ -278,7 +293,6 @@ create table fide_avistamiento_tb(
 
 create table fide_nido_tb(
     id_nido int primary key auto_increment,
-    id_monitoreo int not null,
     etiqueta_tortuga varchar(50) not null,
     ubicacion varchar(100),
     fecha_anidacion datetime,
@@ -289,7 +303,6 @@ create table fide_nido_tb(
     fecha_creacion timestamp default current_timestamp,
     fecha_modificacion timestamp default current_timestamp on update current_timestamp,
     foreign key (etiqueta_tortuga) references fide_tortuga_tb(etiqueta_tortuga),
-    foreign key (id_monitoreo) references fide_monitoreo_tb(id_monitoreo),
     foreign key (id_estado) references fide_estado_tb(id_estado),
     index ndx_etiqueta_tortuga (etiqueta_tortuga),
     index ndx_id_estado (id_estado) 
@@ -298,7 +311,6 @@ create table fide_nido_tb(
 create table fide_nacimiento_tb(
     id_nacimiento int primary key auto_increment,
     id_nido int not null,
-    id_monitoreo int not null,
     fecha_eclosion datetime,
     crias_vivas int,
     crias_muertas int,
@@ -306,8 +318,7 @@ create table fide_nacimiento_tb(
     observaciones varchar(255),
     id_estado int not null,
     foreign key (id_nido) references fide_nido_tb(id_nido),
-    foreign key (id_estado) references fide_estado_tb(id_estado),
-    foreign key (id_monitoreo) references fide_monitoreo_tb(id_monitoreo)
+    foreign key (id_estado) references fide_estado_tb(id_estado)
 )ENGINE = InnoDB;
 
 
@@ -333,7 +344,7 @@ create table fide_prestamo_tb(
     fecha_creacion timestamp default current_timestamp,
     fecha_modificacion timestamp default current_timestamp on update current_timestamp,
     foreign key (id_herramienta) references fide_herramientas_tb(id_herramienta),
-    foreign key (id_usuario) references fide_usuarios_tb(id_usuario),
+    foreign key (id_usuario) references fide_usuario_tb(id_usuario),
     foreign key (id_estado) references fide_estado_tb(id_estado),
     index ndx_id_herramienta (id_herramienta),
     index ndx_id_usuario (id_usuario),
@@ -471,55 +482,55 @@ INSERT INTO fide_ruta_tb (ruta, id_rol, requiere_rol) VALUES
 INSERT INTO fide_usuario_tb
 (username, password, nombre, apellido_paterno, apellido_materno, correo, telefono, id_estado)
 VALUES
-('juan.garcia',      'J7@mP2x!', 'Juan',      'Garcia',      'Lopez',      'juan.garcia@gmail.com',      '612345678', 1),
-('maria.martinez',   'M#8kL5q$', 'Maria',     'Martinez',    'Gomez',      'maria.martinez@gmail.com',   '622345679', 2),
-('carlos.lopez',     'C9&vR1t*', 'Carlos',    'Lopez',       'Perez',      'carlos.lopez@gmail.com',     '632345680', 1),
-('ana.rodriguez',    'A4!nW7z%', 'Ana',       'Rodriguez',   'Fernandez',  'ana.rodriguez@gmail.com',    '642345681', 2),
-('luis.fernandez',   'L2@xH8m&', 'Luis',      'Fernandez',   'Gonzalez',   'luis.fernandez@gmail.com',   '652345682', 1),
-('elena.gonzalez',   'E6$pT3k#', 'Elena',     'Gonzalez',    'Sanchez',    'elena.gonzalez@gmail.com',   '662345683', 2),
-('pedro.perez',      'P1%yN9c!', 'Pedro',     'Perez',       'Ruiz',       'pedro.perez@gmail.com',      '672345684', 1),
-('sofia.sanchez',    'S5&wQ2j$', 'Sofia',     'Sanchez',     'Ramirez',    'sofia.sanchez@gmail.com',    '682345685', 2),
-('miguel.ruiz',      'M8!dF4v@', 'Miguel',    'Ruiz',        'Torres',     'miguel.ruiz@gmail.com',      '692345686', 1),
-('isabel.ramirez',   'I3#uX7n%', 'Isabel',    'Ramirez',     'Flores',     'isabel.ramirez@gmail.com',   '702345687', 2),
-('jose.torres',      'J9*tB5r&', 'Jose',      'Torres',      'Rivera',     'jose.torres@gmail.com',      '712345688', 1),
-('lucia.flores',     'L4@gC8p!', 'Lucia',     'Flores',      'Morales',    'lucia.flores@gmail.com',     '722345689', 2),
-('antonio.rivera',   'A7$hZ1m*', 'Antonio',   'Rivera',      'Ortiz',      'antonio.rivera@gmail.com',   '732345690', 1),
-('david.solis',      'D8@qL2w!', 'David',     'Solis',       'Castro',     'david.solis@gmail.com',      '742345691', 2),
-('nicole.vargas',    'N4#zX8m$', 'Nicole',    'Vargas',      'Jimenez',    'nicole.vargas@gmail.com',    '752345692', 1),
-('bianca.solano',    'B7%rP3k&', 'Bianca',    'Solano',      'Mora',       'bianca.solano@gmail.com',    '762345693', 2),
-('sebastian.castro', 'S2!nV6t@', 'Sebastian', 'Castro',      'Rojas',      'sebastian.castro@gmail.com', '772345694', 1),
-('andres.mora',      'A9&gW4p#', 'Andres',    'Mora',        'Vega',       'andres.mora@gmail.com',      '782345695', 2),
-('paula.vega',       'P3@dF8x!', 'Paula',     'Vega',        'Salas',      'paula.vega@gmail.com',       '792345696', 1),
-('kevin.salas',      'K6#hJ1q$', 'Kevin',     'Salas',       'Leon',       'kevin.salas@gmail.com',      '802345697', 2),
-('laura.leon',       'L5%yM9w*', 'Laura',     'Leon',        'Acosta',     'laura.leon@gmail.com',       '812345698', 1),
-('jorge.acosta',     'J2@uT7k&', 'Jorge',     'Acosta',      'Herrera',    'jorge.acosta@gmail.com',     '822345699', 2),
-('karla.herrera',    'K8!bR3n#', 'Karla',     'Herrera',     'Campos',     'karla.herrera@gmail.com',    '832345700', 1),
-('diego.campos',     'D4$pX6m%', 'Diego',     'Campos',      'Navarro',    'diego.campos@gmail.com',     '842345701', 2),
-('adriana.navarro',  'A1&vL8t!', 'Adriana',   'Navarro',     'Mendez',     'adriana.navarro@gmail.com',  '852345702', 1),
-('roberto.mendez',   'R9@gQ5c$', 'Roberto',   'Mendez',      'Aguilar',    'roberto.mendez@gmail.com',   '862345703', 2),
-('daniela.aguilar',  'D7#kH2z*', 'Daniela',   'Aguilar',     'Cordero',    'daniela.aguilar@gmail.com',  '872345704', 1),
-('ricardo.cordero',  'R5!mN4x&', 'Ricardo',   'Cordero',     'Araya',      'ricardo.cordero@gmail.com',  '882345705', 2),
-('gabriela.araya',   'G3%pW7j@', 'Gabriela',  'Araya',       'Monge',      'gabriela.araya@gmail.com',   '892345706', 1),
-('oscar.monge',      'O6$tY1q#', 'Oscar',     'Monge',       'Quesada',    'oscar.monge@gmail.com',      '902345707', 2),
-('valeria.quesada',  'V8@rC5m!', 'Valeria',   'Quesada',     'Alfaro',     'valeria.quesada@gmail.com',  '912345708', 1),
-('fernando.alfaro',  'F2#nD9x$', 'Fernando',  'Alfaro',      'Esquivel',   'fernando.alfaro@gmail.com',  '922345709', 2),
-('camila.esquivel',  'C4&wH6k%', 'Camila',    'Esquivel',    'Blanco',     'camila.esquivel@gmail.com',  '932345710', 1),
-('eduardo.blanco',   'E1!vP8t&', 'Eduardo',   'Blanco',      'Chaves',     'eduardo.blanco@gmail.com',   '942345711', 2),
-('patricia.chaves',  'P9@xJ3m*', 'Patricia',  'Chaves',      'Nunez',      'patricia.chaves@gmail.com',  '952345712', 1),
-('sergio.nunez',     'S7#qL5c!', 'Sergio',    'Nunez',       'Porras',     'sergio.nunez@gmail.com',     '962345713', 2),
-('monica.porras',    'M5%zR2w$', 'Monica',    'Porras',      'Soto',       'monica.porras@gmail.com',    '972345714', 1),
-('cristian.soto',    'C8&tF4k@', 'Cristian',  'Soto',        'Valverde',   'cristian.soto@gmail.com',    '982345715', 2),
-('alicia.valverde',  'A6!hN1p#', 'Alicia',    'Valverde',    'Rojas',      'alicia.valverde@gmail.com',  '992345716', 1),
-('esteban.rojas',    'E3@dM7x%', 'Esteban',   'Rojas',       'Jimenez',    'esteban.rojas@gmail.com',    '602345717', 2),
-('veronica.jimenez', 'V4&yK9q!', 'Veronica',  'Jimenez',     'Solis',      'veronica.jimenez@gmail.com', '612345718', 1),
-('adrian.arias',     'A8#uP2m$', 'Adrian',    'Arias',       'Vargas',     'adrian.arias@gmail.com',     '622345719', 2),
-('melissa.diaz',     'M1%gT6w*', 'Melissa',   'Diaz',        'Rojas',      'melissa.diaz@gmail.com',     '632345720', 1),
-('hector.ortega',    'H9@bL5n&', 'Hector',    'Ortega',      'Lopez',      'hector.ortega@gmail.com',    '642345721', 2),
-('ximena.marin',     'X2!kC8p#', 'Ximena',    'Marin',       'Campos',     'ximena.marin@gmail.com',     '652345722', 1),
-('fabian.guerrero',  'F7$rW3x%', 'Fabian',    'Guerrero',    'Soto',       'fabian.guerrero@gmail.com',  '662345723', 2),
-('carolina.reyes',   'C5&nJ1t@', 'Carolina',  'Reyes',       'Perez',      'carolina.reyes@gmail.com',   '672345724', 1),
-('manuel.espinoza',  'M3#vH9m!', 'Manuel',    'Espinoza',    'Vega',       'manuel.espinoza@gmail.com',  '682345725', 2),
-('tatiana.molina',   'T6@qX4k$', 'Tatiana',   'Molina',      'Castillo',   'tatiana.molina@gmail.com',   '692345726', 1);
+('juan.garcia',      '$2a$10$j2AUm7e/emJJEIcZWnfUnejf9BLwJ8s4g23uateiO9SaZJURLdNUq', 'Juan',      'Garcia',      'Lopez',      'juan.garcia@gmail.com',      '612345678', 1),
+('maria.martinez',   '$2a$10$Ex/LQrSMKp3aW7mgiHpN.e9O14iAnIDe3wLw3YgM4Ud1v2JFO3K82', 'Maria',     'Martinez',    'Gomez',      'maria.martinez@gmail.com',   '622345679', 2),
+('carlos.lopez',     '$2a$10$E4tF5VBca2M9oGb1H.dJdenZHe9SLDBJXpgyNTGOEbGUsjLlFTs8O', 'Carlos',    'Lopez',       'Perez',      'carlos.lopez@gmail.com',     '632345680', 1),
+('ana.rodriguez',    '$2a$10$h5071Pmv7uYf5xtobEoVTeQAqLZkajdAM7errNtPk.y3xoA2FIP5e', 'Ana',       'Rodriguez',   'Fernandez',  'ana.rodriguez@gmail.com',    '642345681', 2),
+('luis.fernandez',   '$2a$10$HMSAsoG8VNZkC8QqYvkK..PKNLah1B0dduOYW24DA8C001FKWQE6m', 'Luis',      'Fernandez',   'Gonzalez',   'luis.fernandez@gmail.com',   '652345682', 1),
+('elena.gonzalez',   '$2a$10$Khp8MWm8xnf9qxsUVhWDoOVRiI8ZOo5o3TtN8P4xfSR4QmePKZAjm', 'Elena',     'Gonzalez',    'Sanchez',    'elena.gonzalez@gmail.com',   '662345683', 2),
+('pedro.perez',      '$2a$10$YUH6dzGmV4jTDJ95m6KQQuoBCVTOC6MyPkjHeIGKw2UlEB7u2CtEe', 'Pedro',     'Perez',       'Ruiz',       'pedro.perez@gmail.com',      '672345684', 1),
+('sofia.sanchez',    '$2a$10$r3qxVt6UTKbU89zcmslXAelmu7rza4rBV9smZSV3CAfs07ywld9La', 'Sofia',     'Sanchez',     'Ramirez',    'sofia.sanchez@gmail.com',    '682345685', 2),
+('miguel.ruiz',      '$2a$10$jw9lttS3jtP/kc2Npsyw6O1VV1pc0k7A9wbp.RxYpavOMRSzvK3SO', 'Miguel',    'Ruiz',        'Torres',     'miguel.ruiz@gmail.com',      '692345686', 1),
+('isabel.ramirez',   '$2a$10$PnxM6nBt14TFGvly6fB7J.3cMUbDCOCcj444ogg4r6OzGsopWc/bm', 'Isabel',    'Ramirez',     'Flores',     'isabel.ramirez@gmail.com',   '702345687', 2),
+('jose.torres',      '$2a$10$PkXz4F8m8nM/8pPemcREz.wExXuzJ2y8NG3Wm2V0XIp8.gy2wos82', 'Jose',      'Torres',      'Rivera',     'jose.torres@gmail.com',      '712345688', 1),
+('lucia.flores',     '$2a$10$LeaiYgELOhGFeo7pwqYPAuWx2hRJ8stp0EcVb97VjorWfR6B5gaqa', 'Lucia',     'Flores',      'Morales',    'lucia.flores@gmail.com',     '722345689', 2),
+('antonio.rivera',   '$2a$10$i73B/WmmCVQPRlJHge0xYOcT.WICXObcdoNX9sO4ug3.ERGNPXdlu', 'Antonio',   'Rivera',      'Ortiz',      'antonio.rivera@gmail.com',   '732345690', 1),
+('david.solis',      '$2a$10$r/y7q0X4iFj9/iX21hHU1.x9euPuHWr8bknEz0j8fyXlhvF40Q7fW', 'David',     'Solis',       'Castro',     'david.solis@gmail.com',      '742345691', 2),
+('nicole.vargas',    '$2a$10$4lY8Le2jocxjgjhqPe/2vuYs/y2wat7xj6we6Z5DGhYW42h0nJ5se', 'Nicole',    'Vargas',      'Jimenez',    'nicole.vargas@gmail.com',    '752345692', 1),
+('bianca.solano',    '$2a$10$3Vj1bPAkYbok5KprHQ1HO.pS4YQsKPKfsTH0JXemcYBnZERt2aufe', 'Bianca',    'Solano',      'Mora',       'bianca.solano@gmail.com',    '762345693', 2),
+('sebastian.castro', '$2a$10$ahu/ffkGfAj/LB18OUHfHuFVMuv76/JMPfFXuVQ046inJYyBqTeku', 'Sebastian', 'Castro',      'Rojas',      'sebastian.castro@gmail.com', '772345694', 1),
+('andres.mora',      '$2a$10$6j8F/W6L0eRx8WFppRKK0O3uT7ngooUj6disFhhvslbXRJ8opyXZ2', 'Andres',    'Mora',        'Vega',       'andres.mora@gmail.com',      '782345695', 2),
+('paula.vega',       '$2a$10$UpJYv/tsQRYhfMjH9TwSleReOohwUqToQGG4VN33NSjZaZzC0mFGq', 'Paula',     'Vega',        'Salas',      'paula.vega@gmail.com',       '792345696', 1),
+('kevin.salas',      '$2a$10$VTG7.0ORTTzUVobXIllUgewYVnwXRfI7iyQQEO02u3buLbRB0943e', 'Kevin',     'Salas',       'Leon',       'kevin.salas@gmail.com',      '802345697', 2),
+('laura.leon',       '$2a$10$UXKhxy2BTE87FuIGKXpiye5wO1FAfI2E4whP9PB1zJ/XkPwqorhJ6', 'Laura',     'Leon',        'Acosta',     'laura.leon@gmail.com',       '812345698', 1),
+('jorge.acosta',     '$2a$10$P7Bm9RweANC.EjzgBrwGk.YVYo4vPTMhw/6dhe9gNXrY2wseQBfim', 'Jorge',     'Acosta',      'Herrera',    'jorge.acosta@gmail.com',     '822345699', 2),
+('karla.herrera',    '$2a$10$/dbYumJASSwudlDx150iheEsTP.kFXEpKzqBtLRBnoiwPCrD0YVXW', 'Karla',     'Herrera',     'Campos',     'karla.herrera@gmail.com',    '832345700', 1),
+('diego.campos',     '$2a$10$LSIsNx9QwLIYFRmRc0nW0eVS3Cb0QI0ityWB1QD7vcswXJ.KXtxKO', 'Diego',     'Campos',      'Navarro',    'diego.campos@gmail.com',     '842345701', 2),
+('adriana.navarro',  '$2a$10$wKnczs12ymaxkMF3TPGE6ucCP5hs2oNYqiD0N/Cb3ZLQxtTjtePKi', 'Adriana',   'Navarro',     'Mendez',     'adriana.navarro@gmail.com',  '852345702', 1),
+('roberto.mendez',   '$2a$10$JH.9/MAnkmGbiT54Eb2BVudsSATPAaehF.HLGwJYKC4HbPzZS2dOi', 'Roberto',   'Mendez',      'Aguilar',    'roberto.mendez@gmail.com',   '862345703', 2),
+('daniela.aguilar',  '$2a$10$To2n0vN25Lgtd9QvQls6vuQkVUbDzoL.Mun2k87ewUooP6nGLtoF6', 'Daniela',   'Aguilar',     'Cordero',    'daniela.aguilar@gmail.com',  '872345704', 1),
+('ricardo.cordero',  '$2a$10$evYg2YkIOF2ZFvM2osWqNe6OXUXdHCCh0U9/ffMlQC1qhg05xvi6S', 'Ricardo',   'Cordero',     'Araya',      'ricardo.cordero@gmail.com',  '882345705', 2),
+('gabriela.araya',   '$2a$10$Q40T/8AxQsG4Y28cCO9UfuFIXgETIt7wZvS7eABhQTjH/bdYbnGA.', 'Gabriela',  'Araya',       'Monge',      'gabriela.araya@gmail.com',   '892345706', 1),
+('oscar.monge',      '$2a$10$fYYZ/NbFmRkCz07fkZnNLOm6r/p9NZeOVBs3V0mdBpHu3AVzC8mIG', 'Oscar',     'Monge',       'Quesada',    'oscar.monge@gmail.com',      '902345707', 2),
+('valeria.quesada',  '$2a$10$Z9cborwec4tGIIucjbJIbefOX.20qZi76SsrZzLPJbDOeHP15Y.Oi', 'Valeria',   'Quesada',     'Alfaro',     'valeria.quesada@gmail.com',  '912345708', 1),
+('fernando.alfaro',  '$2a$10$iqPpBoO6akKJtJbEnig2lOGho0cHiyFPtd53.bzf0myfQb.v93Roa', 'Fernando',  'Alfaro',      'Esquivel',   'fernando.alfaro@gmail.com',  '922345709', 2),
+('camila.esquivel',  '$2a$10$riNIzEtMMNU2LbkcB5XPt.qo0ZR9bhvrlmhQQaPd3A3azaKuF645W', 'Camila',    'Esquivel',    'Blanco',     'camila.esquivel@gmail.com',  '932345710', 1),
+('eduardo.blanco',   '$2a$10$Jn7BF4ixueb6qwvEqD0bP.BcAkQibNO53fPfiTf87VdLiLJKzMiKK', 'Eduardo',   'Blanco',      'Chaves',     'eduardo.blanco@gmail.com',   '942345711', 2),
+('patricia.chaves',  '$2a$10$b6/KLzcXe97JhckTyX6J4uWTRwm/NAGggjGfWeHYwRjpwTg8D7fbG', 'Patricia',  'Chaves',      'Nunez',      'patricia.chaves@gmail.com',  '952345712', 1),
+('sergio.nunez',     '$2a$10$g8M0Pe3pvMJhLanguPNUUOFJQqA9qS6f/7ugE5Kcp2yXJw3GC.fN.', 'Sergio',    'Nunez',       'Porras',     'sergio.nunez@gmail.com',     '962345713', 2),
+('monica.porras',    '$2a$10$i0QR4un3yi7nVZAVbnJJg./kCHol9c1tyDk6AlNRAbcdAYynjdPmW', 'Monica',    'Porras',      'Soto',       'monica.porras@gmail.com',    '972345714', 1),
+('cristian.soto',    '$2a$10$iKI0XKfbdZgK.Gw4/Vow8eOsSPKndCLl8ZQlFWe5xo2bwviXfiqRm', 'Cristian',  'Soto',        'Valverde',   'cristian.soto@gmail.com',    '982345715', 2),
+('alicia.valverde',  '$2a$10$yWGdJODiRU/WY3H7kPs2Kuok8cCQmHGAa2IvOTaeXuYw0S3ptokBq', 'Alicia',    'Valverde',    'Rojas',      'alicia.valverde@gmail.com',  '992345716', 1),
+('esteban.rojas',    '$2a$10$M9bfU8wCkZl2cWAssbUSL.PRxAFl218l68E8fxeVV5jQmu00280KS', 'Esteban',   'Rojas',       'Jimenez',    'esteban.rojas@gmail.com',    '602345717', 2),
+('veronica.jimenez', '$2a$10$i7Pi4xnx5mCcpTedpgs8YeXCUW4d5f.baYriVpA2ArhYyusJhwZ96', 'Veronica',  'Jimenez',     'Solis',      'veronica.jimenez@gmail.com', '612345718', 1),
+('adrian.arias',     '$2a$10$g6szeJqs71e067Zr.8uSNueKhhkzNv9AaNqEYouJy4k5eRqOiWdja', 'Adrian',    'Arias',       'Vargas',     'adrian.arias@gmail.com',     '622345719', 2),
+('melissa.diaz',     '$2a$10$Fkwi9Jft7rw3EhZ.QH/xXOggUKPF.0moOSVq0nltv2krxLUDTeK8G', 'Melissa',   'Diaz',        'Rojas',      'melissa.diaz@gmail.com',     '632345720', 1),
+('hector.ortega',    '$2a$10$WSQrPtN8mRlf3.Ac7QtxTOvIleetQ9COMvy4qLb5.SiuNDsgNJA.W', 'Hector',    'Ortega',      'Lopez',      'hector.ortega@gmail.com',    '642345721', 2),
+('ximena.marin',     '$2a$10$8wBJ.ENnCTFVSZjFacrgIO86BMPk6zzAAWdgoDCxAW5yn6nX9VPTO', 'Ximena',    'Marin',       'Campos',     'ximena.marin@gmail.com',     '652345722', 1),
+('fabian.guerrero',  '$2a$10$kXXWbRyA.AJhDFqHMHtq2urhtCm4e0Lv4byEI64cJ8N3fiymAA07i', 'Fabian',    'Guerrero',    'Soto',       'fabian.guerrero@gmail.com',  '662345723', 2),
+('carolina.reyes',   '$2a$10$bjZ0JoHoR70TaxJkaA3E.uJ39IP2JUVa.ZZs78PE5x..L58QKapg2', 'Carolina',  'Reyes',       'Perez',      'carolina.reyes@gmail.com',   '672345724', 1),
+('manuel.espinoza',  '$2a$10$zbvmkkoP8l4XWhQF2tQbjOE/cpKbaEFK33LL.kC9gsvn.mkF7iZf6', 'Manuel',    'Espinoza',    'Vega',       'manuel.espinoza@gmail.com',  '682345725', 2),
+('tatiana.molina',   '$2a$10$QMpzr1Sd3979R0ycB5SlXecQn5MWG20CUy7lUnxNOzKtsDYIQ1W3m', 'Tatiana',   'Molina',      'Castillo',   'tatiana.molina@gmail.com',   '692345726', 1);
 
 INSERT INTO fide_usuario_rol_tb (id_usuario, id_rol) VALUES
 (1, 2),
@@ -610,19 +621,3 @@ INSERT INTO fide_actividad_guia_tb (id_actividad, id_guia, fecha_asignacion, id_
 (3, 4, '2026-07-01 08:00:00', 1),
 (4, 5, '2026-07-01 08:00:00', 1),
 (5, 6, '2026-07-01 08:00:00', 1);
-
-INSERT INTO fide_voluntariado_tb (id_usuario, id_estado, fecha_ingreso, disponibilidad) VALUES
-(13, 1, '2023-01-15', 'Lunes a Viernes'),
-(14, 1, '2023-02-20', 'Fines de Semana'),
-(15, 1, '2023-03-05', 'Lunes a Viernes'),
-(16, 1, '2023-04-10', 'Fines de Semana'),
-(17, 1, '2023-05-25', 'Lunes a Viernes'),
-(18, 1, '2023-06-30', 'Fines de Semana'),
-(19, 1, '2023-07-15', 'Lunes a Viernes'),
-(20, 1, '2023-08-20', 'Fines de Semana'),
-(21, 1, '2023-09-05', 'Lunes a Viernes'),
-(22, 1, '2023-10-10', 'Fines de Semana'),
-(23, 1, '2023-11-15', 'Lunes a Viernes'),
-(24, 1, '2023-12-20', 'Fines de Semana');
-
-

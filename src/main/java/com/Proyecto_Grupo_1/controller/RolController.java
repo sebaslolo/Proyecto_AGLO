@@ -51,7 +51,12 @@ public class RolController {
         if (bindingResult.hasErrors()) {
             return "/admin/roles/modifica";
         }
-        rolService.save(rol);
+        try {
+            rolService.save(rol);
+        } catch (IllegalArgumentException | IllegalStateException e) {
+            bindingResult.rejectValue("rol", "rol.error.inesperado", e.getMessage());
+            return "/admin/roles/modifica";
+        }
         redirectAttributes.addFlashAttribute("todoOk", msg("rol.mensaje.guardado"));
         return "redirect:/admin/roles/listado";
     }

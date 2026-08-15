@@ -3,9 +3,6 @@ package com.Proyecto_Grupo_1.controller;
 import com.Proyecto_Grupo_1.dto.LoginForm;
 import com.Proyecto_Grupo_1.dto.RegistroForm;
 import com.Proyecto_Grupo_1.service.ActividadService;
-import com.Proyecto_Grupo_1.service.EstadoService;
-import com.Proyecto_Grupo_1.service.RolService;
-import com.Proyecto_Grupo_1.service.UsuarioRolService;
 import com.Proyecto_Grupo_1.service.UsuarioService;
 import jakarta.validation.Valid;
 import org.springframework.context.MessageSource;
@@ -24,22 +21,13 @@ public class AuthController {
 
     private final ActividadService actividadService;
     private final UsuarioService usuarioService;
-    private final UsuarioRolService usuarioRolService;
-    private final EstadoService estadoService;
-    private final RolService rolService;
     private final MessageSource messageSource;
 
     public AuthController(ActividadService actividadService,
             UsuarioService usuarioService,
-            UsuarioRolService usuarioRolService,
-            EstadoService estadoService,
-            RolService rolService,
             MessageSource messageSource) {
         this.actividadService = actividadService;
         this.usuarioService = usuarioService;
-        this.usuarioRolService = usuarioRolService;
-        this.estadoService = estadoService;
-        this.rolService = rolService;
         this.messageSource = messageSource;
     }
 
@@ -52,6 +40,7 @@ public class AuthController {
     @GetMapping("/login")
     public String login(@RequestParam(required = false) String error,
             @RequestParam(required = false) String logout,
+            @RequestParam(required = false) String expired,
             Model model) {
         if (!model.containsAttribute("loginForm")) {
             model.addAttribute("loginForm", new LoginForm());
@@ -61,6 +50,9 @@ public class AuthController {
         }
         if (logout != null) {
             model.addAttribute("todoOk", "Sesión cerrada correctamente.");
+        }
+        if (expired != null) {
+            model.addAttribute("error", "La sesión expiró. Inicie sesión nuevamente.");
         }
         return "/auth/login";
     }
@@ -90,10 +82,7 @@ public class AuthController {
             return "/auth/registro";
         }
         try {
-            var estadoActivo = estadoService.obtenerEstadoPorNombre("Activo");
-            var usuario = usuarioService.registrarCliente(registroForm, estadoActivo);
-            rolService.getRolPorNombre("CLIENTE")
-                    .ifPresent(rol -> usuarioRolService.reemplazarRolPrincipal(usuario.getIdUsuario(), rol.getIdRol()));
+            usuarioService.registrarCliente(registroForm);
             redirectAttributes.addFlashAttribute("todoOk", msg("registro.mensaje.exitoso"));
             return "redirect:/login";
         } catch (IllegalArgumentException | IllegalStateException e) {
@@ -107,6 +96,11 @@ public class AuthController {
     @GetMapping("/forgot-password")
     public String forgotPassword() {
         return "/auth/forgot-password";
+    }
+
+    @GetMapping("/acceso_denegado")
+    public String accesoDenegado() {
+        return "/acceso_denegado";
     }
 
     private String msg(String key) {

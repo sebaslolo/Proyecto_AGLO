@@ -1,79 +1,61 @@
 # Proyecto AGLO
 
-## Descripcion
+AGLO es una aplicación web Spring Boot para gestionar actividades, reservaciones, usuarios, guías y los catálogos operativos de la plataforma.
 
-Proyecto AGLO es una aplicacion web desarrollada con Spring Boot para la gestion de actividades, reservaciones, usuarios, guias y modulos informativos relacionados con la plataforma AGLO.
+## Tecnología
 
-El sistema integra vistas publicas para consulta de actividades y reservaciones, asi como un panel administrativo para el mantenimiento de catalogos y datos principales del proyecto.
+- Java 17 y Maven.
+- Spring Boot, Spring MVC, Spring Security, Spring Data JPA y Validation.
+- Thymeleaf, Bootstrap, Font Awesome, jQuery y WebJars.
+- MySQL y Firebase Storage.
 
-## Tecnologias principales
+## Requisitos
 
-- Java 17 como version de compilacion.
-- Spring Boot con Spring MVC.
-- Thymeleaf para la generacion de vistas.
-- Spring Data JPA y Spring Validation.
-- MySQL como motor de base de datos.
-- Maven como gestor de dependencias y construccion.
-- Bootstrap, Font Awesome, jQuery y WebJars para recursos de interfaz.
-- Firebase Storage para manejo de archivos e imagenes.
+- JDK 17.
+- MySQL local o accesible desde la aplicación.
+- Las credenciales de conexión y Firebase revisadas en `src/main/resources/application.properties`.
 
-## Requisitos de ejecucion
+El proyecto incluye Maven Wrapper, por lo que no requiere una instalación global de Maven después de clonar el repositorio.
 
-Antes de ejecutar el proyecto, se requiere contar con:
+## Base de datos
 
-- JDK 17 o compatible.
-- Maven instalado.
-- MySQL disponible en ambiente local.
-- Base de datos `AGLO` creada a partir del script `sql/DB.sql`.
-- Configuracion de conexion revisada en `src/main/resources/application.properties`.
-- Archivo JSON de credenciales de Firebase disponible en `src/main/resources/firebase/`, segun la ruta configurada en `application.properties`.
+`sql/DB.sql` es el bootstrap canónico de AGLO y recrea la base de datos. Ejecútelo únicamente contra el ambiente local que desea reinicializar:
 
-## Ejecucion local
+```bash
+mysql -u root -p < sql/DB.sql
+```
 
-1. Clonar o descargar el repositorio.
-2. Ingresar a la carpeta del proyecto:
+Las cuentas de desarrollo del script usan hashes BCrypt compatibles con el inicio de sesión. No sustituya esos hashes por contraseñas en texto plano.
 
-   ```bash
-   cd Proyecto_AGLO
-   ```
+## Ejecución local
 
-3. Crear la base de datos ejecutando el script:
+```bash
+./mvnw clean verify
+./mvnw spring-boot:run
+```
 
-   ```bash
-   mysql -u root -p < sql/DB.sql
-   ```
+Abra <http://localhost:8080>.
 
-4. Revisar en `src/main/resources/application.properties` los valores de conexion a MySQL, credenciales, puerto de ejecucion y configuracion de Firebase.
-5. Ejecutar la aplicacion:
+## Seguridad y roles
 
-   ```bash
-   mvn spring-boot:run
-   ```
+- Las rutas públicas están declaradas explícitamente en `SecurityConfig`.
+- `/admin/**` requiere `ADMIN` y `/guia/**` requiere `GUIA`.
+- Las reservaciones y su historial requieren `CLIENTE`; la confirmación permite `CLIENTE` o `ADMIN` y el controlador verifica la propiedad de la reservación.
+- Cualquier ruta no clasificada se deniega por defecto.
+- `fide_ruta_tb` sigue siendo un catálogo administrativo: editarlo no cambia las reglas de seguridad en tiempo de ejecución.
+- Los roles de sistema `ADMIN`, `GUIA` y `CLIENTE` no se pueden renombrar ni eliminar. Los roles adicionales no conceden acceso privilegiado por sí solos.
 
-6. Abrir la aplicacion en el navegador:
+## Contenedor
 
-   ```text
-   http://localhost:8080
-   ```
+La imagen ejecuta `mvn clean verify` durante su construcción y expone el puerto 8080:
 
-## Modulos y rutas destacadas
+```bash
+docker build -t aglo .
+docker run --rm -p 8080:8080 aglo
+```
 
-- Inicio, inicio de sesion, registro y recuperacion de contrasena.
-- Catalogo de actividades y vista de detalle.
-- Reservaciones, confirmacion de reserva y consulta de mis reservaciones.
-- Panel administrativo.
-- Gestion de usuarios, roles, rutas, actividades, tipos de actividad, guias, asignacion de guias y estados.
-- Agenda para guias.
-- Vistas informativas para voluntariados, avistamientos, herramientas y retroalimentacion.
+La imagen necesita acceso a la misma configuración de MySQL y Firebase que el entorno local.
 
-## Estado del avance
+## Credenciales Firebase
 
-- El proyecto esta estructurado como una aplicacion Spring Boot MVC con capas de `controller`, `service`, `repository`, `domain` y `templates`.
-- La base de datos principal esta definida mediante el script `sql/DB.sql`.
-- Existe autenticacion por sesion e interceptor para proteger rutas administrativas, de guia y de reservaciones de usuario.
-- El panel administrativo y los CRUDs principales se encuentran implementados.
-- El catalogo, las reservaciones y la agenda de guia ya cuentan con controladores y vistas.
-- La internacionalizacion esta configurada mediante archivos de mensajes en varios idiomas.
-- Actualmente no se detecta una carpeta `src/test`, por lo que las pruebas automatizadas quedan pendientes.
-- La documentacion de avance disponible corresponde al archivo `PR-STEM-01-Avance 2_Grupo1.pdf`.
-
+La configuración existente de Firebase se mantiene sin cambios para no alterar los entornos actuales. La clave actualmente versionada debe rotarse y externalizarse antes de desplegar fuera de desarrollo; esa migración se gestiona como una tarea separada.

@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html lang="es" xmlns:th="http://www.thymeleaf.org">
-    <head th:replace="~{aglo/fragmentos :: head('Usuarios | AGLO', 'dashboard.css')}"></head>
+    <head th:replace="~{aglo/fragmentos :: head('Usuarios | AGLO', 'admin.css')}"></head>
     <body class="admin-page">
         <header th:replace="~{admin/fragmentos :: nav}"></header>
         <main class="admin-main">
@@ -52,6 +52,8 @@
                                     <button class="btn btn-sm btn-outline-danger" type="button"
                                             data-bs-toggle="modal" data-bs-target="#confirmDeleteModal"
                                             th:data-delete-id="${usuario.idUsuario}"
+                                            th:data-delete-action="@{/admin/usuarios/eliminar}"
+                                            data-delete-field="idUsuario"
                                             th:data-delete-name="${usuario.nombre + ' ' + usuario.apellidoPaterno}">
                                         <i class="fa-solid fa-trash"></i> Eliminar
                                     </button>
@@ -63,26 +65,7 @@
             </section>
         </main>
 
-        <div class="modal fade" id="confirmDeleteModal" tabindex="-1" aria-hidden="true">
-            <div class="modal-dialog modal-dialog-centered">
-                <div class="modal-content">
-                    <form th:action="@{/admin/usuarios/eliminar}" method="post">
-                        <input type="hidden" name="idUsuario" id="deleteId"/>
-                        <div class="modal-header bg-warning">
-                            <h2 class="modal-title fs-5">Confirmar eliminación</h2>
-                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
-                        </div>
-                        <div class="modal-body">
-                            <p>¿Desea eliminar <strong id="deleteName">este registro</strong>?</p>
-                        </div>
-                        <div class="modal-footer">
-                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                            <button type="submit" class="btn btn-danger">Eliminar</button>
-                        </div>
-                    </form>
-                </div>
-            </div>
-        </div>
+        <th:block th:replace="~{admin/fragmentos :: delete-modal}"></th:block>
 
         <th:block th:replace="~{aglo/fragmentos :: scripts('dashboard.js')}"></th:block>
     </body>

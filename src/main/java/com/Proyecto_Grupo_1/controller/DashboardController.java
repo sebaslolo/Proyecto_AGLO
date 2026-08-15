@@ -46,7 +46,7 @@ public class DashboardController {
                                 .map(rol -> rol.getRol())
                                 .collect(Collectors.joining(", "))));
 
-        model.addAttribute("dashboardTitle", "Registro de nuevo usuario");
+        model.addAttribute("dashboardTitle", "Panel administrativo");
         model.addAttribute("activeSection", "dashboard");
         model.addAttribute("usuarios", usuarios);
         model.addAttribute("totalUsuarios", usuarios.size());

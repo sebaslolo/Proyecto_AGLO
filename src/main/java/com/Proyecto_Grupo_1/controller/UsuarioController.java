@@ -79,6 +79,11 @@ public class UsuarioController {
                 && (usuario.getPassword() == null || usuario.getPassword().isBlank())) {
             bindingResult.rejectValue("password", "usuario.error.password", "La contraseña es obligatoria.");
         }
+        if (usuario.getPassword() != null && !usuario.getPassword().isBlank()
+                && !usuarioService.cumplePoliticaPassword(usuario.getPassword())) {
+            bindingResult.rejectValue("password", "usuario.error.password",
+                    "La contraseña debe tener al menos 8 caracteres y un dígito.");
+        }
         if (!usuarioService.correoDisponible(usuario.getCorreo(), usuario.getIdUsuario())) {
             bindingResult.rejectValue("correo", "usuario.error.correoDuplicado", msg("usuario.error.correoDuplicado"));
         }
