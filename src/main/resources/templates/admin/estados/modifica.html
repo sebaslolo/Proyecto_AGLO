@@ -1,13 +1,13 @@
 <!DOCTYPE html>
-<html lang="es" xmlns:th="http://www.thymeleaf.org">
-    <head th:replace="~{aglo/fragmentos :: head('Estado | AGLO', 'admin.css')}"></head>
+<html th:lang="${#locale.language}" xmlns:th="http://www.thymeleaf.org">
+    <head th:replace="~{aglo/fragmentos :: head(#{estado.meta.formulario}, 'admin.css')}"></head>
     <body class="admin-page">
         <header th:replace="~{admin/fragmentos :: nav}"></header>
         <main class="admin-main">
             <section class="admin-page-title">
                 <div>
-                    <h1 th:text="${estado.idEstado == null ? 'Nuevo estado' : 'Editar estado'}">Estado</h1>
-                    <p>Nombre del estado de catalogo.</p>
+                    <h1 th:text="${estado.idEstado == null} ? #{estado.nuevo} : #{estado.editar}">Estado</h1>
+                    <p th:text="#{estado.descripcionFormulario}">Nombre del estado de catálogo.</p>
                 </div>
             </section>
             <section th:replace="~{admin/fragmentos :: mensajes}"></section>
@@ -15,18 +15,18 @@
                 <form th:action="@{/admin/estados/guardar}" th:object="${estado}" method="post" class="was-validated">
                     <input type="hidden" th:field="*{idEstado}"/>
                     <div th:if="${#fields.hasAnyErrors()}" class="alert alert-danger form-errors" role="alert">
-                        <strong>Revise los datos indicados.</strong>
+                        <strong th:text="#{formulario.invalido}">Revise los datos indicados.</strong>
                         <ul class="mb-0 mt-2"><li th:each="fieldError : ${#fields.allErrors()}" th:text="${fieldError}">Error de validación</li></ul>
                     </div>
                     <div class="form-grid">
                         <div class="full-row">
-                            <label class="form-label" for="nombreEstado">Nombre</label>
+                            <label class="form-label" for="nombreEstado" th:text="#{general.nombre}">Nombre</label>
                             <input class="form-control" type="text" th:field="*{nombreEstado}" maxlength="50" required/>
                         </div>
                     </div>
                     <div class="form-actions">
-                        <a class="btn btn-outline-dark" th:href="@{/admin/estados/listado}">Cancelar</a>
-                        <button class="btn btn-success" type="submit">Guardar</button>
+                        <a class="btn btn-outline-dark" th:href="@{/admin/estados/listado}" th:text="#{accion.cancelar}">Cancelar</a>
+                        <button class="btn btn-success" type="submit" th:text="#{accion.guardar}">Guardar</button>
                     </div>
                 </form>
             </section>

@@ -1,36 +1,35 @@
 <!DOCTYPE html>
-<html lang="es" xmlns:th="http://www.thymeleaf.org">
-    <head th:replace="~{aglo/fragmentos :: head('Mis reservaciones | AGLO', 'dashboard.css')}"></head>
+<html th:lang="${#locale.language}" xmlns:th="http://www.thymeleaf.org">
+    <head th:replace="~{aglo/fragmentos :: head(#{reservacion.publico.historial.meta}, 'dashboard.css')}"></head>
     <body class="public-page">
         <main class="public-main">
             <section class="public-page-title">
                 <div>
-                    <h1>Mis reservaciones</h1>
-                    <p>Historial de reservaciones realizadas.</p>
+                    <h1 th:text="#{reservacion.historial}">Mis reservaciones</h1>
+                    <p th:text="#{reservacion.publico.historial.descripcion}">Historial de reservaciones realizadas.</p>
                 </div>
-                <a class="btn btn-light" th:href="@{/catalogo/listado}">Catálogo</a>
+                <a class="btn btn-light" th:href="@{/catalogo/listado}" th:text="#{reservacion.publico.catalogo}">Catálogo</a>
             </section>
             <section th:replace="~{admin/fragmentos :: mensajes}"></section>
-
             <section class="admin-panel">
                 <div class="table-responsive">
                     <table class="table admin-table align-middle">
                         <thead>
                             <tr>
-                                <th>Fecha</th>
-                                <th>Monto</th>
-                                <th>Estado</th>
+                                <th th:text="#{general.fecha}">Fecha</th>
+                                <th th:text="#{reservacion.publico.monto}">Monto</th>
+                                <th th:text="#{general.estado}">Estado</th>
                                 <th></th>
                             </tr>
                         </thead>
                         <tbody>
                             <tr th:if="${reservaciones == null or reservaciones.empty}">
-                                <td colspan="4" class="empty-row">No hay reservaciones registradas.</td>
+                                <td colspan="4" class="empty-row" th:text="#{reservacion.publico.historial.sinRegistros}">No hay reservaciones registradas.</td>
                             </tr>
                             <tr th:each="reservacion : ${reservaciones}">
-                                <td th:text="${reservacion.fechaReservacion != null ? #temporals.format(reservacion.fechaReservacion, 'dd/MM/yyyy HH:mm') : 'Sin fecha'}">Fecha</td>
-                                <td th:text="${reservacion.montoTotal != null ? @monedaCostaRica.formatear(reservacion.montoTotal) : '₡0'}">₡0</td>
-                                <td th:text="${reservacion.estado != null ? reservacion.estado.nombreEstado : 'Sin estado'}">Pendiente</td>
+                                <td th:text="${reservacion.fechaReservacion != null ? #temporals.format(reservacion.fechaReservacion, #messages.msg('formato.fechaHoraCorta')) : #messages.msg('general.sinFecha')}">Fecha</td>
+                                <td th:text="${reservacion.montoTotal != null ? @monedaCostaRica.formatear(reservacion.montoTotal) : #messages.msg('reservacion.publico.montoCero')}">₡0</td>
+                                <td th:text="${reservacion.estado != null ? reservacion.estado.nombreEstado : #messages.msg('general.sinEstado')}">Pendiente</td>
                                 <td class="text-end">
                                     <a class="btn btn-sm btn-outline-dark" th:href="@{/reservaciones/confirmacion/{id}(id=${reservacion.idReservacion})}" th:text="#{accion.detalle}">Detalle</a>
                                 </td>

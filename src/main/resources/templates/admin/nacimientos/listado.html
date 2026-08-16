@@ -1,58 +1,68 @@
 <!DOCTYPE html>
-<html lang="es" xmlns:th="http://www.thymeleaf.org">
-    <head th:replace="~{aglo/fragmentos :: head('Nacimientos | AGLO', 'admin.css')}"></head>
+<html th:lang="${#locale.language}" xmlns:th="http://www.thymeleaf.org">
+    <head th:replace="~{aglo/fragmentos :: head(#{nacimiento.meta.listado}, 'admin.css')}"></head>
     <body class="admin-page">
         <header th:replace="~{admin/fragmentos :: nav}"></header>
         <main class="admin-main">
             <section class="admin-page-title">
                 <div>
-                    <h1>Nacimientos</h1>
-                    <p>Registro de eclosiones y crías por nido.</p>
+                    <h1 th:text="#{nacimiento.titulo}">Nacimientos</h1>
+                    <p th:text="#{nacimiento.descripcionPagina}">Registro de eclosiones y crías por nido.</p>
                 </div>
                 <a class="btn page-action" th:href="@{/admin/nacimientos/nuevo}">
-                    <i class="fa-solid fa-plus"></i> Nuevo nacimiento
+                    <i class="fa-solid fa-plus" aria-hidden="true"></i>
+                    <span th:text="#{nacimiento.nuevo}">Nuevo nacimiento</span>
                 </a>
             </section>
             <section th:replace="~{admin/fragmentos :: mensajes}"></section>
-
             <section class="admin-panel">
-                <p class="admin-summary" th:text="${totalNacimientos} + ' nacimiento(s) registrado(s)'">0 nacimientos registrados</p>
+                <p class="admin-summary" th:text="#{nacimiento.resumen(${totalNacimientos})}">0 nacimientos registrados</p>
                 <div class="table-responsive">
                     <table class="table admin-table align-middle">
                         <thead>
                             <tr>
-                                <th>Nido</th>
-                                <th>Eclosión</th>
-                                <th>Vivas</th>
-                                <th>Muertas</th>
-                                <th>Infértiles</th>
-                                <th>Estado</th>
-                                <th class="actions-header">Acciones</th>
+                                <th th:text="#{nacimiento.nido}">Nido</th>
+                                <th th:text="#{nacimiento.eclosion}">Eclosión</th>
+                                <th th:text="#{nacimiento.vivas}">Vivas</th>
+                                <th th:text="#{nacimiento.muertas}">Muertas</th>
+                                <th th:text="#{nacimiento.infertiles}">Infértiles</th>
+                                <th th:text="#{nacimiento.estado}">Estado</th>
+                                <th class="actions-header" th:text="#{general.acciones}">Acciones</th>
                             </tr>
                         </thead>
                         <tbody>
                             <tr th:if="${nacimientos == null or nacimientos.empty}">
-                                <td colspan="7" class="empty-row">No hay nacimientos registrados.</td>
+                                <td colspan="7" class="empty-row" th:text="#{nacimiento.sinRegistros}">No hay nacimientos registrados.</td>
                             </tr>
                             <tr th:each="nacimiento : ${nacimientos}">
-                                <td th:text="${nacimiento.nido != null and nacimiento.nido.tortuga != null ? 'Tortuga ' + nacimiento.nido.tortuga.etiquetaTortuga : (nacimiento.nido != null ? (nacimiento.nido.ubicacion ?: 'Nido sin datos de ubicación') : 'Sin nido')}">Tortuga T-001</td>
-                                <td th:text="${nacimiento.fechaEclosion != null ? #temporals.format(nacimiento.fechaEclosion, 'dd/MM/yyyy HH:mm') : 'Sin fecha'}">14/08/2026</td>
+                                <td th:text="${nacimiento.nido != null and nacimiento.nido.tortuga != null
+                                    ? #messages.msg('nacimiento.tortugaReferencia', nacimiento.nido.tortuga.etiquetaTortuga)
+                                    : (nacimiento.nido != null
+                                        ? (nacimiento.nido.ubicacion ?: #messages.msg('nacimiento.nidoSinUbicacion'))
+                                        : #messages.msg('nacimiento.sinNido'))}">Tortuga T-001</td>
+                                <td th:text="${nacimiento.fechaEclosion != null
+                                    ? #temporals.format(nacimiento.fechaEclosion, 'dd/MM/yyyy HH:mm')
+                                    : #messages.msg('general.sinFecha')}">14/08/2026</td>
                                 <td th:text="${nacimiento.criasVivas ?: '0'}">50</td>
                                 <td th:text="${nacimiento.criasMuertas ?: '0'}">2</td>
                                 <td th:text="${nacimiento.criasInfertiles ?: '0'}">3</td>
-                                <td th:text="${nacimiento.estado != null ? nacimiento.estado.nombreEstado : 'Sin estado'}">Activo</td>
+                                <td th:text="${nacimiento.estado != null ? nacimiento.estado.nombreEstado : #messages.msg('general.sinEstado')}">Activo</td>
                                 <td class="table-actions">
                                     <a class="btn btn-sm btn-outline-dark"
                                        th:href="@{/admin/nacimientos/modificar/{id}(id=${nacimiento.idNacimiento})}">
-                                        <i class="fa-solid fa-pen"></i> Editar
+                                        <i class="fa-solid fa-pen" aria-hidden="true"></i>
+                                        <span th:text="#{accion.editar}">Editar</span>
                                     </a>
                                     <button th:if="${isAdmin}" class="btn btn-sm btn-outline-danger" type="button"
                                             data-bs-toggle="modal" data-bs-target="#confirmDeleteModal"
                                             th:data-delete-action="@{/admin/nacimientos/eliminar}"
                                             data-delete-field="idNacimiento"
                                             th:data-delete-id="${nacimiento.idNacimiento}"
-                                            th:data-delete-name="${nacimiento.fechaEclosion != null ? 'nacimiento del ' + #temporals.format(nacimiento.fechaEclosion, 'dd/MM/yyyy') : 'nacimiento sin fecha registrada'}">
-                                        <i class="fa-solid fa-trash"></i> Eliminar
+                                            th:data-delete-name="${nacimiento.fechaEclosion != null
+                                                ? #messages.msg('nacimiento.eliminar.referencia', #temporals.format(nacimiento.fechaEclosion, 'dd/MM/yyyy'))
+                                                : #messages.msg('nacimiento.eliminar.sinFecha')}">
+                                        <i class="fa-solid fa-trash" aria-hidden="true"></i>
+                                        <span th:text="#{accion.eliminar}">Eliminar</span>
                                     </button>
                                 </td>
                             </tr>
@@ -61,7 +71,6 @@
                 </div>
             </section>
         </main>
-
         <div th:replace="~{admin/fragmentos :: delete-modal}"></div>
         <th:block th:replace="~{aglo/fragmentos :: scripts('dashboard.js')}"></th:block>
     </body>

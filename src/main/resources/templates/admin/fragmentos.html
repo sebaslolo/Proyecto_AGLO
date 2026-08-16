@@ -10,14 +10,12 @@
             <img th:src="@{/img/logoAglo.png}" alt="Logo AGLO"/>
             <span>AGLO</span>
         </a>
-
         <button class="navbar-toggler admin-toggler" type="button" data-bs-toggle="collapse"
                 data-bs-target="#adminNavbar" aria-controls="adminNavbar" aria-expanded="false"
-                aria-label="Mostrar navegación">
+                th:attr="aria-label=#{general.mostrarNavegacion}">
             <span class="navbar-toggler-icon"></span>
         </button>
-
-        <nav class="collapse navbar-collapse" id="adminNavbar" aria-label="Navegación de cuenta">
+        <nav class="collapse navbar-collapse" id="adminNavbar" th:attr="aria-label=#{general.navegacionCuenta}">
             <ul class="navbar-nav me-auto mb-2 mb-xl-0 admin-links">
                 <li th:if="${isAdmin}" class="nav-item">
                     <a class="nav-link"
@@ -27,7 +25,6 @@
                         <span th:text="#{navbar.dashboard}">Panel</span>
                     </a>
                 </li>
-
                 <li th:if="${!isAdmin and canOperateGuide}" class="nav-item">
                     <a class="nav-link"
                        th:classappend="${#strings.contains(uri, '/guia/agenda')} ? ' active' : ''"
@@ -36,7 +33,6 @@
                         <span th:text="#{navbar.agenda}">Agenda</span>
                     </a>
                 </li>
-
                 <li th:if="${isAdmin}" class="nav-item dropdown">
                     <a class="nav-link dropdown-toggle"
                        th:classappend="${#strings.contains(uri, '/admin/actividades') or #strings.contains(uri, '/admin/reservaciones') or #strings.contains(uri, '/admin/guias')} ? ' active' : ''"
@@ -50,7 +46,6 @@
                         <li><a class="dropdown-item" th:classappend="${#strings.contains(uri, '/admin/guias')} ? ' active' : ''" th:href="@{/admin/guias/listado}" th:text="#{navbar.guias}">Guías</a></li>
                     </ul>
                 </li>
-
                 <li th:if="${canOperateGuide}" class="nav-item dropdown">
                     <a class="nav-link dropdown-toggle"
                        th:classappend="${#strings.contains(uri, '/admin/monitoreos') or #strings.contains(uri, '/admin/avistamientos') or #strings.contains(uri, '/admin/tortugas') or #strings.contains(uri, '/admin/nidos') or #strings.contains(uri, '/admin/nacimientos')} ? ' active' : ''"
@@ -66,7 +61,6 @@
                         <li><a class="dropdown-item" th:classappend="${#strings.contains(uri, '/admin/nacimientos')} ? ' active' : ''" th:href="@{/admin/nacimientos/listado}" th:text="#{navbar.nacimientos}">Nacimientos</a></li>
                     </ul>
                 </li>
-
                 <li th:if="${canOperateGuide}" class="nav-item dropdown">
                     <a class="nav-link dropdown-toggle"
                        th:classappend="${#strings.contains(uri, '/admin/herramientas') or #strings.contains(uri, '/admin/prestamos')} ? ' active' : ''"
@@ -79,7 +73,6 @@
                         <li><a class="dropdown-item" th:classappend="${#strings.contains(uri, '/admin/prestamos')} ? ' active' : ''" th:href="@{/admin/prestamos/listado}" th:text="#{navbar.prestamos}">Préstamos</a></li>
                     </ul>
                 </li>
-
                 <li th:if="${isAdmin}" class="nav-item dropdown">
                     <a class="nav-link dropdown-toggle"
                        th:classappend="${#strings.contains(uri, '/admin/usuarios') or #strings.contains(uri, '/admin/roles') or #strings.contains(uri, '/admin/tipos-actividad') or #strings.contains(uri, '/admin/estados') or #strings.contains(uri, '/admin/rutas')} ? ' active' : ''"
@@ -98,12 +91,9 @@
                     </ul>
                 </li>
             </ul>
-
             <div class="admin-actions">
                 <div class="dropdown">
-                    <button class="btn language-btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" th:text="#{navbar.idiomaActual}">
-                        Esp
-                    </button>
+                    <button class="btn language-btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" th:text="#{navbar.idiomaActual}">Esp</button>
                     <ul class="dropdown-menu dropdown-menu-end">
                         <li><a class="dropdown-item" th:href="@{${uri}(lang=es)}" th:text="#{idioma.es}">Español</a></li>
                         <li><a class="dropdown-item" th:href="@{${uri}(lang=en)}" th:text="#{idioma.en}">English</a></li>
@@ -120,20 +110,18 @@
         </nav>
     </div>
 </header>
-
 <section xmlns:th="http://www.thymeleaf.org" th:fragment="mensajes">
     <div class="admin-alerts" aria-live="polite">
         <div th:if="${todoOk}" class="alert alert-success alert-dismissible fade show" role="status">
             <span th:text="${todoOk}">Operación realizada.</span>
-            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Cerrar"></button>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" th:attr="aria-label=#{general.cerrar}"></button>
         </div>
         <div th:if="${error}" class="alert alert-danger alert-dismissible fade show" role="alert">
             <span th:text="${error}">Error.</span>
-            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Cerrar"></button>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" th:attr="aria-label=#{general.cerrar}"></button>
         </div>
     </div>
 </section>
-
 <div xmlns:th="http://www.thymeleaf.org" th:fragment="delete-modal" th:if="${isAdmin}"
      class="modal fade" id="confirmDeleteModal" tabindex="-1" aria-labelledby="confirmDeleteTitle" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
@@ -144,10 +132,10 @@
                 <input th:if="${_csrf != null}" type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
                 <div class="modal-header">
                     <h2 class="modal-title fs-5" id="confirmDeleteTitle" th:text="#{accion.confirmar.eliminar}">Confirmar eliminación</h2>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" th:attr="aria-label=#{general.cerrar}"></button>
                 </div>
                 <div class="modal-body">
-                    <p>¿Desea eliminar <strong id="deleteName">este registro</strong>?</p>
+                    <p><span th:text="#{accion.eliminar.pregunta}">¿Desea eliminar</span> <strong id="deleteName" th:text="#{general.esteRegistro}">este registro</strong>?</p>
                     <p class="delete-warning mb-0" th:text="#{accion.confirmar.texto}">Esta acción no se puede reversar.</p>
                 </div>
                 <div class="modal-footer">

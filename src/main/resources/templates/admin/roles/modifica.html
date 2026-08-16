@@ -1,13 +1,13 @@
 <!DOCTYPE html>
-<html lang="es" xmlns:th="http://www.thymeleaf.org">
-    <head th:replace="~{aglo/fragmentos :: head('Rol | AGLO', 'admin.css')}"></head>
+<html th:lang="${#locale.language}" xmlns:th="http://www.thymeleaf.org">
+    <head th:replace="~{aglo/fragmentos :: head(#{rol.meta.formulario}, 'admin.css')}"></head>
     <body class="admin-page">
         <header th:replace="~{admin/fragmentos :: nav}"></header>
         <main class="admin-main">
             <section class="admin-page-title">
                 <div>
-                    <h1 th:text="${rol.idRol == null ? 'Nuevo rol' : 'Editar rol'}">Rol</h1>
-                    <p>Nombre del rol de acceso.</p>
+                    <h1 th:text="${rol.idRol == null} ? #{rol.nuevo} : #{rol.editar}">Rol</h1>
+                    <p th:text="#{rol.descripcionFormulario}">Nombre del rol de acceso.</p>
                 </div>
             </section>
             <section th:replace="~{admin/fragmentos :: mensajes}"></section>
@@ -15,21 +15,21 @@
                 <form th:action="@{/admin/roles/guardar}" th:object="${rol}" method="post" class="was-validated">
                     <input type="hidden" th:field="*{idRol}"/>
                     <div th:if="${#fields.hasAnyErrors()}" class="alert alert-danger form-errors" role="alert">
-                        <strong>Revise los datos indicados.</strong>
+                        <strong th:text="#{formulario.invalido}">Revise los datos indicados.</strong>
                         <ul class="mb-0 mt-2">
                             <li th:each="fieldError : ${#fields.allErrors()}" th:text="${fieldError}">Error de validación</li>
                         </ul>
                     </div>
                     <div class="form-grid">
                         <div class="full-row">
-                            <label class="form-label" for="rol">Rol</label>
+                            <label class="form-label" for="rol" th:text="#{rol.rol}">Rol</label>
                             <input class="form-control" th:classappend="${#fields.hasErrors('rol')} ? ' is-invalid' : ''" type="text" th:field="*{rol}" maxlength="20" required/>
                             <div class="invalid-feedback" th:if="${#fields.hasErrors('rol')}" th:errors="*{rol}">Rol inválido</div>
                         </div>
                     </div>
                     <div class="form-actions">
-                        <a class="btn btn-outline-dark" th:href="@{/admin/roles/listado}">Cancelar</a>
-                        <button class="btn btn-success" type="submit">Guardar</button>
+                        <a class="btn btn-outline-dark" th:href="@{/admin/roles/listado}" th:text="#{accion.cancelar}">Cancelar</a>
+                        <button class="btn btn-success" type="submit" th:text="#{accion.guardar}">Guardar</button>
                     </div>
                 </form>
             </section>

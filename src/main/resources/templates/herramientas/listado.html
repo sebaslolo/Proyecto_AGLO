@@ -1,17 +1,17 @@
 <!DOCTYPE html>
-<html lang="es" xmlns:th="http://www.thymeleaf.org">
-    <head th:replace="~{aglo/fragmentos :: head('Herramientas | AGLO', 'dashboard.css')}"></head>
+<html th:lang="${#locale.language}" xmlns:th="http://www.thymeleaf.org">
+    <head th:replace="~{aglo/fragmentos :: head(#{herramienta.publico.meta}, 'dashboard.css')}"></head>
     <body class="public-page">
         <main class="public-main">
             <section class="public-page-title">
                 <div>
-                    <h1>Herramientas</h1>
-                    <p>Control de herramientas y equipo comunitario.</p>
+                    <h1 th:text="#{herramienta.titulo}">Herramientas</h1>
+                    <p th:text="#{herramienta.publico.descripcion}">Control de herramientas y equipo comunitario.</p>
                 </div>
-                <a class="btn btn-light" th:href="@{/inicio}">Inicio</a>
+                <a class="btn btn-light" th:href="@{/inicio}" th:text="#{menu.inicio}">Inicio</a>
             </section>
             <section class="admin-panel">
-                <p class="mb-0">Este modulo esta reservado para el inventario y prestamo de herramientas.</p>
+                <p class="mb-0" th:text="#{herramienta.publico.moduloReservado}">Este módulo está reservado para el inventario y préstamo de herramientas.</p>
             </section>
         </main>
         <th:block th:replace="~{aglo/fragmentos :: scripts('dashboard.js')}"></th:block>

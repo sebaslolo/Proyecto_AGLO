@@ -1,39 +1,40 @@
 <!DOCTYPE html>
-<html lang="es" xmlns:th="http://www.thymeleaf.org">
-    <head th:replace="~{aglo/fragmentos :: head('Nacimiento | AGLO', 'admin.css')}"></head>
+<html th:lang="${#locale.language}" xmlns:th="http://www.thymeleaf.org">
+    <head th:replace="~{aglo/fragmentos :: head(#{nacimiento.meta.formulario}, 'admin.css')}"></head>
     <body class="admin-page">
         <header th:replace="~{admin/fragmentos :: nav}"></header>
         <main class="admin-main">
             <section class="admin-page-title">
                 <div>
-                    <h1 th:text="${nacimiento.idNacimiento == null ? 'Nuevo nacimiento' : 'Editar nacimiento'}">Nacimiento</h1>
-                    <p>Registre la eclosión y el resultado de las crías.</p>
+                    <h1 th:text="${nacimiento.idNacimiento == null} ? #{nacimiento.nuevo} : #{nacimiento.editar}">Nacimiento</h1>
+                    <p th:text="#{nacimiento.descripcionFormulario}">Registre la eclosión y el resultado de las crías.</p>
                 </div>
             </section>
             <section th:replace="~{admin/fragmentos :: mensajes}"></section>
-
             <section class="admin-panel">
                 <form th:action="@{/admin/nacimientos/guardar}" th:object="${nacimiento}" method="post" class="was-validated">
                     <input type="hidden" th:field="*{idNacimiento}"/>
                     <div th:if="${#fields.hasAnyErrors()}" class="alert alert-danger form-errors" role="alert">
-                        <strong>Revise los datos indicados.</strong>
+                        <strong th:text="#{formulario.invalido}">Revise los datos indicados.</strong>
                         <ul class="mb-0 mt-2"><li th:each="fieldError : ${#fields.allErrors()}" th:text="${fieldError}">Error de validación</li></ul>
                     </div>
                     <div class="form-grid">
                         <div>
-                            <label class="form-label" for="idNido">Nido</label>
+                            <label class="form-label" for="idNido" th:text="#{nacimiento.nido}">Nido</label>
                             <select class="form-select" id="idNido" name="nido.idNido" required>
-                                <option value="">Seleccione</option>
+                                <option value="" th:text="#{general.seleccione}">Seleccione</option>
                                 <option th:each="nidoItem : ${nidos}"
                                         th:value="${nidoItem.idNido}"
                                         th:selected="${nacimiento.nido != null and nacimiento.nido.idNido == nidoItem.idNido}"
-                                        th:text="${nidoItem.tortuga != null ? 'Tortuga ' + nidoItem.tortuga.etiquetaTortuga : (nidoItem.ubicacion != null ? nidoItem.ubicacion : 'Nido sin datos de ubicación')}">Tortuga T-001</option>
+                                        th:text="${nidoItem.tortuga != null
+                                            ? #messages.msg('nacimiento.tortugaReferencia', nidoItem.tortuga.etiquetaTortuga)
+                                            : (nidoItem.ubicacion != null ? nidoItem.ubicacion : #messages.msg('nacimiento.nidoSinUbicacion'))}">Tortuga T-001</option>
                             </select>
                         </div>
                         <div>
-                            <label class="form-label" for="idEstado">Estado</label>
+                            <label class="form-label" for="idEstado" th:text="#{nacimiento.estado}">Estado</label>
                             <select class="form-select" id="idEstado" name="estado.idEstado" required>
-                                <option value="">Seleccione</option>
+                                <option value="" th:text="#{general.seleccione}">Seleccione</option>
                                 <option th:each="estadoItem : ${estados}"
                                         th:value="${estadoItem.idEstado}"
                                         th:selected="${nacimiento.estado != null and nacimiento.estado.idEstado == estadoItem.idEstado}"
@@ -41,30 +42,33 @@
                             </select>
                         </div>
                         <div>
-                            <label class="form-label" for="fechaEclosion">Fecha y hora de eclosión</label>
+                            <label class="form-label" for="fechaEclosion" th:text="#{nacimiento.fechaEclosion}">Fecha y hora de eclosión</label>
                             <input class="form-control" type="datetime-local" id="fechaEclosion" name="fechaEclosion"
                                    th:value="${nacimiento.fechaEclosion != null ? #temporals.format(nacimiento.fechaEclosion, 'yyyy-MM-dd''T''HH:mm') : ''}"/>
                         </div>
                         <div>
-                            <label class="form-label" for="criasVivas">Crías vivas</label>
+                            <label class="form-label" for="criasVivas" th:text="#{nacimiento.criasVivas}">Crías vivas</label>
                             <input class="form-control" type="number" th:field="*{criasVivas}" min="0"/>
                         </div>
                         <div>
-                            <label class="form-label" for="criasMuertas">Crías muertas</label>
+                            <label class="form-label" for="criasMuertas" th:text="#{nacimiento.criasMuertas}">Crías muertas</label>
                             <input class="form-control" type="number" th:field="*{criasMuertas}" min="0"/>
                         </div>
                         <div>
-                            <label class="form-label" for="criasInfertiles">Crías infértiles</label>
+                            <label class="form-label" for="criasInfertiles" th:text="#{nacimiento.criasInfertiles}">Crías infértiles</label>
                             <input class="form-control" type="number" th:field="*{criasInfertiles}" min="0"/>
                         </div>
                         <div class="full-row">
-                            <label class="form-label" for="observaciones">Observaciones</label>
+                            <label class="form-label" for="observaciones" th:text="#{nacimiento.observaciones}">Observaciones</label>
                             <textarea class="form-control" th:field="*{observaciones}" rows="4" maxlength="255"></textarea>
                         </div>
                     </div>
                     <div class="form-actions">
-                        <a class="btn btn-outline-dark" th:href="@{/admin/nacimientos/listado}">Cancelar</a>
-                        <button class="btn btn-success" type="submit"><i class="fa-solid fa-floppy-disk"></i> Guardar</button>
+                        <a class="btn btn-outline-dark" th:href="@{/admin/nacimientos/listado}" th:text="#{accion.cancelar}">Cancelar</a>
+                        <button class="btn btn-success" type="submit">
+                            <i class="fa-solid fa-floppy-disk" aria-hidden="true"></i>
+                            <span th:text="#{accion.guardar}">Guardar</span>
+                        </button>
                     </div>
                 </form>
             </section>

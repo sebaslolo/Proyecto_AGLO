@@ -1,189 +1,78 @@
 <!DOCTYPE html>
-<html lang="es" xmlns:th="http://www.thymeleaf.org">
-
-    <head th:replace="~{aglo/fragmentos :: head('Retroalimentación | AGLO', 'dashboard.css')}"></head>
-
+<html th:lang="${#locale.language}" xmlns:th="http://www.thymeleaf.org">
+    <head th:replace="~{aglo/fragmentos :: head(#{retroalimentacion.meta.listado}, 'dashboard.css')}"></head>
     <body>
-
         <main class="admin-main">
-
             <section class="admin-page-title">
-
                 <div>
-                    <h1>Retroalimentación</h1>
-                    <p>Opiniones y calificaciones de las experiencias de voluntariado.</p>
+                    <h1 th:text="#{retroalimentacion.titulo}">Retroalimentación</h1>
+                    <p th:text="#{retroalimentacion.descripcionPagina}">Opiniones y calificaciones de las experiencias de voluntariado.</p>
                 </div>
-
-                <a class="btn btn-light"
-                   th:href="@{/inicio}">
-                    Inicio
-                </a>
-
+                <a class="btn btn-light" th:href="@{/inicio}" th:text="#{menu.inicio}">Inicio</a>
             </section>
-
             <section th:replace="~{admin/fragmentos :: mensajes}"></section>
-
             <section class="admin-panel">
-
                 <div class="admin-page-title">
-
                     <div>
-                        <h2>Listado de evaluaciones</h2>
+                        <h2 th:text="#{retroalimentacion.listadoEvaluaciones}">Listado de evaluaciones</h2>
                     </div>
-
-                    <span class="badge text-bg-success"
-                          th:text="'Total: ' + ${totalRetroalimentaciones}">
-                        Total: 0
-                    </span>
-
+                    <span class="badge text-bg-success" th:text="${#messages.msg('retroalimentacion.totalEvaluaciones', totalRetroalimentaciones)}">Total: 0</span>
                 </div>
-
                 <div class="table-responsive">
-
                     <table class="table admin-table align-middle">
-
                         <thead>
-
                             <tr>
-                                <th>ID</th>
-                                <th>Voluntario</th>
-                                <th>Actividad</th>
-                                <th>Puntuación</th>
-                                <th>Comentarios</th>
-                                <th>Fecha</th>
-                                <th>Estado</th>
+                                <th th:text="#{retroalimentacion.id}">ID</th>
+                                <th th:text="#{retroalimentacion.voluntario}">Voluntario</th>
+                                <th th:text="#{retroalimentacion.actividad}">Actividad</th>
+                                <th th:text="#{retroalimentacion.puntuacion}">Puntuación</th>
+                                <th th:text="#{retroalimentacion.comentarios}">Comentarios</th>
+                                <th th:text="#{general.fecha}">Fecha</th>
+                                <th th:text="#{general.estado}">Estado</th>
                             </tr>
-
                         </thead>
-
                         <tbody>
-
                             <tr th:if="${retroalimentaciones == null or retroalimentaciones.empty}">
-
-                                <td colspan="7"
-                                    class="empty-row">
-
-                                    No hay retroalimentaciones registradas.
-
-                                </td>
-
+                                <td colspan="7" class="empty-row" th:text="#{retroalimentacion.sinRegistros}">No hay retroalimentaciones registradas.</td>
                             </tr>
-
                             <tr th:each="retroalimentacion : ${retroalimentaciones}">
-
-                                <td th:text="${retroalimentacion.idSolicitud}">
-                                    1
-                                </td>
-
+                                <td th:text="${retroalimentacion.idSolicitud}">1</td>
                                 <td>
-
                                     <span th:if="${retroalimentacion.usuario != null}"
-                                          th:text="${retroalimentacion.usuario.nombre
-                                          + ' '
-                                          + retroalimentacion.usuario.apellidoPaterno}">
-                                        Usuario
-                                    </span>
-
-                                    <span th:if="${retroalimentacion.usuario == null}">
-                                        Sin usuario
-                                    </span>
-
+                                          th:text="${retroalimentacion.usuario.nombre + ' ' + retroalimentacion.usuario.apellidoPaterno}">Usuario</span>
+                                    <span th:if="${retroalimentacion.usuario == null}" th:text="#{general.sinUsuario}">Sin usuario</span>
                                 </td>
-
-                                <td th:text="${retroalimentacion.actividad != null
-                                        ? retroalimentacion.actividad.nombreActividad
-                                        : 'Sin actividad'}">
-
-                                    Voluntariado ambiental
-
-                                </td>
-
+                                <td th:text="${retroalimentacion.actividad != null ? retroalimentacion.actividad.nombreActividad : #messages.msg('retroalimentacion.sinActividad')}">Actividad</td>
                                 <td>
-
                                     <span th:if="${puntuaciones[retroalimentacion.idSolicitud] != null}"
-                                          th:text="${puntuaciones[retroalimentacion.idSolicitud] + ' / 5'}">
-
-                                        5 / 5
-
-                                    </span>
-
+                                          th:text="${#messages.msg('retroalimentacion.puntuacionSobreCinco', puntuaciones[retroalimentacion.idSolicitud])}">5 / 5</span>
                                     <span th:if="${puntuaciones[retroalimentacion.idSolicitud] == null}"
-                                          class="text-muted">
-
-                                        Sin puntuación
-
-                                    </span>
-
+                                          class="text-muted" th:text="#{retroalimentacion.sinPuntuacion}">Sin puntuación</span>
                                     <small>
-                                        <i class="fa-solid fa-star"></i>
-                                        Calificación
+                                        <i class="fa-solid fa-star" aria-hidden="true"></i>
+                                        <span th:text="#{retroalimentacion.calificacion}">Calificación</span>
                                     </small>
-
                                 </td>
-
                                 <td>
-
-                                    <span th:if="${comentarios[retroalimentacion.idSolicitud] != null
-                                            and !comentarios[retroalimentacion.idSolicitud].isEmpty()}"
-                                          th:text="${comentarios[retroalimentacion.idSolicitud]}">
-
-                                        Excelente experiencia.
-
-                                    </span>
-
-                                    <span th:if="${comentarios[retroalimentacion.idSolicitud] == null
-                                            or comentarios[retroalimentacion.idSolicitud].isEmpty()}"
-                                          class="text-muted">
-
-                                        Sin comentarios
-
-                                    </span>
-
+                                    <span th:if="${comentarios[retroalimentacion.idSolicitud] != null and !comentarios[retroalimentacion.idSolicitud].isEmpty()}"
+                                          th:text="${comentarios[retroalimentacion.idSolicitud]}">Comentario</span>
+                                    <span th:if="${comentarios[retroalimentacion.idSolicitud] == null or comentarios[retroalimentacion.idSolicitud].isEmpty()}"
+                                          class="text-muted" th:text="#{retroalimentacion.sinComentarios}">Sin comentarios</span>
                                 </td>
-
-                                <td th:text="${retroalimentacion.fechaEnvio != null
-                                        ? #temporals.format(
-                                        retroalimentacion.fechaEnvio,
-                                        'dd/MM/yyyy HH:mm')
-                                        : 'Sin fecha'}">
-
-                                    15/08/2026 02:00
-
-                                </td>
-
+                                <td th:text="${retroalimentacion.fechaEnvio != null ? #temporals.format(retroalimentacion.fechaEnvio, #messages.msg('formato.fechaHoraCorta')) : #messages.msg('general.sinFecha')}">Fecha</td>
                                 <td>
-
                                     <span th:if="${retroalimentacion.estado != null}"
                                           th:text="${retroalimentacion.estado.nombreEstado}"
-                                          class="activity-status status-active">
-
-                                        Activo
-
-                                    </span>
-
+                                          class="activity-status status-active">Activo</span>
                                     <span th:if="${retroalimentacion.estado == null}"
-                                          class="activity-status">
-
-                                        Sin estado
-
-                                    </span>
-
+                                          class="activity-status" th:text="#{general.sinEstado}">Sin estado</span>
                                 </td>
-
                             </tr>
-
                         </tbody>
-
                     </table>
-
                 </div>
-
             </section>
-
         </main>
-
         <th:block th:replace="~{aglo/fragmentos :: scripts('dashboard.js')}"></th:block>
-
     </body>
-
 </html>

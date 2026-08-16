@@ -1,66 +1,65 @@
 <!DOCTYPE html>
-<html lang="es" xmlns:th="http://www.thymeleaf.org">
-    <head th:replace="~{aglo/fragmentos :: head('Usuario | AGLO', 'admin.css')}"></head>
+<html th:lang="${#locale.language}" xmlns:th="http://www.thymeleaf.org">
+    <head th:replace="~{aglo/fragmentos :: head(#{usuario.meta.formulario}, 'admin.css')}"></head>
     <body class="admin-page">
         <header th:replace="~{admin/fragmentos :: nav}"></header>
         <main class="admin-main">
             <section class="admin-page-title">
                 <div>
-                    <h1 th:text="${usuario.idUsuario == null ? 'Crear usuario' : 'Editar usuario'}">Usuario</h1>
-                    <p>Complete los datos de acceso, estado y rol.</p>
+                    <h1 th:text="${usuario.idUsuario == null} ? #{usuario.agregar} : #{usuario.editar}">Usuario</h1>
+                    <p th:text="#{usuario.descripcionFormulario}">Complete los datos de acceso, estado y rol.</p>
                 </div>
             </section>
             <section th:replace="~{admin/fragmentos :: mensajes}"></section>
-
             <section class="admin-panel">
                 <form th:action="@{/admin/usuarios/guardar}" th:object="${usuario}" method="post" class="was-validated">
                     <input type="hidden" th:field="*{idUsuario}"/>
                     <div th:if="${#fields.hasAnyErrors()}" class="alert alert-danger form-errors" role="alert">
-                        <strong>Revise los datos indicados.</strong>
+                        <strong th:text="#{formulario.invalido}">Revise los datos indicados.</strong>
                         <ul class="mb-0 mt-2">
                             <li th:each="fieldError : ${#fields.allErrors()}" th:text="${fieldError}">Error de validación</li>
                         </ul>
                     </div>
                     <div class="form-grid">
                         <div>
-                            <label class="form-label" for="username">Usuario</label>
+                            <label class="form-label" for="username" th:text="#{usuario.username}">Usuario</label>
                             <input class="form-control" th:classappend="${#fields.hasErrors('username')} ? ' is-invalid' : ''" type="text" th:field="*{username}" maxlength="30" required/>
-                            <div class="invalid-feedback" th:if="${#fields.hasErrors('username')}" th:errors="*{username}">Usuario inválido</div>
+                            <div class="invalid-feedback" th:if="${#fields.hasErrors('username')}" th:text="${#fields.errors('username')[0]}">Error</div>
                         </div>
                         <div>
-                            <label class="form-label" for="password">Contraseña</label>
+                            <label class="form-label" for="password" th:text="#{usuario.password}">Contraseña</label>
                             <input class="form-control" th:classappend="${#fields.hasErrors('password')} ? ' is-invalid' : ''" type="password" id="password" name="password" maxlength="512"
-                                   th:placeholder="${usuario.idUsuario == null ? 'Contraseña' : 'Dejar en blanco para conservarla'}"
+                                   th:placeholder="${usuario.idUsuario == null} ? #{usuario.password} : #{usuario.passwordConservar}"
                                    th:required="${usuario.idUsuario == null}"/>
-                            <div class="invalid-feedback" th:if="${#fields.hasErrors('password')}" th:errors="*{password}">Contraseña inválida</div>
+                            <div class="invalid-feedback" th:if="${#fields.hasErrors('password')}" th:text="${#fields.errors('password')[0]}">Error</div>
                         </div>
                         <div>
-                            <label class="form-label" for="nombre">Nombre</label>
+                            <label class="form-label" for="nombre" th:text="#{usuario.nombre}">Nombre</label>
                             <input class="form-control" th:classappend="${#fields.hasErrors('nombre')} ? ' is-invalid' : ''" type="text" th:field="*{nombre}" maxlength="20" required/>
-                            <div class="invalid-feedback" th:if="${#fields.hasErrors('nombre')}" th:errors="*{nombre}">Nombre inválido</div>
+                            <div class="invalid-feedback" th:if="${#fields.hasErrors('nombre')}" th:text="${#fields.errors('nombre')[0]}">Error</div>
                         </div>
                         <div>
-                            <label class="form-label" for="apellidoPaterno">Apellido paterno</label>
+                            <label class="form-label" for="apellidoPaterno" th:text="#{usuario.apellidoPaterno}">Apellido paterno</label>
                             <input class="form-control" th:classappend="${#fields.hasErrors('apellidoPaterno')} ? ' is-invalid' : ''" type="text" th:field="*{apellidoPaterno}" maxlength="30" required/>
-                            <div class="invalid-feedback" th:if="${#fields.hasErrors('apellidoPaterno')}" th:errors="*{apellidoPaterno}">Apellido inválido</div>
+                            <div class="invalid-feedback" th:if="${#fields.hasErrors('apellidoPaterno')}" th:text="${#fields.errors('apellidoPaterno')[0]}">Error</div>
                         </div>
                         <div>
-                            <label class="form-label" for="apellidoMaterno">Apellido materno</label>
+                            <label class="form-label" for="apellidoMaterno" th:text="#{usuario.apellidoMaterno}">Apellido materno</label>
                             <input class="form-control" type="text" th:field="*{apellidoMaterno}" maxlength="30"/>
                         </div>
                         <div>
-                            <label class="form-label" for="correo">Correo electrónico</label>
+                            <label class="form-label" for="correo" th:text="#{usuario.correo}">Correo electrónico</label>
                             <input class="form-control" th:classappend="${#fields.hasErrors('correo')} ? ' is-invalid' : ''" type="email" th:field="*{correo}" maxlength="75"/>
-                            <div class="invalid-feedback" th:if="${#fields.hasErrors('correo')}" th:errors="*{correo}">Correo inválido</div>
+                            <div class="invalid-feedback" th:if="${#fields.hasErrors('correo')}" th:text="${#fields.errors('correo')[0]}">Error</div>
                         </div>
                         <div>
-                            <label class="form-label" for="telefono">Teléfono</label>
+                            <label class="form-label" for="telefono" th:text="#{usuario.telefono}">Teléfono</label>
                             <input class="form-control" type="text" th:field="*{telefono}" maxlength="25"/>
                         </div>
                         <div>
-                            <label class="form-label" for="idEstado">Estado</label>
+                            <label class="form-label" for="idEstado" th:text="#{usuario.estado}">Estado</label>
                             <select class="form-select" id="idEstado" name="estado.idEstado" required>
-                                <option value="">Seleccione</option>
+                                <option value="" th:text="#{general.seleccione}">Seleccione</option>
                                 <option th:each="estado : ${estados}"
                                         th:value="${estado.idEstado}"
                                         th:selected="${usuario.estado != null and usuario.estado.idEstado == estado.idEstado}"
@@ -68,9 +67,9 @@
                             </select>
                         </div>
                         <div class="full-row">
-                            <label class="form-label" for="idRol">Rol</label>
+                            <label class="form-label" for="idRol" th:text="#{usuario.rol}">Rol</label>
                             <select class="form-select" id="idRol" name="idRol">
-                                <option value="">Sin rol</option>
+                                <option value="" th:text="#{usuario.sinRol}">Sin rol</option>
                                 <option th:each="rol : ${roles}"
                                         th:value="${rol.idRol}"
                                         th:selected="${idRol != null and idRol == rol.idRol}"
@@ -79,8 +78,11 @@
                         </div>
                     </div>
                     <div class="form-actions">
-                        <a class="btn btn-outline-dark" th:href="@{/admin/usuarios/listado}">Cancelar</a>
-                        <button class="btn btn-success" type="submit"><i class="fa-solid fa-floppy-disk"></i> Guardar</button>
+                        <a class="btn btn-outline-dark" th:href="@{/admin/usuarios/listado}" th:text="#{accion.cancelar}">Cancelar</a>
+                        <button class="btn btn-success" type="submit">
+                            <i class="fa-solid fa-floppy-disk" aria-hidden="true"></i>
+                            <span th:text="#{accion.guardar}">Guardar</span>
+                        </button>
                     </div>
                 </form>
             </section>

@@ -1,88 +1,67 @@
 <!DOCTYPE html>
-<html lang="es" xmlns:th="http://www.thymeleaf.org">
-    <head th:replace="~{aglo/fragmentos :: head('Actividades | AGLO', 'admin.css')}"></head>
+<html th:lang="${#locale.language}" xmlns:th="http://www.thymeleaf.org">
+    <head th:replace="~{aglo/fragmentos :: head(#{actividad.meta.listado}, 'admin.css')}"></head>
     <body class="admin-page">
         <header th:replace="~{admin/fragmentos :: nav}"></header>
         <main class="admin-main">
             <section class="admin-page-title">
                 <div>
-                    <h1>Actividades</h1>
-                    <p>Oferta turística disponible para reservaciones.</p>
+                    <h1 th:text="#{actividad.titulo}">Actividades</h1>
+                    <p th:text="#{actividad.descripcionPagina}">Oferta turística disponible para reservaciones.</p>
                 </div>
-                <a class="btn new-activity-btn"
-                   th:href="@{/admin/actividades/nueva}">
-                    <i class="fa-solid fa-plus"></i>
-                    Nueva actividad
+                <a class="btn new-activity-btn" th:href="@{/admin/actividades/nueva}">
+                    <i class="fa-solid fa-plus" aria-hidden="true"></i>
+                    <span th:text="#{actividad.agregar}">Nueva actividad</span>
                 </a>
             </section>
-
             <section th:replace="~{admin/fragmentos :: mensajes}"></section>
-
             <section class="admin-panel">
-                <form class="search-form mb-3"
-                      th:action="@{/admin/actividades/listado}"
-                      method="get">
+                <form class="search-form mb-3" th:action="@{/admin/actividades/listado}" method="get">
                     <input class="form-control form-control-sm"
                            type="search"
                            name="q"
                            th:value="${q}"
-                           placeholder="Buscar actividad"
-                           aria-label="Buscar actividad"/>
+                           th:placeholder="#{actividad.buscar.placeholder}"
+                           th:attr="aria-label=#{actividad.buscar.aria}"/>
                     <button class="btn btn-sm search-btn"
                             type="submit"
-                            aria-label="Buscar">
-                        <i class="fa-solid fa-magnifying-glass"></i>
+                            th:attr="aria-label=#{accion.buscar}">
+                        <i class="fa-solid fa-magnifying-glass" aria-hidden="true"></i>
                     </button>
                 </form>
-
                 <div class="table-responsive">
                     <table class="table admin-table activities-table align-middle">
                         <thead>
                             <tr>
-                                <th>Nombre</th>
-                                <th>Tipo</th>
-                                <th>Inicio</th>
-                                <th>Fin</th>
-                                <th>Cupo</th>
-                                <th>Precio</th>
-                                <th>Estado</th>
-                                <th class="actions-header">Acciones</th>
+                                <th th:text="#{general.nombre}">Nombre</th>
+                                <th th:text="#{actividad.tipoActividad}">Tipo</th>
+                                <th th:text="#{actividad.fechaHoraInicio}">Inicio</th>
+                                <th th:text="#{actividad.fechaHoraFin}">Fin</th>
+                                <th th:text="#{actividad.cupoMaximo}">Cupo</th>
+                                <th th:text="#{actividad.precioActual}">Precio</th>
+                                <th th:text="#{actividad.estado}">Estado</th>
+                                <th class="actions-header" th:text="#{general.acciones}">Acciones</th>
                             </tr>
                         </thead>
                         <tbody>
                             <tr th:if="${actividades == null or actividades.empty}">
-                                <td colspan="8" class="empty-row">No hay actividades registradas.</td>
+                                <td colspan="8" class="empty-row" th:text="#{actividad.sinRegistros}">No hay actividades registradas.</td>
                             </tr>
                             <tr th:each="actividad : ${actividades}">
-                                <td class="activity-name"
-                                    th:text="${actividad.nombreActividad}">
-                                    Tour
-                                </td>
+                                <td class="activity-name" th:text="${actividad.nombreActividad}">Tour</td>
                                 <td th:text="${actividad.tipoActividad != null
                                     ? actividad.tipoActividad.nombreTipoActividad
-                                    : 'Sin tipo'}">
-                                    Tipo
-                                </td>
+                                    : #messages.msg('actividad.sinTipo')}">Tipo</td>
                                 <td th:text="${actividad.fechaHoraInicio != null
                                     ? #temporals.format(actividad.fechaHoraInicio, 'dd/MM/yyyy HH:mm')
-                                    : 'Sin fecha'}">
-                                    15/08/2026 16:30
-                                </td>
+                                    : #messages.msg('general.sinFecha')}">15/08/2026 16:30</td>
                                 <td th:text="${actividad.fechaHoraFin != null
                                     ? #temporals.format(actividad.fechaHoraFin, 'dd/MM/yyyy HH:mm')
-                                    : 'Sin fecha'}">
-                                    15/08/2026 18:30
-                                </td>
-                                <td class="capacity-cell"
-                                    th:text="${actividad.cupoMaximo}">
-                                    20
-                                </td>
-                                <td class="price-cell"
-                                    th:text="${actividad.precioActual != null
+                                    : #messages.msg('general.sinFecha')}">15/08/2026 18:30</td>
+                                <td class="capacity-cell" th:text="${actividad.cupoMaximo}">20</td>
+                                <td class="price-cell" th:text="${actividad.precioActual != null
                                     ? @monedaCostaRica.formatear(actividad.precioActual)
-                                    : 'Sin precio'}">
-                                    ₡0
-                                </td>
+                                    : #messages.msg('actividad.sinPrecio')}">₡0</td>
                                 <td>
                                     <span class="activity-status"
                                           th:classappend="${actividad.estado != null
@@ -91,20 +70,18 @@
                                           : ' status-inactive'}"
                                           th:text="${actividad.estado != null
                                           ? actividad.estado.nombreEstado
-                                          : 'Sin estado'}">
-                                        Activo
-                                    </span>
+                                          : #messages.msg('general.sinEstado')}">Activo</span>
                                 </td>
                                 <td class="activity-actions text-end">
                                     <a class="btn btn-sm activity-action-btn"
                                        th:href="@{/admin/actividades/{id}/guias/listado(id=${actividad.idActividad})}">
-                                        <i class="fa-solid fa-person-hiking"></i>
-                                        <span>Guías</span>
+                                        <i class="fa-solid fa-person-hiking" aria-hidden="true"></i>
+                                        <span th:text="#{actividad.guias}">Guías</span>
                                     </a>
                                     <a class="btn btn-sm activity-action-btn"
                                        th:href="@{/admin/actividades/modificar/{id}(id=${actividad.idActividad})}">
-                                        <i class="fa-solid fa-pen"></i>
-                                        <span>Editar</span>
+                                        <i class="fa-solid fa-pen" aria-hidden="true"></i>
+                                        <span th:text="#{accion.editar}">Editar</span>
                                     </a>
                                     <button class="btn btn-sm activity-action-btn delete-action-btn"
                                             type="button"
@@ -114,8 +91,8 @@
                                             th:data-delete-action="@{/admin/actividades/eliminar}"
                                             data-delete-field="idActividad"
                                             th:data-delete-name="${actividad.nombreActividad}">
-                                        <i class="fa-solid fa-trash-can"></i>
-                                        <span>Eliminar</span>
+                                        <i class="fa-solid fa-trash-can" aria-hidden="true"></i>
+                                        <span th:text="#{accion.eliminar}">Eliminar</span>
                                     </button>
                                 </td>
                             </tr>
@@ -124,9 +101,7 @@
                 </div>
             </section>
         </main>
-
         <th:block th:replace="~{admin/fragmentos :: delete-modal}"></th:block>
-
-    <th:block th:replace="~{aglo/fragmentos :: scripts('dashboard.js')}"></th:block>
-</body>
+        <th:block th:replace="~{aglo/fragmentos :: scripts('dashboard.js')}"></th:block>
+    </body>
 </html>

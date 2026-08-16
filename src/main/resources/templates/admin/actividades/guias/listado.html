@@ -1,69 +1,77 @@
 <!DOCTYPE html>
-<html lang="es" xmlns:th="http://www.thymeleaf.org">
-    <head th:replace="~{aglo/fragmentos :: head('Asignación de guías | AGLO', 'admin.css')}"></head>
+<html th:lang="${#locale.language}" xmlns:th="http://www.thymeleaf.org">
+    <head th:replace="~{aglo/fragmentos :: head(#{actividad.guia.meta}, 'admin.css')}"></head>
     <body class="admin-page">
         <header th:replace="~{admin/fragmentos :: nav}"></header>
         <main class="admin-main">
             <section class="admin-page-title">
                 <div>
-                    <h1>Asignar guías</h1>
-                    <p th:text="${actividad != null ? actividad.nombreActividad : 'Actividad'}">Actividad</p>
+                    <h1 th:text="#{actividad.guia.titulo}">Asignar guías</h1>
+                    <p th:text="${actividad != null ? actividad.nombreActividad : #messages.msg('actividad.tituloSingular')}">Actividad</p>
                 </div>
-                <a class="btn btn-light" th:href="@{/admin/actividades/listado}">Regresar</a>
+                <a class="btn btn-light" th:href="@{/admin/actividades/listado}" th:text="#{accion.regresar}">Regresar</a>
             </section>
             <section th:replace="~{admin/fragmentos :: mensajes}"></section>
-
             <section class="admin-panel">
                 <form class="form-grid" th:action="@{/admin/actividades/{id}/guias/guardar(id=${idActividad})}" method="post">
                     <div>
-                        <label class="form-label" for="idGuia">Guía</label>
+                        <label class="form-label" for="idGuia" th:text="#{general.guia}">Guía</label>
                         <select class="form-select" id="idGuia" name="idGuia" required>
-                            <option value="">Seleccione</option>
+                            <option value="" th:text="#{general.seleccione}">Seleccione</option>
                             <option th:each="guia : ${guias}"
                                     th:value="${guia.idGuia}"
-                                    th:text="${guia.usuario != null ? guia.usuario.nombre + ' ' + guia.usuario.apellidoPaterno : 'Guía sin usuario asociado'}">Guía</option>
+                                    th:text="${guia.usuario != null ? guia.usuario.nombre + ' ' + guia.usuario.apellidoPaterno : #messages.msg('actividad.guia.sinUsuario')}">Guía</option>
                         </select>
                     </div>
                     <div>
-                        <label class="form-label" for="idEstado">Estado</label>
+                        <label class="form-label" for="idEstado" th:text="#{general.estado}">Estado</label>
                         <select class="form-select" id="idEstado" name="idEstado" required>
-                            <option value="">Seleccione</option>
+                            <option value="" th:text="#{general.seleccione}">Seleccione</option>
                             <option th:each="estado : ${estados}" th:value="${estado.idEstado}" th:text="${estado.nombreEstado}">Activo</option>
                         </select>
                     </div>
                     <div class="form-actions full-row">
-                        <button class="btn btn-success" type="submit"><i class="fa-solid fa-user-plus"></i> Asignar</button>
+                        <button class="btn btn-success" type="submit">
+                            <i class="fa-solid fa-user-plus" aria-hidden="true"></i>
+                            <span th:text="#{accion.asignar}">Asignar</span>
+                        </button>
                     </div>
                 </form>
             </section>
-
             <section class="admin-panel">
                 <div class="table-responsive">
                     <table class="table admin-table align-middle">
                         <thead>
                             <tr>
-                                <th>Guía</th>
-                                <th>Fecha asignación</th>
-                                <th>Estado</th>
+                                <th th:text="#{general.guia}">Guía</th>
+                                <th th:text="#{actividad.guia.fechaAsignacion}">Fecha asignación</th>
+                                <th th:text="#{general.estado}">Estado</th>
                                 <th></th>
                             </tr>
                         </thead>
                         <tbody>
                             <tr th:if="${asignaciones == null or asignaciones.empty}">
-                                <td colspan="4" class="empty-row">No hay guías asignados.</td>
+                                <td colspan="4" class="empty-row" th:text="#{actividad.guia.sinAsignaciones}">No hay guías asignados.</td>
                             </tr>
                             <tr th:each="asignacion : ${asignaciones}">
-                                <td th:text="${asignacion.guia != null and asignacion.guia.usuario != null ? asignacion.guia.usuario.nombre + ' ' + asignacion.guia.usuario.apellidoPaterno : 'Guía'}">Guía</td>
-                                <td th:text="${asignacion.fechaAsignacion != null ? #temporals.format(asignacion.fechaAsignacion, 'dd/MM/yyyy HH:mm') : 'Sin fecha'}">Fecha</td>
-                                <td th:text="${asignacion.estado != null ? asignacion.estado.nombreEstado : 'Sin estado'}">Activo</td>
+                                <td th:text="${asignacion.guia != null and asignacion.guia.usuario != null
+                                    ? asignacion.guia.usuario.nombre + ' ' + asignacion.guia.usuario.apellidoPaterno
+                                    : #messages.msg('general.guia')}">Guía</td>
+                                <td th:text="${asignacion.fechaAsignacion != null
+                                    ? #temporals.format(asignacion.fechaAsignacion, 'dd/MM/yyyy HH:mm')
+                                    : #messages.msg('general.sinFecha')}">Fecha</td>
+                                <td th:text="${asignacion.estado != null ? asignacion.estado.nombreEstado : #messages.msg('general.sinEstado')}">Activo</td>
                                 <td class="text-end">
                                     <button class="btn btn-sm btn-outline-danger" type="button"
                                             data-bs-toggle="modal" data-bs-target="#confirmDeleteModal"
                                             th:data-delete-action="@{/admin/actividades/{id}/guias/eliminar(id=${idActividad})}"
                                             data-delete-field="idGuia"
                                             th:data-delete-id="${asignacion.guia.idGuia}"
-                                            th:data-delete-name="${asignacion.guia != null and asignacion.guia.usuario != null ? asignacion.guia.usuario.nombre + ' ' + asignacion.guia.usuario.apellidoPaterno : 'este guía'}">
-                                        <i class="fa-solid fa-trash"></i> Remover
+                                            th:data-delete-name="${asignacion.guia != null and asignacion.guia.usuario != null
+                                                ? asignacion.guia.usuario.nombre + ' ' + asignacion.guia.usuario.apellidoPaterno
+                                                : #messages.msg('actividad.guia.eliminar.referencia')}">
+                                        <i class="fa-solid fa-trash" aria-hidden="true"></i>
+                                        <span th:text="#{accion.remover}">Remover</span>
                                     </button>
                                 </td>
                             </tr>

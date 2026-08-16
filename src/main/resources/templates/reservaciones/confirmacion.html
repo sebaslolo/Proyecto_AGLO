@@ -1,58 +1,57 @@
 <!DOCTYPE html>
-<html lang="es" xmlns:th="http://www.thymeleaf.org">
-    <head th:replace="~{aglo/fragmentos :: head('Confirmación | AGLO', 'dashboard.css')}"></head>
+<html th:lang="${#locale.language}" xmlns:th="http://www.thymeleaf.org">
+    <head th:replace="~{aglo/fragmentos :: head(#{reservacion.publico.confirmacion.meta}, 'dashboard.css')}"></head>
     <body class="public-page">
         <main class="public-main">
             <section class="public-page-title">
                 <div>
                     <h1 th:text="#{reservacion.confirmacion}">Confirmación de reservación</h1>
-                    <p th:text="#{reservacion.confirmacion}">Confirmación de reservación</p>
+                    <p th:text="#{reservacion.publico.confirmacion.descripcion}">Resumen de la reservación realizada.</p>
                 </div>
-                <a class="btn btn-light" th:href="@{/catalogo/listado}">Catálogo</a>
+                <a class="btn btn-light" th:href="@{/catalogo/listado}" th:text="#{reservacion.publico.catalogo}">Catálogo</a>
             </section>
             <section th:replace="~{admin/fragmentos :: mensajes}"></section>
-
             <section class="admin-panel">
                 <div class="summary-grid">
                     <div class="summary-card">
-                        <i class="fa-solid fa-calendar-check"></i>
-                        <span>Fecha</span>
-                        <strong th:text="${reservacion.fechaReservacion != null ? #temporals.format(reservacion.fechaReservacion, 'dd/MM/yyyy') : 'Sin fecha'}">Fecha</strong>
+                        <i class="fa-solid fa-calendar-check" aria-hidden="true"></i>
+                        <span th:text="#{general.fecha}">Fecha</span>
+                        <strong th:text="${reservacion.fechaReservacion != null ? #temporals.format(reservacion.fechaReservacion, #messages.msg('formato.fechaCorta')) : #messages.msg('general.sinFecha')}">Fecha</strong>
                     </div>
                     <div class="summary-card">
-                        <i class="fa-solid fa-money-bill"></i>
-                        <span>Monto</span>
-                        <strong th:text="${reservacion.montoTotal != null ? @monedaCostaRica.formatear(reservacion.montoTotal) : '₡0'}">₡0</strong>
+                        <i class="fa-solid fa-money-bill" aria-hidden="true"></i>
+                        <span th:text="#{reservacion.publico.monto}">Monto</span>
+                        <strong th:text="${reservacion.montoTotal != null ? @monedaCostaRica.formatear(reservacion.montoTotal) : #messages.msg('reservacion.publico.montoCero')}">₡0</strong>
                     </div>
                     <div class="summary-card">
-                        <i class="fa-solid fa-circle-info"></i>
-                        <span>Estado</span>
-                        <strong th:text="${reservacion.estado != null ? reservacion.estado.nombreEstado : 'Sin estado'}">Pendiente</strong>
+                        <i class="fa-solid fa-circle-info" aria-hidden="true"></i>
+                        <span th:text="#{general.estado}">Estado</span>
+                        <strong th:text="${reservacion.estado != null ? reservacion.estado.nombreEstado : #messages.msg('general.sinEstado')}">Pendiente</strong>
                     </div>
                 </div>
                 <div class="table-responsive">
                     <table class="table admin-table align-middle">
                         <thead>
                             <tr>
-                                <th>Actividad</th>
-                                <th>Personas</th>
-                                <th>Precio unitario</th>
-                                <th>Subtotal</th>
+                                <th th:text="#{reservacion.publico.actividad}">Actividad</th>
+                                <th th:text="#{reservacion.publico.personas}">Personas</th>
+                                <th th:text="#{reservacion.publico.precioUnitario}">Precio unitario</th>
+                                <th th:text="#{reservacion.publico.subtotal}">Subtotal</th>
                             </tr>
                         </thead>
                         <tbody>
                             <tr th:each="detalle : ${detalles}">
-                                <td th:text="${detalle.actividad != null ? detalle.actividad.nombreActividad : 'Actividad'}">Actividad</td>
+                                <td th:text="${detalle.actividad != null ? detalle.actividad.nombreActividad : #messages.msg('reservacion.admin.sinActividad')}">Actividad</td>
                                 <td th:text="${detalle.cantidadPersonas}">1</td>
-                                <td th:text="${detalle.precioUnitario != null ? @monedaCostaRica.formatear(detalle.precioUnitario) : '₡0'}">₡0</td>
-                                <td th:text="${detalle.subtotal != null ? @monedaCostaRica.formatear(detalle.subtotal) : '₡0'}">₡0</td>
+                                <td th:text="${detalle.precioUnitario != null ? @monedaCostaRica.formatear(detalle.precioUnitario) : #messages.msg('reservacion.publico.montoCero')}">₡0</td>
+                                <td th:text="${detalle.subtotal != null ? @monedaCostaRica.formatear(detalle.subtotal) : #messages.msg('reservacion.publico.montoCero')}">₡0</td>
                             </tr>
                         </tbody>
                     </table>
                 </div>
                 <div class="form-actions">
-                    <a class="btn btn-outline-dark" th:href="@{/mis-reservaciones}">Mis reservaciones</a>
-                    <a class="btn btn-success" th:href="@{/catalogo/listado}">Reservar otra actividad</a>
+                    <a class="btn btn-outline-dark" th:href="@{/mis-reservaciones}" th:text="#{reservacion.historial}">Mis reservaciones</a>
+                    <a class="btn btn-success" th:href="@{/catalogo/listado}" th:text="#{reservacion.publico.reservarOtra}">Reservar otra actividad</a>
                 </div>
             </section>
         </main>

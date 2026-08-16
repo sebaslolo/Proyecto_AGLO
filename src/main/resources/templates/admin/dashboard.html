@@ -1,10 +1,9 @@
 <!DOCTYPE html>
-<html lang="es" xmlns:th="http://www.thymeleaf.org">
-    <head th:replace="~{aglo/fragmentos :: head('Panel administrativo | AGLO', 'admin.css')}"></head>
+<html th:lang="${#locale.language}" xmlns:th="http://www.thymeleaf.org">
+    <head th:replace="~{aglo/fragmentos :: head(#{dashboard.meta.titulo}, 'admin.css')}"></head>
 
     <body class="admin-page dashboard-page">
         <header th:replace="~{admin/fragmentos :: nav}"></header>
-
         <main class="admin-main admin-content">
             <section class="dashboard-page-heading">
                 <div>
@@ -17,10 +16,8 @@
                     <span th:text="#{dashboard.accion.nuevaActividad}">Nueva actividad</span>
                 </a>
             </section>
-
             <section th:replace="~{admin/fragmentos :: mensajes}"></section>
-
-            <section class="dashboard-kpi-grid" aria-label="Indicadores principales">
+            <section class="dashboard-kpi-grid" th:attr="aria-label=#{dashboard.aria.indicadores}">
                 <a class="dashboard-kpi-card dashboard-kpi-card--users" th:href="@{/admin/usuarios/listado}">
                     <span class="dashboard-kpi-icon" aria-hidden="true"><i class="fa-solid fa-users"></i></span>
                     <span class="dashboard-kpi-copy">
@@ -29,7 +26,6 @@
                     </span>
                     <i class="fa-solid fa-arrow-up-right-from-square dashboard-kpi-link" aria-hidden="true"></i>
                 </a>
-
                 <a class="dashboard-kpi-card dashboard-kpi-card--activities" th:href="@{/admin/actividades/listado}">
                     <span class="dashboard-kpi-icon" aria-hidden="true"><i class="fa-solid fa-calendar-days"></i></span>
                     <span class="dashboard-kpi-copy">
@@ -38,7 +34,6 @@
                     </span>
                     <i class="fa-solid fa-arrow-up-right-from-square dashboard-kpi-link" aria-hidden="true"></i>
                 </a>
-
                 <a class="dashboard-kpi-card dashboard-kpi-card--reservations" th:href="@{/admin/reservaciones/listado}">
                     <span class="dashboard-kpi-icon" aria-hidden="true"><i class="fa-solid fa-calendar-check"></i></span>
                     <span class="dashboard-kpi-copy">
@@ -47,7 +42,6 @@
                     </span>
                     <i class="fa-solid fa-arrow-up-right-from-square dashboard-kpi-link" aria-hidden="true"></i>
                 </a>
-
                 <article class="dashboard-kpi-card dashboard-kpi-card--revenue">
                     <span class="dashboard-kpi-icon" aria-hidden="true"><i class="fa-solid fa-coins"></i></span>
                     <span class="dashboard-kpi-copy">
@@ -56,8 +50,7 @@
                     </span>
                 </article>
             </section>
-
-            <section class="dashboard-insights-grid" aria-label="Resumen de reservaciones">
+            <section class="dashboard-insights-grid" th:attr="aria-label=#{dashboard.aria.resumenReservaciones}">
                 <article class="dashboard-panel dashboard-chart-panel dashboard-chart-panel--trend">
                     <div class="dashboard-panel-heading">
                         <div>
@@ -66,14 +59,13 @@
                         </div>
                     </div>
                     <div class="dashboard-chart-wrap" th:if="${dashboard.hasReservaciones}">
-                        <canvas id="reservationsMonthlyChart" aria-label="Tendencia mensual de reservaciones" role="img"></canvas>
+                        <canvas id="reservationsMonthlyChart" th:attr="aria-label=#{dashboard.aria.tendenciaMensual}" role="img"></canvas>
                     </div>
                     <p class="dashboard-empty-state" th:unless="${dashboard.hasReservaciones}">
                         <i class="fa-regular fa-calendar-xmark" aria-hidden="true"></i>
                         <span th:text="#{dashboard.vacio.reservaciones}">No hay reservaciones registradas.</span>
                     </p>
                 </article>
-
                 <article class="dashboard-panel dashboard-chart-panel dashboard-chart-panel--status">
                     <div class="dashboard-panel-heading">
                         <div>
@@ -82,7 +74,7 @@
                         </div>
                     </div>
                     <div class="dashboard-chart-wrap dashboard-chart-wrap--doughnut" th:if="${dashboard.hasReservaciones}">
-                        <canvas id="reservationsStatusChart" aria-label="Distribución de reservaciones por estado" role="img"></canvas>
+                        <canvas id="reservationsStatusChart" th:attr="aria-label=#{dashboard.aria.distribucionEstados}" role="img"></canvas>
                     </div>
                     <p class="dashboard-empty-state" th:unless="${dashboard.hasReservaciones}">
                         <i class="fa-regular fa-chart-bar" aria-hidden="true"></i>
@@ -90,8 +82,7 @@
                     </p>
                 </article>
             </section>
-
-            <section class="dashboard-guide-card" aria-label="Disponibilidad de guías">
+            <section class="dashboard-guide-card" th:attr="aria-label=#{dashboard.aria.disponibilidadGuias}">
                 <div class="dashboard-guide-icon" aria-hidden="true"><i class="fa-solid fa-person-hiking"></i></div>
                 <div class="dashboard-guide-content">
                     <span th:text="#{dashboard.guias.disponibles}">Guías disponibles</span>
@@ -101,7 +92,7 @@
                     </strong>
                 </div>
                 <div class="dashboard-guide-meter" role="progressbar"
-                     th:attr="aria-valuenow=${dashboard.guiasDisponibles},aria-valuemax=${dashboard.totalGuias}"
+                     th:attr="aria-valuenow=${dashboard.guiasDisponibles},aria-valuemax=${dashboard.totalGuias},aria-label=#{dashboard.aria.progresoGuias}"
                      aria-valuemin="0">
                     <span th:style="${dashboard.totalGuias > 0 ? 'width: ' + (dashboard.guiasDisponibles * 100 / dashboard.totalGuias) + '%' : 'width: 0%'}"></span>
                 </div>
@@ -110,7 +101,6 @@
                     <i class="fa-solid fa-arrow-right" aria-hidden="true"></i>
                 </a>
             </section>
-
             <section class="dashboard-lists-grid">
                 <article class="dashboard-panel dashboard-list-panel">
                     <div class="dashboard-panel-heading">
@@ -123,14 +113,13 @@
                             <i class="fa-solid fa-arrow-right" aria-hidden="true"></i>
                         </a>
                     </div>
-
                     <div class="dashboard-activity-list" th:if="${dashboard.actividadesProximas != null and !dashboard.actividadesProximas.empty}">
                         <a class="dashboard-activity-item" th:each="actividad : ${dashboard.actividadesProximas}"
                            th:href="@{/admin/actividades/modificar/{id}(id=${actividad.idActividad})}">
-                            <span class="dashboard-activity-date" th:text="${actividad.fechaHoraInicio != null ? #temporals.format(actividad.fechaHoraInicio, 'dd MMM') : '—'}">01 Ene</span>
+                            <span class="dashboard-activity-date" th:text="${actividad.fechaHoraInicio != null ? #temporals.format(actividad.fechaHoraInicio, #messages.msg('formato.diaMesCorto')) : #messages.msg('general.sinDato')}">01 Ene</span>
                             <span class="dashboard-activity-copy">
                                 <strong th:text="${actividad.nombreActividad}">Actividad</strong>
-                                <small th:text="${actividad.fechaHoraInicio != null ? #temporals.format(actividad.fechaHoraInicio, 'dd/MM/yyyy HH:mm') : '—'}">01/01/2026 08:00</small>
+                                <small th:text="${actividad.fechaHoraInicio != null ? #temporals.format(actividad.fechaHoraInicio, #messages.msg('formato.fechaHoraCorta')) : #messages.msg('general.sinDato')}">01/01/2026 08:00</small>
                             </span>
                             <span class="dashboard-activity-cupo">
                                 <i class="fa-solid fa-users" aria-hidden="true"></i>
@@ -144,7 +133,6 @@
                         <span th:text="#{dashboard.vacio.actividades}">No hay actividades próximas.</span>
                     </p>
                 </article>
-
                 <article class="dashboard-panel dashboard-list-panel">
                     <div class="dashboard-panel-heading">
                         <div>
@@ -156,7 +144,6 @@
                             <i class="fa-solid fa-arrow-right" aria-hidden="true"></i>
                         </a>
                     </div>
-
                     <div class="table-responsive" th:if="${dashboard.reservacionesRecientes != null and !dashboard.reservacionesRecientes.empty}">
                         <table class="table dashboard-reservations-table align-middle mb-0">
                             <thead>
@@ -164,20 +151,20 @@
                                     <th th:text="#{dashboard.columna.usuario}">Usuario</th>
                                     <th th:text="#{dashboard.columna.monto}">Monto</th>
                                     <th th:text="#{dashboard.columna.estado}">Estado</th>
-                                    <th class="text-end"><span class="visually-hidden">Acciones</span></th>
+                                    <th class="text-end"><span class="visually-hidden" th:text="#{general.acciones}">Acciones</span></th>
                                 </tr>
                             </thead>
                             <tbody>
                                 <tr th:each="reservacion : ${dashboard.reservacionesRecientes}">
                                     <td>
-                                        <strong th:text="${reservacion.usuario != null ? reservacion.usuario.nombre + ' ' + reservacion.usuario.apellidoPaterno : '—'}">Usuario</strong>
-                                        <small th:text="${reservacion.fechaReservacion != null ? #temporals.format(reservacion.fechaReservacion, 'dd/MM/yyyy HH:mm') : '—'}">01/01/2026 08:00</small>
+                                        <strong th:text="${reservacion.usuario != null ? reservacion.usuario.nombre + ' ' + reservacion.usuario.apellidoPaterno : #messages.msg('general.sinUsuario')}">Usuario</strong>
+                                        <small th:text="${reservacion.fechaReservacion != null ? #temporals.format(reservacion.fechaReservacion, #messages.msg('formato.fechaHoraCorta')) : #messages.msg('general.sinFecha')}">01/01/2026 08:00</small>
                                     </td>
-                                    <td th:text="${reservacion.montoTotal != null ? @monedaCostaRica.formatear(reservacion.montoTotal) : '—'}">₡0</td>
+                                    <td th:text="${reservacion.montoTotal != null ? @monedaCostaRica.formatear(reservacion.montoTotal) : #messages.msg('general.sinDato')}">₡0</td>
                                     <td>
                                         <span class="dashboard-status"
                                               th:classappend="${reservacion.estado != null and #strings.equalsIgnoreCase(reservacion.estado.nombreEstado, 'activo')} ? ' dashboard-status--success' : ' dashboard-status--neutral'"
-                                              th:text="${reservacion.estado != null ? reservacion.estado.nombreEstado : '—'}">Pendiente</span>
+                                              th:text="${reservacion.estado != null ? reservacion.estado.nombreEstado : #messages.msg('general.sinEstado')}">Pendiente</span>
                                     </td>
                                     <td class="text-end">
                                         <a class="dashboard-detail-link"
@@ -198,7 +185,6 @@
                 </article>
             </section>
         </main>
-
         <script th:inline="javascript">
             window.agloDashboardData = {
                 monthly: {

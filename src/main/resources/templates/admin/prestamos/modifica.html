@@ -1,29 +1,30 @@
 <!DOCTYPE html>
-<html lang="es" xmlns:th="http://www.thymeleaf.org">
-    <head th:replace="~{aglo/fragmentos :: head('Préstamo | AGLO', 'admin.css')}"></head>
+<html th:lang="${#locale.language}" xmlns:th="http://www.thymeleaf.org">
+    <head th:replace="~{aglo/fragmentos :: head(#{prestamo.meta.formulario}, 'admin.css')}"></head>
     <body class="admin-page">
         <header th:replace="~{admin/fragmentos :: nav}"></header>
         <main class="admin-main">
             <section class="admin-page-title">
                 <div>
-                    <h1 th:text="${prestamo.idPrestamo == null ? 'Nuevo préstamo' : 'Editar préstamo'}">Préstamo</h1>
-                    <p>Asigne una herramienta a un usuario y registre sus fechas.</p>
+                    <h1 th:text="${prestamo.idPrestamo == null} ? #{prestamo.nuevo} : #{prestamo.editar}">Préstamo</h1>
+                    <p th:text="#{prestamo.descripcionFormulario}">Asigne una herramienta a un usuario y registre sus fechas.</p>
                 </div>
             </section>
             <section th:replace="~{admin/fragmentos :: mensajes}"></section>
-
             <section class="admin-panel">
                 <form th:action="@{/admin/prestamos/guardar}" th:object="${prestamo}" method="post" class="was-validated">
                     <input type="hidden" th:field="*{idPrestamo}"/>
                     <div th:if="${#fields.hasAnyErrors()}" class="alert alert-danger form-errors" role="alert">
-                        <strong>Revise los datos indicados.</strong>
-                        <ul class="mb-0 mt-2"><li th:each="fieldError : ${#fields.allErrors()}" th:text="${fieldError}">Error de validación</li></ul>
+                        <strong th:text="#{formulario.invalido}">Revise los datos indicados.</strong>
+                        <ul class="mb-0 mt-2">
+                            <li th:each="fieldError : ${#fields.allErrors()}" th:text="${fieldError}"></li>
+                        </ul>
                     </div>
                     <div class="form-grid">
                         <div>
-                            <label class="form-label" for="idHerramienta">Herramienta</label>
+                            <label class="form-label" for="idHerramienta" th:text="#{prestamo.herramienta}">Herramienta</label>
                             <select class="form-select" id="idHerramienta" name="herramienta.idHerramienta" required>
-                                <option value="">Seleccione</option>
+                                <option value="" th:text="#{general.seleccione}">Seleccione</option>
                                 <option th:each="herramientaItem : ${herramientas}"
                                         th:value="${herramientaItem.idHerramienta}"
                                         th:selected="${prestamo.herramienta != null and prestamo.herramienta.idHerramienta == herramientaItem.idHerramienta}"
@@ -31,9 +32,9 @@
                             </select>
                         </div>
                         <div>
-                            <label class="form-label" for="idUsuario">Usuario</label>
+                            <label class="form-label" for="idUsuario" th:text="#{prestamo.usuario}">Usuario</label>
                             <select class="form-select" id="idUsuario" name="usuario.idUsuario" required>
-                                <option value="">Seleccione</option>
+                                <option value="" th:text="#{general.seleccione}">Seleccione</option>
                                 <option th:each="usuarioItem : ${usuarios}"
                                         th:value="${usuarioItem.idUsuario}"
                                         th:selected="${prestamo.usuario != null and prestamo.usuario.idUsuario == usuarioItem.idUsuario}"
@@ -41,9 +42,9 @@
                             </select>
                         </div>
                         <div>
-                            <label class="form-label" for="idEstado">Estado</label>
+                            <label class="form-label" for="idEstado" th:text="#{prestamo.estado}">Estado</label>
                             <select class="form-select" id="idEstado" name="estado.idEstado" required>
-                                <option value="">Seleccione</option>
+                                <option value="" th:text="#{general.seleccione}">Seleccione</option>
                                 <option th:each="estadoItem : ${estados}"
                                         th:value="${estadoItem.idEstado}"
                                         th:selected="${prestamo.estado != null and prestamo.estado.idEstado == estadoItem.idEstado}"
@@ -51,19 +52,24 @@
                             </select>
                         </div>
                         <div>
-                            <label class="form-label" for="fechaPrestamo">Fecha de préstamo</label>
+                            <label class="form-label" for="fechaPrestamo" th:text="#{prestamo.fechaPrestamo}">Fecha de préstamo</label>
                             <input class="form-control" type="date" id="fechaPrestamo" name="fechaPrestamo"
                                    th:value="${prestamo.fechaPrestamo != null ? #temporals.format(prestamo.fechaPrestamo, 'yyyy-MM-dd') : ''}"/>
                         </div>
                         <div>
-                            <label class="form-label" for="fechaDevolucion">Fecha de devolución</label>
+                            <label class="form-label" for="fechaDevolucion" th:text="#{prestamo.fechaDevolucion}">Fecha de devolución</label>
                             <input class="form-control" type="date" id="fechaDevolucion" name="fechaDevolucion"
                                    th:value="${prestamo.fechaDevolucion != null ? #temporals.format(prestamo.fechaDevolucion, 'yyyy-MM-dd') : ''}"/>
                         </div>
                     </div>
                     <div class="form-actions">
-                        <a class="btn btn-outline-dark" th:href="@{/admin/prestamos/listado}">Cancelar</a>
-                        <button class="btn btn-success" type="submit"><i class="fa-solid fa-floppy-disk"></i> Guardar</button>
+                        <a class="btn btn-outline-dark" th:href="@{/admin/prestamos/listado}">
+                            <span th:text="#{accion.cancelar}">Cancelar</span>
+                        </a>
+                        <button class="btn btn-success" type="submit">
+                            <i class="fa-solid fa-floppy-disk"></i>
+                            <span th:text="#{accion.guardar}">Guardar</span>
+                        </button>
                     </div>
                 </form>
             </section>

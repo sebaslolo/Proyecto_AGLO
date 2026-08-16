@@ -1,35 +1,36 @@
 <!DOCTYPE html>
-<html lang="es" xmlns:th="http://www.thymeleaf.org">
-    <head th:replace="~{aglo/fragmentos :: head('Estados | AGLO', 'admin.css')}"></head>
+<html th:lang="${#locale.language}" xmlns:th="http://www.thymeleaf.org">
+    <head th:replace="~{aglo/fragmentos :: head(#{estado.meta.listado}, 'admin.css')}"></head>
     <body class="admin-page">
         <header th:replace="~{admin/fragmentos :: nav}"></header>
         <main class="admin-main">
             <section class="admin-page-title">
                 <div>
-                    <h1>Estados</h1>
-                    <p>Estados usados por usuarios, actividades y reservaciones.</p>
+                    <h1 th:text="#{estado.titulo}">Estados</h1>
+                    <p th:text="#{estado.descripcionPagina}">Estados usados por usuarios, actividades y reservaciones.</p>
                 </div>
-                <a class="btn btn-light" th:href="@{/admin/estados/nuevo}">Nuevo</a>
+                <a class="btn btn-light" th:href="@{/admin/estados/nuevo}" th:text="#{accion.nuevo}">Nuevo</a>
             </section>
             <section th:replace="~{admin/fragmentos :: mensajes}"></section>
             <section class="admin-panel">
                 <div class="table-responsive">
                     <table class="table admin-table align-middle">
-                        <thead><tr><th>Nombre</th><th></th></tr></thead>
+                        <thead><tr><th th:text="#{general.nombre}">Nombre</th><th></th></tr></thead>
                         <tbody>
                             <tr th:if="${estados == null or estados.empty}">
-                                <td colspan="2" class="empty-row">No hay estados registrados.</td>
+                                <td colspan="2" class="empty-row" th:text="#{estado.sinRegistros}">No hay estados registrados.</td>
                             </tr>
                             <tr th:each="estado : ${estados}">
                                 <td th:text="${estado.nombreEstado}">Activo</td>
                                 <td class="text-end">
-                                    <a class="btn btn-sm btn-outline-dark" th:href="@{/admin/estados/modificar/{id}(id=${estado.idEstado})}">Editar</a>
+                                    <a class="btn btn-sm btn-outline-dark" th:href="@{/admin/estados/modificar/{id}(id=${estado.idEstado})}" th:text="#{accion.editar}">Editar</a>
                                     <button class="btn btn-sm btn-outline-danger" type="button"
                                             data-bs-toggle="modal" data-bs-target="#confirmDeleteModal"
                                             th:data-delete-action="@{/admin/estados/eliminar}"
                                             data-delete-field="idEstado"
                                             th:data-delete-id="${estado.idEstado}"
-                                            th:data-delete-name="${estado.nombreEstado}">Eliminar</button>
+                                            th:data-delete-name="${estado.nombreEstado}"
+                                            th:text="#{accion.eliminar}">Eliminar</button>
                                 </td>
                             </tr>
                         </tbody>

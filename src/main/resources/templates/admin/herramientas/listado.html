@@ -1,54 +1,56 @@
 <!DOCTYPE html>
-<html lang="es" xmlns:th="http://www.thymeleaf.org">
-    <head th:replace="~{aglo/fragmentos :: head('Herramientas | AGLO', 'admin.css')}"></head>
+<html th:lang="${#locale.language}" xmlns:th="http://www.thymeleaf.org">
+    <head th:replace="~{aglo/fragmentos :: head(#{herramienta.meta.listado}, 'admin.css')}"></head>
     <body class="admin-page">
         <header th:replace="~{admin/fragmentos :: nav}"></header>
         <main class="admin-main">
             <section class="admin-page-title">
                 <div>
-                    <h1>Herramientas</h1>
-                    <p>Inventario de herramientas disponibles para el equipo.</p>
+                    <h1 th:text="#{herramienta.titulo}">Herramientas</h1>
+                    <p th:text="#{herramienta.descripcionPagina}">Inventario de herramientas disponibles para el equipo.</p>
                 </div>
                 <a class="btn page-action" th:href="@{/admin/herramientas/nuevo}">
-                    <i class="fa-solid fa-plus"></i> Nueva herramienta
+                    <i class="fa-solid fa-plus"></i>
+                    <span th:text="#{herramienta.nueva}">Nueva herramienta</span>
                 </a>
             </section>
             <section th:replace="~{admin/fragmentos :: mensajes}"></section>
-
             <section class="admin-panel">
-                <p class="admin-summary" th:text="${totalHerramientas} + ' herramienta(s) registrada(s)'">0 herramientas registradas</p>
+                <p class="admin-summary" th:text="#{herramienta.resumen(${totalHerramientas})}">Herramientas registradas: 0</p>
                 <div class="table-responsive">
                     <table class="table admin-table align-middle">
                         <thead>
                             <tr>
-                                <th>Nombre</th>
-                                <th>Descripción</th>
-                                <th>Estado</th>
-                                <th>Creación</th>
-                                <th class="actions-header">Acciones</th>
+                                <th th:text="#{herramienta.nombre}">Nombre</th>
+                                <th th:text="#{herramienta.descripcion}">Descripción</th>
+                                <th th:text="#{herramienta.estado}">Estado</th>
+                                <th th:text="#{herramienta.fechaCreacion}">Creación</th>
+                                <th class="actions-header" th:text="#{general.acciones}">Acciones</th>
                             </tr>
                         </thead>
                         <tbody>
                             <tr th:if="${herramientas == null or herramientas.empty}">
-                                <td colspan="5" class="empty-row">No hay herramientas registradas.</td>
+                                <td colspan="5" class="empty-row" th:text="#{herramienta.sinRegistros}">No hay herramientas registradas.</td>
                             </tr>
                             <tr th:each="herramienta : ${herramientas}">
                                 <td th:text="${herramienta.nombreHerramienta}">Linterna</td>
-                                <td th:text="${herramienta.descripcion ?: 'Sin descripción'}">Descripción</td>
-                                <td th:text="${herramienta.estado != null ? herramienta.estado.nombreEstado : 'Sin estado'}">Activo</td>
-                                <td th:text="${herramienta.fechaCreacion != null ? #temporals.format(herramienta.fechaCreacion, 'dd/MM/yyyy') : 'Sin fecha'}">14/08/2026</td>
+                                <td th:text="${herramienta.descripcion != null and !herramienta.descripcion.isBlank()} ? ${herramienta.descripcion} : #{general.sinDescripcion}">Descripción</td>
+                                <td th:text="${herramienta.estado != null} ? ${herramienta.estado.nombreEstado} : #{general.sinEstado}">Activo</td>
+                                <td th:text="${herramienta.fechaCreacion != null} ? ${#temporals.format(herramienta.fechaCreacion, 'dd/MM/yyyy')} : #{general.sinFecha}">14/08/2026</td>
                                 <td class="table-actions">
                                     <a class="btn btn-sm btn-outline-dark"
                                        th:href="@{/admin/herramientas/modificar/{id}(id=${herramienta.idHerramienta})}">
-                                        <i class="fa-solid fa-pen"></i> Editar
+                                        <i class="fa-solid fa-pen"></i>
+                                        <span th:text="#{accion.editar}">Editar</span>
                                     </a>
                                     <button th:if="${isAdmin}" class="btn btn-sm btn-outline-danger" type="button"
                                             data-bs-toggle="modal" data-bs-target="#confirmDeleteModal"
                                             th:data-delete-action="@{/admin/herramientas/eliminar}"
                                             data-delete-field="idHerramienta"
                                             th:data-delete-id="${herramienta.idHerramienta}"
-                                            th:data-delete-name="${herramienta.nombreHerramienta}">
-                                        <i class="fa-solid fa-trash"></i> Eliminar
+                                            th:data-delete-name="#{herramienta.eliminar.referencia(${herramienta.nombreHerramienta})}">
+                                        <i class="fa-solid fa-trash"></i>
+                                        <span th:text="#{accion.eliminar}">Eliminar</span>
                                     </button>
                                 </td>
                             </tr>
@@ -57,7 +59,6 @@
                 </div>
             </section>
         </main>
-
         <div th:replace="~{admin/fragmentos :: delete-modal}"></div>
         <th:block th:replace="~{aglo/fragmentos :: scripts('dashboard.js')}"></th:block>
     </body>

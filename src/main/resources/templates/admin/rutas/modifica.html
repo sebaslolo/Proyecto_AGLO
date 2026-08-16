@@ -1,13 +1,13 @@
 <!DOCTYPE html>
-<html lang="es" xmlns:th="http://www.thymeleaf.org">
-    <head th:replace="~{aglo/fragmentos :: head('Ruta | AGLO', 'admin.css')}"></head>
+<html th:lang="${#locale.language}" xmlns:th="http://www.thymeleaf.org">
+    <head th:replace="~{aglo/fragmentos :: head(#{ruta.meta.formulario}, 'admin.css')}"></head>
     <body class="admin-page">
         <header th:replace="~{admin/fragmentos :: nav}"></header>
         <main class="admin-main">
             <section class="admin-page-title">
                 <div>
-                    <h1 th:text="${ruta.idRuta == null ? 'Nueva ruta' : 'Editar ruta'}">Ruta</h1>
-                    <p>Rutas usadas como referencia de acceso.</p>
+                    <h1 th:text="${ruta.idRuta == null} ? #{ruta.nueva} : #{ruta.editar}">Ruta</h1>
+                    <p th:text="#{ruta.descripcionFormulario}">Rutas usadas como referencia de acceso.</p>
                 </div>
             </section>
             <section th:replace="~{admin/fragmentos :: mensajes}"></section>
@@ -15,31 +15,29 @@
                 <form th:action="@{/admin/rutas/guardar}" th:object="${ruta}" method="post" class="was-validated">
                     <input type="hidden" th:field="*{idRuta}"/>
                     <div th:if="${#fields.hasAnyErrors()}" class="alert alert-danger form-errors" role="alert">
-                        <strong>Revise los datos indicados.</strong>
+                        <strong th:text="#{formulario.invalido}">Revise los datos indicados.</strong>
                         <ul class="mb-0 mt-2"><li th:each="fieldError : ${#fields.allErrors()}" th:text="${fieldError}">Error de validación</li></ul>
                     </div>
                     <div class="form-grid">
                         <div>
-                            <label class="form-label" for="ruta">Ruta</label>
+                            <label class="form-label" for="ruta" th:text="#{ruta.ruta}">Ruta</label>
                             <input class="form-control" type="text" th:field="*{ruta}" maxlength="255" required/>
                         </div>
                         <div>
-                            <label class="form-label" for="idRol">Rol</label>
+                            <label class="form-label" for="idRol" th:text="#{ruta.rol}">Rol</label>
                             <select class="form-select" id="idRol" name="rol.idRol">
-                                <option value="">Publica</option>
-                                <option th:each="rol : ${roles}" th:value="${rol.idRol}"
-                                        th:selected="${ruta.rol != null and ruta.rol.idRol == rol.idRol}"
-                                        th:text="${rol.rol}">ADMIN</option>
+                                <option value="" th:text="#{ruta.publica}">Pública</option>
+                                <option th:each="rol : ${roles}" th:value="${rol.idRol}" th:selected="${ruta.rol != null and ruta.rol.idRol == rol.idRol}" th:text="${rol.rol}">ADMIN</option>
                             </select>
                         </div>
                         <div class="full-row form-check">
                             <input class="form-check-input" type="checkbox" th:field="*{requiereRol}"/>
-                            <label class="form-check-label" for="requiereRol">Requiere rol</label>
+                            <label class="form-check-label" for="requiereRol" th:text="#{ruta.requiereRol}">Requiere rol</label>
                         </div>
                     </div>
                     <div class="form-actions">
-                        <a class="btn btn-outline-dark" th:href="@{/admin/rutas/listado}">Cancelar</a>
-                        <button class="btn btn-success" type="submit">Guardar</button>
+                        <a class="btn btn-outline-dark" th:href="@{/admin/rutas/listado}" th:text="#{accion.cancelar}">Cancelar</a>
+                        <button class="btn btn-success" type="submit" th:text="#{accion.guardar}">Guardar</button>
                     </div>
                 </form>
             </section>

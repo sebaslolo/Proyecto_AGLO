@@ -1,52 +1,54 @@
 <!DOCTYPE html>
-<html lang="es" xmlns:th="http://www.thymeleaf.org">
-    <head th:replace="~{aglo/fragmentos :: head('Monitoreos | AGLO', 'admin.css')}"></head>
+<html th:lang="${#locale.language}" xmlns:th="http://www.thymeleaf.org">
+    <head th:replace="~{aglo/fragmentos :: head(#{monitoreo.meta.listado}, 'admin.css')}"></head>
     <body class="admin-page">
         <header th:replace="~{admin/fragmentos :: nav}"></header>
         <main class="admin-main">
             <section class="admin-page-title">
                 <div>
-                    <h1>Monitoreos</h1>
-                    <p>Seguimiento de recorridos y trabajo de campo.</p>
+                    <h1 th:text="#{monitoreo.titulo}">Monitoreos</h1>
+                    <p th:text="#{monitoreo.descripcionPagina}">Seguimiento de recorridos y trabajo de campo.</p>
                 </div>
                 <a class="btn page-action" th:href="@{/admin/monitoreos/nuevo}">
-                    <i class="fa-solid fa-plus"></i> Nuevo monitoreo
+                    <i class="fa-solid fa-plus"></i>
+                    <span th:text="#{monitoreo.nuevo}">Nuevo monitoreo</span>
                 </a>
             </section>
             <section th:replace="~{admin/fragmentos :: mensajes}"></section>
-
             <section class="admin-panel">
-                <p class="admin-summary" th:text="${totalMonitoreos} + ' monitoreo(s) registrado(s)'">0 monitoreos registrados</p>
+                <p class="admin-summary" th:text="#{monitoreo.resumen(${totalMonitoreos})}">Monitoreos registrados: 0</p>
                 <div class="table-responsive">
                     <table class="table admin-table align-middle">
                         <thead>
                             <tr>
-                                <th>Guía</th>
-                                <th>Fecha</th>
-                                <th>Estado</th>
-                                <th class="actions-header">Acciones</th>
+                                <th th:text="#{monitoreo.guia}">Guía</th>
+                                <th th:text="#{monitoreo.fecha}">Fecha</th>
+                                <th th:text="#{monitoreo.estado}">Estado</th>
+                                <th class="actions-header" th:text="#{general.acciones}">Acciones</th>
                             </tr>
                         </thead>
                         <tbody>
                             <tr th:if="${monitoreos == null or monitoreos.empty}">
-                                <td colspan="4" class="empty-row">No hay monitoreos registrados.</td>
+                                <td colspan="4" class="empty-row" th:text="#{monitoreo.sinRegistros}">No hay monitoreos registrados.</td>
                             </tr>
                             <tr th:each="monitoreo : ${monitoreos}">
-                                <td th:text="${monitoreo.guia != null and monitoreo.guia.usuario != null ? monitoreo.guia.usuario.nombre + ' ' + monitoreo.guia.usuario.apellidoPaterno : 'Sin guía'}">Guía</td>
-                                <td th:text="${monitoreo.fechaMonitoreo != null ? #temporals.format(monitoreo.fechaMonitoreo, 'dd/MM/yyyy HH:mm') : 'Sin fecha'}">14/08/2026 20:00</td>
-                                <td th:text="${monitoreo.estado != null ? monitoreo.estado.nombreEstado : 'Sin estado'}">Activo</td>
+                                <td th:text="${monitoreo.guia != null and monitoreo.guia.usuario != null} ? ${monitoreo.guia.usuario.nombre + ' ' + monitoreo.guia.usuario.apellidoPaterno} : #{general.sinGuia}">Guía</td>
+                                <td th:text="${monitoreo.fechaMonitoreo != null} ? ${#temporals.format(monitoreo.fechaMonitoreo, 'dd/MM/yyyy HH:mm')} : #{general.sinFecha}">14/08/2026 20:00</td>
+                                <td th:text="${monitoreo.estado != null} ? ${monitoreo.estado.nombreEstado} : #{general.sinEstado}">Activo</td>
                                 <td class="table-actions">
                                     <a class="btn btn-sm btn-outline-dark"
                                        th:href="@{/admin/monitoreos/modificar/{id}(id=${monitoreo.idMonitoreo})}">
-                                        <i class="fa-solid fa-pen"></i> Editar
+                                        <i class="fa-solid fa-pen"></i>
+                                        <span th:text="#{accion.editar}">Editar</span>
                                     </a>
                                     <button th:if="${isAdmin}" class="btn btn-sm btn-outline-danger" type="button"
                                             data-bs-toggle="modal" data-bs-target="#confirmDeleteModal"
                                             th:data-delete-action="@{/admin/monitoreos/eliminar}"
                                             data-delete-field="idMonitoreo"
                                             th:data-delete-id="${monitoreo.idMonitoreo}"
-                                            th:data-delete-name="${monitoreo.guia != null and monitoreo.guia.usuario != null ? 'monitoreo de ' + monitoreo.guia.usuario.nombre + ' ' + monitoreo.guia.usuario.apellidoPaterno : 'monitoreo sin guía asignada'}">
-                                        <i class="fa-solid fa-trash"></i> Eliminar
+                                            th:data-delete-name="${monitoreo.guia != null and monitoreo.guia.usuario != null} ? #{monitoreo.eliminar.referencia(${monitoreo.guia.usuario.nombre + ' ' + monitoreo.guia.usuario.apellidoPaterno})} : #{monitoreo.eliminar.sinGuia}">
+                                        <i class="fa-solid fa-trash"></i>
+                                        <span th:text="#{accion.eliminar}">Eliminar</span>
                                     </button>
                                 </td>
                             </tr>
@@ -55,7 +57,6 @@
                 </div>
             </section>
         </main>
-
         <div th:replace="~{admin/fragmentos :: delete-modal}"></div>
         <th:block th:replace="~{aglo/fragmentos :: scripts('dashboard.js')}"></th:block>
     </body>

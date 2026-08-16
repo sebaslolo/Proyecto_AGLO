@@ -1,6 +1,6 @@
 <!DOCTYPE html>
-<html lang="es" xmlns:th="http://www.thymeleaf.org">
-    <head th:replace="~{aglo/fragmentos :: head('Acceso denegado | AGLO', 'login.css')}"></head>
+<html th:lang="${#locale.language}" xmlns:th="http://www.thymeleaf.org">
+    <head th:replace="~{aglo/fragmentos :: head(#{accesoDenegado.meta}, 'login.css')}"></head>
     <body>
         <section class="fondo">
             <div class="overlay"></div>
@@ -12,9 +12,9 @@
             </header>
             <main class="contenedor">
                 <div class="cardRegistro">
-                    <h1>Acceso denegado</h1>
-                    <p>No cuenta con permisos para acceder a esta página.</p>
-                    <p class="login"><a th:href="@{/}">Volver al inicio</a></p>
+                    <h1 th:text="#{accesoDenegado.titulo}">Acceso denegado</h1>
+                    <p th:text="#{accesoDenegado.descripcion}">No cuenta con permisos para acceder a esta página.</p>
+                    <p class="login"><a th:href="@{/}" th:text="#{auth.volverInicio}">Volver al inicio</a></p>
                 </div>
             </main>
         </section>
