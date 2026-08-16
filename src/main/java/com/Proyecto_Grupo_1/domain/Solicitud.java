@@ -37,7 +37,7 @@ public class Solicitud {
     @JoinColumn(name = "id_estado", nullable = false)
     private Estado estado;
 
-    @Column(name = "fecha_solicitud", insertable = false, updatable = false)
+    @Column(name = "fecha_solicitud", updatable = false)
     private LocalDateTime fechaSolicitud;
 
     @Column(name = "fecha_envio")

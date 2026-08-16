@@ -115,8 +115,14 @@ public class RetroalimentacionService {
         solicitud.setEstado(
                 estado);
 
+        LocalDateTime ahora =
+                LocalDateTime.now();
+
+        solicitud.setFechaSolicitud(
+                ahora);
+
         solicitud.setFechaEnvio(
-                LocalDateTime.now());
+                ahora);
 
         solicitud =
                 solicitudService.save(
