@@ -41,9 +41,33 @@
                         <span th:text="#{navbar.operacion}">Operación</span>
                     </a>
                     <ul class="dropdown-menu">
-                        <li><a class="dropdown-item" th:classappend="${#strings.contains(uri, '/admin/actividades')} ? ' active' : ''" th:href="@{/admin/actividades/listado}" th:text="#{navbar.actividades}">Actividades</a></li>
-                        <li><a class="dropdown-item" th:classappend="${#strings.contains(uri, '/admin/reservaciones')} ? ' active' : ''" th:href="@{/admin/reservaciones/listado}" th:text="#{navbar.reservaciones}">Reservaciones</a></li>
-                        <li><a class="dropdown-item" th:classappend="${#strings.contains(uri, '/admin/guias')} ? ' active' : ''" th:href="@{/admin/guias/listado}" th:text="#{navbar.guias}">Guías</a></li>
+                        <li>
+                            <a class="dropdown-item"
+                               th:href="@{/admin/actividades/listado}">
+                                Actividades
+                            </a>
+                        </li>
+
+                        <li>
+                            <a class="dropdown-item"
+                               th:href="@{/admin/reservaciones/listado}">
+                                Reservaciones
+                            </a>
+                        </li>
+
+                        <li>
+                            <a class="dropdown-item"
+                               th:href="@{/admin/guias/listado}">
+                                Guías
+                            </a>
+                        </li>
+
+                        <li>
+                            <a class="dropdown-item"
+                               th:href="@{/retroalimentacion/listado}">
+                                Retroalimentación
+                            </a>
+                        </li>
                     </ul>
                 </li>
                 <li th:if="${canOperateGuide}" class="nav-item dropdown">
