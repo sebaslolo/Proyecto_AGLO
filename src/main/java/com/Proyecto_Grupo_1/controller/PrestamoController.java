@@ -52,7 +52,7 @@ public class PrestamoController {
         model.addAttribute("prestamos",prestamos);
         model.addAttribute("totalPrestamos",prestamos.size());
 
-        return "/admin/prestamos/listado";
+        return "admin/prestamos/listado";
 
     }
 
@@ -63,7 +63,7 @@ public class PrestamoController {
 
         cargarCatalogos(model);
 
-        return "/admin/prestamos/modifica";
+        return "admin/prestamos/modifica";
 
     }
 
@@ -75,7 +75,7 @@ public class PrestamoController {
 
         if(bindingResult.hasErrors()){
             cargarCatalogos(model);
-            return "/admin/prestamos/modifica";
+            return "admin/prestamos/modifica";
         }
 
         try {
@@ -83,7 +83,7 @@ public class PrestamoController {
         } catch (IllegalArgumentException e) {
             bindingResult.reject("formulario.invalido", e.getMessage());
             cargarCatalogos(model);
-            return "/admin/prestamos/modifica";
+            return "admin/prestamos/modifica";
         }
 
         redirectAttributes.addFlashAttribute("todoOk",msg("prestamo.mensaje.guardado"));
@@ -131,7 +131,7 @@ public class PrestamoController {
 
         cargarCatalogos(model);
 
-        return "/admin/prestamos/modifica";
+        return "admin/prestamos/modifica";
 
     }
 

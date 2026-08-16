@@ -82,7 +82,7 @@ public class VoluntariadoController {
         model.addAttribute("cuposDisponibles", cuposDisponibles);
         model.addAttribute("inscripcionesUsuario", inscripcionesUsuario);
 
-        return "/voluntariados/listado";
+        return "voluntariados/listado";
     }
 
     @PostMapping("/inscribir")
@@ -161,7 +161,7 @@ public class VoluntariadoController {
                 "inscripciones",
                 inscripciones);
 
-        return "/voluntariados/mis-inscripciones";
+        return "voluntariados/mis-inscripciones";
     }
 
     // HU-5 - Mis voluntariados para retroalimentación
@@ -259,6 +259,6 @@ public class VoluntariadoController {
                 "totalVoluntariados",
                 voluntariados.size());
 
-        return "/voluntariados/mis-voluntariados";
+        return "voluntariados/mis-voluntariados";
     }
 }

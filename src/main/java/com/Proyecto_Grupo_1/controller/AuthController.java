@@ -41,7 +41,7 @@ public class AuthController {
     @GetMapping({"/", "/inicio"})
     public String inicio(Model model) {
         model.addAttribute("actividades", actividadService.getActividades(true));
-        return "/inicio";
+        return "inicio";
     }
 
     @GetMapping("/login")
@@ -61,7 +61,7 @@ public class AuthController {
         if (expired != null) {
             model.addAttribute("error", "La sesión expiró. Inicie sesión nuevamente.");
         }
-        return "/auth/login";
+        return "auth/login";
     }
 
     @GetMapping("/registro")
@@ -69,7 +69,7 @@ public class AuthController {
         if (!model.containsAttribute("registroForm")) {
             model.addAttribute("registroForm", new RegistroForm());
         }
-        return "/auth/registro";
+        return "auth/registro";
     }
 
     @PostMapping("/registro")
@@ -99,7 +99,7 @@ public class AuthController {
         }
 
         if (bindingResult.hasErrors()) {
-            return "/auth/registro";
+            return "auth/registro";
         }
 
         try {
@@ -121,7 +121,7 @@ public class AuthController {
 
     @GetMapping("/forgot-password")
     public String forgotPassword() {
-        return "/auth/forgot-password";
+        return "auth/forgot-password";
     }
 
     @PostMapping("/forgot-password")
@@ -206,7 +206,7 @@ public class AuthController {
 
     @GetMapping("/acceso_denegado")
     public String accesoDenegado() {
-        return "/acceso_denegado";
+        return "acceso_denegado";
     }
 
     private String generarPasswordTemporal() {

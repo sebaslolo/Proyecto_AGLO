@@ -41,21 +41,21 @@ public class RutaController {
         model.addAttribute("rutas", rutas);
         model.addAttribute("totalRutas", rutas.size());
         model.addAttribute("roles", rolService.getRoles(false));
-        return "/admin/rutas/listado";
+        return "admin/rutas/listado";
     }
 
     @GetMapping("/nuevo")
     public String nuevo(Model model) {
         model.addAttribute("ruta", new Ruta());
         model.addAttribute("roles", rolService.getRoles(false));
-        return "/admin/rutas/modifica";
+        return "admin/rutas/modifica";
     }
 
     @PostMapping("/guardar")
     public String guardar(@Valid Ruta ruta, BindingResult bindingResult, Model model, RedirectAttributes redirectAttributes) {
         if (bindingResult.hasErrors()) {
             model.addAttribute("roles", rolService.getRoles(false));
-            return "/admin/rutas/modifica";
+            return "admin/rutas/modifica";
         }
         rutaService.save(ruta);
         redirectAttributes.addFlashAttribute("todoOk", msg("ruta.mensaje.guardado"));
@@ -84,7 +84,7 @@ public class RutaController {
         }
         model.addAttribute("ruta", rutaOpt.get());
         model.addAttribute("roles", rolService.getRoles(false));
-        return "/admin/rutas/modifica";
+        return "admin/rutas/modifica";
     }
 
     private String msg(String key) {

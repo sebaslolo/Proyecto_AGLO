@@ -54,14 +54,14 @@ public class ReservacionController {
         var reservaciones = reservacionService.getReservaciones(false);
         model.addAttribute("reservaciones", reservaciones);
         model.addAttribute("totalReservaciones", reservaciones.size());
-        return "/admin/reservaciones/listado";
+        return "admin/reservaciones/listado";
     }
 
     @GetMapping("/admin/reservaciones/nuevo")
     public String nuevoAdmin(Model model) {
         model.addAttribute("reservacionAdminForm", new ReservacionAdminForm());
         cargarCatalogosAltaAdmin(model);
-        return "/admin/reservaciones/modifica";
+        return "admin/reservaciones/modifica";
     }
 
     @PostMapping("/admin/reservaciones/guardar")
@@ -72,7 +72,7 @@ public class ReservacionController {
             RedirectAttributes redirectAttributes) {
         if (bindingResult.hasErrors()) {
             cargarCatalogosAltaAdmin(model);
-            return "/admin/reservaciones/modifica";
+            return "admin/reservaciones/modifica";
         }
 
         try {
@@ -83,7 +83,7 @@ public class ReservacionController {
         } catch (IllegalArgumentException | IllegalStateException e) {
             bindingResult.reject("formulario.invalido", msg("reservacion.admin.error.formulario"));
             cargarCatalogosAltaAdmin(model);
-            return "/admin/reservaciones/modifica";
+            return "admin/reservaciones/modifica";
         }
 
         redirectAttributes.addFlashAttribute("todoOk", msg("reservacion.mensaje.guardada"));
@@ -107,7 +107,7 @@ public class ReservacionController {
             estadoReservacionForm.setIdEstado(reservacion.getEstado().getIdEstado());
         }
         cargarFormularioEstadoAdmin(model, reservacion, estadoReservacionForm);
-        return "/admin/reservaciones/estado";
+        return "admin/reservaciones/estado";
     }
 
     @PostMapping("/admin/reservaciones/modificar/{idReservacion}")
@@ -126,7 +126,7 @@ public class ReservacionController {
         Reservacion reservacion = reservacionOpt.get();
         if (bindingResult.hasErrors()) {
             cargarFormularioEstadoAdmin(model, reservacion, estadoReservacionForm);
-            return "/admin/reservaciones/estado";
+            return "admin/reservaciones/estado";
         }
 
         try {
@@ -134,7 +134,7 @@ public class ReservacionController {
         } catch (IllegalArgumentException | IllegalStateException e) {
             bindingResult.reject("formulario.invalido", msg("reservacion.admin.error.formulario"));
             cargarFormularioEstadoAdmin(model, reservacion, estadoReservacionForm);
-            return "/admin/reservaciones/estado";
+            return "admin/reservaciones/estado";
         }
 
         redirectAttributes.addFlashAttribute("todoOk", msg("reservacion.mensaje.estadoActualizado"));
@@ -150,7 +150,7 @@ public class ReservacionController {
         }
         model.addAttribute("reservacion", reservacionOpt.get());
         model.addAttribute("detalles", reservacionService.obtenerDetalle(idReservacion));
-        return "/admin/reservaciones/detalle";
+        return "admin/reservaciones/detalle";
     }
 
     @GetMapping("/reservaciones/nueva")
@@ -165,7 +165,7 @@ public class ReservacionController {
         model.addAttribute("reservacionForm", reservacionForm);
         model.addAttribute("actividad", actividadOpt.get());
         model.addAttribute("cupoDisponible", reservacionService.obtenerCupoDisponible(idActividad));
-        return "/reservaciones/modifica";
+        return "reservaciones/modifica";
     }
 
     @PostMapping("/reservaciones/guardar")
@@ -186,7 +186,7 @@ public class ReservacionController {
         if (bindingResult.hasErrors()) {
             model.addAttribute("actividad", actividadOpt.get());
             model.addAttribute("cupoDisponible", reservacionService.obtenerCupoDisponible(reservacionForm.getIdActividad()));
-            return "/reservaciones/modifica";
+            return "reservaciones/modifica";
         }
         Integer idUsuario = obtenerUsuarioActual(authentication).getIdUsuario();
         try {
@@ -200,7 +200,7 @@ public class ReservacionController {
             model.addAttribute("error", e.getMessage());
             model.addAttribute("actividad", actividadOpt.get());
             model.addAttribute("cupoDisponible", reservacionService.obtenerCupoDisponible(reservacionForm.getIdActividad()));
-            return "/reservaciones/modifica";
+            return "reservaciones/modifica";
         }
     }
 
@@ -238,7 +238,7 @@ public class ReservacionController {
         }
         model.addAttribute("reservacion", reservacion);
         model.addAttribute("detalles", reservacionService.obtenerDetalle(idReservacion));
-        return "/reservaciones/confirmacion";
+        return "reservaciones/confirmacion";
     }
 
     @GetMapping("/mis-reservaciones")
@@ -252,7 +252,7 @@ public class ReservacionController {
         var reservaciones = reservacionService.listarReservacionesPorUsuario(idUsuario);
         model.addAttribute("reservaciones", reservaciones);
         model.addAttribute("totalReservaciones", reservaciones.size());
-        return "/reservaciones/mis-reservaciones";
+        return "reservaciones/mis-reservaciones";
     }
 
     private void cargarCatalogosAltaAdmin(Model model) {

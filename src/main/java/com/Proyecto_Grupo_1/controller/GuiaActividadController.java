@@ -50,7 +50,7 @@ public class GuiaActividadController {
         model.addAttribute("asignaciones", guiaActividadService.getAsignacionesPorActividad(idActividad));
         model.addAttribute("guias", guiaService.getGuias(false));
         model.addAttribute("estados", estadoService.getEstados(false));
-        return "/admin/actividades/guias/listado";
+        return "admin/actividades/guias/listado";
     }
 
     @PostMapping("/guardar")

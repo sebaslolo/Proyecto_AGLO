@@ -132,7 +132,7 @@ public class RetroalimentacionController {
                 "totalRetroalimentaciones",
                 retroalimentaciones.size());
 
-        return "/retroalimentacion/listado";
+        return "retroalimentacion/listado";
     }
 
     // HU-5 - Formulario para calificar experiencia
@@ -219,7 +219,7 @@ public class RetroalimentacionController {
                 "voluntariado",
                 voluntariado);
 
-        return "/retroalimentacion/calificar";
+        return "retroalimentacion/calificar";
     }
 
     // HU-5 - Guardar retroalimentación

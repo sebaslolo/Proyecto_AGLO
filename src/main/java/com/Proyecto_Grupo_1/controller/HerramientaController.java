@@ -43,7 +43,7 @@ public class HerramientaController {
         model.addAttribute("herramientas", herramientas);
         model.addAttribute("totalHerramientas", herramientas.size());
 
-        return "/admin/herramientas/listado";
+        return "admin/herramientas/listado";
     }
 
     @GetMapping("/nuevo")
@@ -53,7 +53,7 @@ public class HerramientaController {
 
         cargarCatalogos(model);
 
-        return "/admin/herramientas/modifica";
+        return "admin/herramientas/modifica";
     }
 
     @PostMapping("/guardar")
@@ -64,7 +64,7 @@ public class HerramientaController {
 
         if(bindingResult.hasErrors()){
             cargarCatalogos(model);
-            return "/admin/herramientas/modifica";
+            return "admin/herramientas/modifica";
         }
 
         try {
@@ -72,7 +72,7 @@ public class HerramientaController {
         } catch (IllegalArgumentException e) {
             bindingResult.reject("formulario.invalido", e.getMessage());
             cargarCatalogos(model);
-            return "/admin/herramientas/modifica";
+            return "admin/herramientas/modifica";
         }
 
         redirectAttributes.addFlashAttribute("todoOk",msg("herramienta.mensaje.guardado"));
@@ -129,7 +129,7 @@ public class HerramientaController {
 
         cargarCatalogos(model);
 
-        return "/admin/herramientas/modifica";
+        return "admin/herramientas/modifica";
 
     }
 

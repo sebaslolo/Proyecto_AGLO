@@ -52,7 +52,7 @@ public class MonitoreoController {
         model.addAttribute("monitoreos", monitoreos);
         model.addAttribute("totalMonitoreos", monitoreos.size());
 
-        return "/admin/monitoreos/listado";
+        return "admin/monitoreos/listado";
     }
 
     @GetMapping("/nuevo")
@@ -62,7 +62,7 @@ public class MonitoreoController {
 
         cargarCatalogos(model);
 
-        return "/admin/monitoreos/modifica";
+        return "admin/monitoreos/modifica";
     }
 
     @PostMapping("/guardar")
@@ -76,7 +76,7 @@ public class MonitoreoController {
 
             cargarCatalogos(model);
 
-            return "/admin/monitoreos/modifica";
+            return "admin/monitoreos/modifica";
         }
 
         try {
@@ -84,7 +84,7 @@ public class MonitoreoController {
         } catch (IllegalArgumentException e) {
             bindingResult.reject("formulario.invalido", e.getMessage());
             cargarCatalogos(model);
-            return "/admin/monitoreos/modifica";
+            return "admin/monitoreos/modifica";
         }
 
         redirectAttributes.addFlashAttribute(
@@ -146,7 +146,7 @@ public class MonitoreoController {
 
         cargarCatalogos(model);
 
-        return "/admin/monitoreos/modifica";
+        return "admin/monitoreos/modifica";
 
     }
 

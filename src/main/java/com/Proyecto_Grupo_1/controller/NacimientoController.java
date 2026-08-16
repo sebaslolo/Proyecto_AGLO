@@ -63,7 +63,7 @@ public class NacimientoController {
         );
 
 
-        return "/admin/nacimientos/listado";
+        return "admin/nacimientos/listado";
 
     }
 
@@ -82,7 +82,7 @@ public class NacimientoController {
         cargarCatalogos(model);
 
 
-        return "/admin/nacimientos/modifica";
+        return "admin/nacimientos/modifica";
 
     }
 
@@ -101,7 +101,7 @@ public class NacimientoController {
 
             cargarCatalogos(model);
 
-            return "/admin/nacimientos/modifica";
+            return "admin/nacimientos/modifica";
 
         }
 
@@ -111,7 +111,7 @@ public class NacimientoController {
         } catch (IllegalArgumentException e) {
             bindingResult.reject("formulario.invalido", e.getMessage());
             cargarCatalogos(model);
-            return "/admin/nacimientos/modifica";
+            return "admin/nacimientos/modifica";
         }
 
 
@@ -200,7 +200,7 @@ public class NacimientoController {
 
 
 
-        return "/admin/nacimientos/modifica";
+        return "admin/nacimientos/modifica";
 
 
     }

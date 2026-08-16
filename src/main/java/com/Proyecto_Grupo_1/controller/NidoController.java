@@ -51,7 +51,7 @@ public class NidoController {
         model.addAttribute("nidos", nidos);
         model.addAttribute("totalNidos", nidos.size());
 
-        return "/admin/nidos/listado";
+        return "admin/nidos/listado";
 
     }
 
@@ -63,7 +63,7 @@ public class NidoController {
 
         cargarCatalogos(model);
 
-        return "/admin/nidos/modifica";
+        return "admin/nidos/modifica";
 
     }
 
@@ -80,7 +80,7 @@ public class NidoController {
 
             cargarCatalogos(model);
 
-            return "/admin/nidos/modifica";
+            return "admin/nidos/modifica";
 
         }
 
@@ -90,7 +90,7 @@ public class NidoController {
         } catch (IllegalArgumentException e) {
             bindingResult.reject("formulario.invalido", e.getMessage());
             cargarCatalogos(model);
-            return "/admin/nidos/modifica";
+            return "admin/nidos/modifica";
         }
 
         redirectAttributes.addFlashAttribute(
@@ -161,7 +161,7 @@ public class NidoController {
         cargarCatalogos(model);
 
 
-        return "/admin/nidos/modifica";
+        return "admin/nidos/modifica";
 
     }
 

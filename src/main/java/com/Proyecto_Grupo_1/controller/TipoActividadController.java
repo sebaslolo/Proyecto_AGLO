@@ -42,21 +42,21 @@ public class TipoActividadController {
         var tiposActividad = tipoActividadService.getTiposActividad(false);
         model.addAttribute("tiposActividad", tiposActividad);
         model.addAttribute("totalTiposActividad", tiposActividad.size());
-        return "/admin/tipos-actividad/listado";
+        return "admin/tipos-actividad/listado";
     }
 
     @GetMapping("/nuevo")
     public String nuevo(Model model) {
         model.addAttribute("tipoActividad", new TipoActividad());
         cargarCatalogos(model);
-        return "/admin/tipos-actividad/modifica";
+        return "admin/tipos-actividad/modifica";
     }
 
     @PostMapping("/guardar")
     public String guardar(@Valid TipoActividad tipoActividad, BindingResult bindingResult, Model model, RedirectAttributes redirectAttributes) {
         if (bindingResult.hasErrors()) {
             cargarCatalogos(model);
-            return "/admin/tipos-actividad/modifica";
+            return "admin/tipos-actividad/modifica";
         }
         tipoActividadService.save(tipoActividad);
         redirectAttributes.addFlashAttribute("todoOk", msg("tipoActividad.mensaje.guardado"));
@@ -89,7 +89,7 @@ public class TipoActividadController {
         }
         model.addAttribute("tipoActividad", tipoActividadOpt.get());
         cargarCatalogos(model);
-        return "/admin/tipos-actividad/modifica";
+        return "admin/tipos-actividad/modifica";
     }
 
     private void cargarCatalogos(Model model) {

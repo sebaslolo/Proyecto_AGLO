@@ -37,19 +37,19 @@ public class EstadoController {
         var estados = estadoService.getEstados(false);
         model.addAttribute("estados", estados);
         model.addAttribute("totalEstados", estados.size());
-        return "/admin/estados/listado";
+        return "admin/estados/listado";
     }
 
     @GetMapping("/nuevo")
     public String nuevo(Model model) {
         model.addAttribute("estado", new Estado());
-        return "/admin/estados/modifica";
+        return "admin/estados/modifica";
     }
 
     @PostMapping("/guardar")
     public String guardar(@Valid Estado estado, BindingResult bindingResult, RedirectAttributes redirectAttributes) {
         if (bindingResult.hasErrors()) {
-            return "/admin/estados/modifica";
+            return "admin/estados/modifica";
         }
         estadoService.save(estado);
         redirectAttributes.addFlashAttribute("todoOk", msg("estado.mensaje.guardado"));
@@ -81,7 +81,7 @@ public class EstadoController {
             return "redirect:/admin/estados/listado";
         }
         model.addAttribute("estado", estadoOpt.get());
-        return "/admin/estados/modifica";
+        return "admin/estados/modifica";
     }
 
     private String msg(String key) {

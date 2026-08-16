@@ -46,7 +46,7 @@ public class CatalogoController {
                         actividad -> reservacionService.obtenerCupoDisponible(actividad.getIdActividad())));
         model.addAttribute("actividades", actividades);
         model.addAttribute("cuposDisponibles", cuposDisponibles);
-        return "/catalogo/listado";
+        return "catalogo/listado";
     }
 
     @GetMapping("/detalle/{idActividad}")
@@ -59,7 +59,7 @@ public class CatalogoController {
         model.addAttribute("actividad", actividadOpt.get());
         model.addAttribute("guias", guiaActividadService.getAsignacionesPorActividad(idActividad));
         model.addAttribute("cupoDisponible", reservacionService.obtenerCupoDisponible(idActividad));
-        return "/catalogo/detalle";
+        return "catalogo/detalle";
     }
 
     private String msg(String key) {

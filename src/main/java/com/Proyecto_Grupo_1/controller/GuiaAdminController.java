@@ -46,7 +46,7 @@ public class GuiaAdminController {
         var guias = guiaService.getGuias(false);
         model.addAttribute("guias", guias);
         model.addAttribute("totalGuias", guias.size());
-        return "/admin/guias/listado";
+        return "admin/guias/listado";
     }
 
     @GetMapping("/nuevo")
@@ -54,7 +54,7 @@ public class GuiaAdminController {
         model.addAttribute("guia", new Guia());
         model.addAttribute("usuarios", usuarioService.getUsuarios(false));
         model.addAttribute("estados", estadoService.getEstados(false));
-        return "/admin/guias/modifica";
+        return "admin/guias/modifica";
     }
 
     @PostMapping("/guardar")
@@ -62,7 +62,7 @@ public class GuiaAdminController {
         if (bindingResult.hasErrors()) {
             model.addAttribute("usuarios", usuarioService.getUsuarios(false));
             model.addAttribute("estados", estadoService.getEstados(false));
-            return "/admin/guias/modifica";
+            return "admin/guias/modifica";
         }
         guiaService.save(guia);
         redirectAttributes.addFlashAttribute("todoOk", msg("guia.mensaje.guardado"));
@@ -92,7 +92,7 @@ public class GuiaAdminController {
         model.addAttribute("guia", guiaOpt.get());
         model.addAttribute("usuarios", usuarioService.getUsuarios(false));
         model.addAttribute("estados", estadoService.getEstados(false));
-        return "/admin/guias/modifica";
+        return "admin/guias/modifica";
     }
 
     private String msg(String key) {

@@ -48,7 +48,7 @@ public class AvistamientoController {
         model.addAttribute("avistamientos",avistamientos);
         model.addAttribute("totalAvistamientos",avistamientos.size());
 
-        return "/admin/avistamientos/listado";
+        return "admin/avistamientos/listado";
 
     }
 
@@ -59,7 +59,7 @@ public class AvistamientoController {
 
         cargarCatalogos(model);
 
-        return "/admin/avistamientos/modifica";
+        return "admin/avistamientos/modifica";
 
     }
 
@@ -71,7 +71,7 @@ public class AvistamientoController {
 
         if(bindingResult.hasErrors()){
             cargarCatalogos(model);
-            return "/admin/avistamientos/modifica";
+            return "admin/avistamientos/modifica";
         }
 
         try {
@@ -79,7 +79,7 @@ public class AvistamientoController {
         } catch (IllegalArgumentException e) {
             bindingResult.reject("formulario.invalido", e.getMessage());
             cargarCatalogos(model);
-            return "/admin/avistamientos/modifica";
+            return "admin/avistamientos/modifica";
         }
 
         redirectAttributes.addFlashAttribute("todoOk",msg("avistamiento.mensaje.guardado"));
@@ -127,7 +127,7 @@ public class AvistamientoController {
 
         cargarCatalogos(model);
 
-        return "/admin/avistamientos/modifica";
+        return "admin/avistamientos/modifica";
 
     }
 

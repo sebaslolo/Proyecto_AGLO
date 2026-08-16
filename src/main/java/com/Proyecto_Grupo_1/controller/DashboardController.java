@@ -18,6 +18,6 @@ public class DashboardController {
     @GetMapping("/admin/dashboard")
     public String dashboard(Model model, Locale locale) {
         model.addAttribute("dashboard", dashboardService.obtenerResumen(locale));
-        return "/admin/dashboard";
+        return "admin/dashboard";
     }
 }

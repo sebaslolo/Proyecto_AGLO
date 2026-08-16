@@ -47,21 +47,21 @@ public class ActividadController {
         model.addAttribute("actividades", actividades);
         model.addAttribute("totalActividades", actividades.size());
         model.addAttribute("q", q);
-        return "/admin/actividades/listado";
+        return "admin/actividades/listado";
     }
 
     @GetMapping("/nueva")
     public String nueva(Model model) {
         model.addAttribute("actividad", new Actividad());
         cargarCatalogos(model);
-        return "/admin/actividades/modifica";
+        return "admin/actividades/modifica";
     }
 
     @PostMapping("/guardar")
     public String guardar(@Valid Actividad actividad, BindingResult bindingResult, Model model, RedirectAttributes redirectAttributes) {
         if (bindingResult.hasErrors()) {
             cargarCatalogos(model);
-            return "/admin/actividades/modifica";
+            return "admin/actividades/modifica";
         }
         try {
             actividadService.save(actividad);
@@ -69,7 +69,7 @@ public class ActividadController {
         } catch (IllegalArgumentException e) {
             cargarCatalogos(model);
             model.addAttribute("error", e.getMessage());
-            return "/admin/actividades/modifica";
+            return "admin/actividades/modifica";
         }
         return "redirect:/admin/actividades/listado";
     }
@@ -100,7 +100,7 @@ public class ActividadController {
         }
         model.addAttribute("actividad", actividadOpt.get());
         cargarCatalogos(model);
-        return "/admin/actividades/modifica";
+        return "admin/actividades/modifica";
     }
 
     private void cargarCatalogos(Model model) {

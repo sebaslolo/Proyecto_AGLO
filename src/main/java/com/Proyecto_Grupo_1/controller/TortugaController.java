@@ -45,7 +45,7 @@ public class TortugaController {
         model.addAttribute("tortugas",tortugas);
         model.addAttribute("totalTortugas",tortugas.size());
 
-        return "/admin/tortugas/listado";
+        return "admin/tortugas/listado";
 
     }
 
@@ -56,7 +56,7 @@ public class TortugaController {
 
         cargarCatalogos(model);
 
-        return "/admin/tortugas/modifica";
+        return "admin/tortugas/modifica";
 
     }
 
@@ -75,7 +75,7 @@ public class TortugaController {
 
         if(bindingResult.hasErrors()){
             cargarCatalogos(model);
-            return "/admin/tortugas/modifica";
+            return "admin/tortugas/modifica";
         }
 
         try {
@@ -83,7 +83,7 @@ public class TortugaController {
         } catch (IllegalArgumentException e) {
             bindingResult.reject("formulario.invalido", e.getMessage());
             cargarCatalogos(model);
-            return "/admin/tortugas/modifica";
+            return "admin/tortugas/modifica";
         }
 
         redirectAttributes.addFlashAttribute("todoOk",msg("tortuga.mensaje.guardado"));
@@ -131,7 +131,7 @@ public class TortugaController {
 
         cargarCatalogos(model);
 
-        return "/admin/tortugas/modifica";
+        return "admin/tortugas/modifica";
 
     }
 

@@ -48,7 +48,7 @@ public class UsuarioRolController {
         if (idUsuario != null) {
             model.addAttribute("asignaciones", usuarioRolService.getRolesPorUsuario(idUsuario));
         }
-        return "/admin/usuarios-roles/listado";
+        return "admin/usuarios-roles/listado";
     }
 
     @PostMapping("/guardar")

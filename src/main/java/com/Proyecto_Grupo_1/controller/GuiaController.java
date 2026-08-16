@@ -32,6 +32,6 @@ public class GuiaController {
                     model.addAttribute("asignaciones", asignaciones);
                     model.addAttribute("totalAsignaciones", asignaciones.size());
                 });
-        return "/guia/agenda";
+        return "guia/agenda";
     }
 }

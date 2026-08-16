@@ -59,14 +59,14 @@ public class UsuarioController {
         model.addAttribute("totalUsuarios", usuarios.size());
         model.addAttribute("rolesPorUsuario", rolesPorUsuario);
         model.addAttribute("q", q);
-        return "/admin/usuarios/listado";
+        return "admin/usuarios/listado";
     }
 
     @GetMapping("/nuevo")
     public String nuevo(Model model) {
         model.addAttribute("usuario", new Usuario());
         cargarCatalogos(model);
-        return "/admin/usuarios/modifica";
+        return "admin/usuarios/modifica";
     }
 
     @PostMapping("/guardar")
@@ -90,7 +90,7 @@ public class UsuarioController {
         if (bindingResult.hasErrors()) {
             cargarCatalogos(model);
             model.addAttribute("idRol", idRol);
-            return "/admin/usuarios/modifica";
+            return "admin/usuarios/modifica";
         }
         Usuario guardado = usuarioService.save(usuario);
         usuarioRolService.reemplazarRolPrincipal(guardado.getIdUsuario(), idRol);
@@ -128,7 +128,7 @@ public class UsuarioController {
                 .map(usuarioRol -> usuarioRol.getRol().getIdRol())
                 .orElse(null));
         cargarCatalogos(model);
-        return "/admin/usuarios/modifica";
+        return "admin/usuarios/modifica";
     }
 
     private void cargarCatalogos(Model model) {

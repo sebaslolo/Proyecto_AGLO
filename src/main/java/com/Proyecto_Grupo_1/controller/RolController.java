@@ -37,25 +37,25 @@ public class RolController {
         var roles = rolService.getRoles(false);
         model.addAttribute("roles", roles);
         model.addAttribute("totalRoles", roles.size());
-        return "/admin/roles/listado";
+        return "admin/roles/listado";
     }
 
     @GetMapping("/nuevo")
     public String nuevo(Model model) {
         model.addAttribute("rol", new Rol());
-        return "/admin/roles/modifica";
+        return "admin/roles/modifica";
     }
 
     @PostMapping("/guardar")
     public String guardar(@Valid Rol rol, BindingResult bindingResult, RedirectAttributes redirectAttributes) {
         if (bindingResult.hasErrors()) {
-            return "/admin/roles/modifica";
+            return "admin/roles/modifica";
         }
         try {
             rolService.save(rol);
         } catch (IllegalArgumentException | IllegalStateException e) {
             bindingResult.rejectValue("rol", "rol.error.inesperado", e.getMessage());
-            return "/admin/roles/modifica";
+            return "admin/roles/modifica";
         }
         redirectAttributes.addFlashAttribute("todoOk", msg("rol.mensaje.guardado"));
         return "redirect:/admin/roles/listado";
@@ -82,7 +82,7 @@ public class RolController {
             return "redirect:/admin/roles/listado";
         }
         model.addAttribute("rol", rolOpt.get());
-        return "/admin/roles/modifica";
+        return "admin/roles/modifica";
     }
 
     private String msg(String key) {
