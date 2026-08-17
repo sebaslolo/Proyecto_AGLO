@@ -216,3 +216,10 @@ Firebase Storage se utiliza para el almacenamiento de archivos e imágenes reque
 La configuración actual de Firebase se mantiene para conservar el funcionamiento de los ambientes desarrollados durante el proyecto.
 
 La credencial actualmente versionada debe rotarse y externalizarse antes de utilizar el sistema en un ambiente productivo real. Esta migración se considera una tarea de seguridad posterior al proyecto académico.
+
+## Diagrama de base de datos
+
+El modelo EER de AGLO fue generado automáticamente mediante MySQL Workbench a partir de la estructura final de la base de datos.
+
+- [Diagrama EER de la base de datos](docs/base-datos/DiagramaBaseDeDatos_ProyectoAGLO.pdf)
+- [Modelo editable de MySQL Workbench](docs/base-datos/ModeloBaseDeDatos_ProyectoAGLO.mwb)
